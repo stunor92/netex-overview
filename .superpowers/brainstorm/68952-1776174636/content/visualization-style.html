@@ -1,0 +1,91 @@
+<h2>Hvordan vil du visualisere NeTEx-elementene?</h2>
+<p class="subtitle">Velg den visningsformen som passer best for din bruk</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="tree" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#0f1117;">
+      <div style="font-family:monospace;font-size:12px;color:#cdd6f4;line-height:1.8;">
+        <div style="color:#89b4fa;">▼ FareProduct</div>
+        <div style="padding-left:16px;color:#a6e3a1;">▼ PreassignedFareProduct</div>
+        <div style="padding-left:32px;color:#cdd6f4;">• ProductType</div>
+        <div style="padding-left:32px;color:#cdd6f4;">• validableElements</div>
+        <div style="padding-left:32px;color:#cdd6f4;">• ConditionSummary</div>
+        <div style="padding-left:16px;color:#a6e3a1;">▶ AmountOfPriceUnitProduct</div>
+        <div style="padding-left:16px;color:#a6e3a1;">▶ SaleDiscountRight</div>
+        <div style="padding-left:16px;color:#a6e3a1;">▶ SupplementProduct</div>
+        <div style="color:#89b4fa;">▼ FarePrice</div>
+        <div style="padding-left:16px;color:#a6e3a1;">▶ FarePriceGroup</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Hierarki-tre</h3>
+      <p>Utforskbart tre som viser arv og nesting mellom elementtyper. Klikk for å utvide og se attributter.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="cards" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#0f1117;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      <div style="background:#1e2030;border:1px solid #313244;border-radius:6px;padding:10px;">
+        <div style="font-size:11px;color:#89b4fa;font-weight:bold;margin-bottom:6px;">PreassignedFareProduct</div>
+        <div style="font-size:10px;color:#6c7086;margin-bottom:4px;">ATTRIBUTTER</div>
+        <div style="font-size:10px;color:#cdd6f4;">ProductType</div>
+        <div style="font-size:10px;color:#cdd6f4;">ChargingMomentRef</div>
+        <div style="font-size:10px;color:#cdd6f4;">TypeOfFareProductRef</div>
+      </div>
+      <div style="background:#1e2030;border:1px solid #313244;border-radius:6px;padding:10px;">
+        <div style="font-size:11px;color:#a6e3a1;font-weight:bold;margin-bottom:6px;">SalesOfferPackage</div>
+        <div style="font-size:10px;color:#6c7086;margin-bottom:4px;">ATTRIBUTTER</div>
+        <div style="font-size:10px;color:#cdd6f4;">ConditionSummary</div>
+        <div style="font-size:10px;color:#cdd6f4;">distributionAssignments</div>
+        <div style="font-size:10px;color:#cdd6f4;">salesOfferPackageElements</div>
+      </div>
+      <div style="background:#1e2030;border:1px solid #313244;border-radius:6px;padding:10px;">
+        <div style="font-size:11px;color:#f38ba8;font-weight:bold;margin-bottom:6px;">FarePrice</div>
+        <div style="font-size:10px;color:#6c7086;margin-bottom:4px;">ATTRIBUTTER</div>
+        <div style="font-size:10px;color:#cdd6f4;">Amount</div>
+        <div style="font-size:10px;color:#cdd6f4;">Currency</div>
+        <div style="font-size:10px;color:#cdd6f4;">PricingRuleRef</div>
+      </div>
+      <div style="background:#1e2030;border:1px solid #313244;border-radius:6px;padding:10px;">
+        <div style="font-size:11px;color:#fab387;font-weight:bold;margin-bottom:6px;">UsageParameter</div>
+        <div style="font-size:10px;color:#6c7086;margin-bottom:4px;">ATTRIBUTTER</div>
+        <div style="font-size:10px;color:#cdd6f4;">UserProfile</div>
+        <div style="font-size:10px;color:#cdd6f4;">FrequencyOfUse</div>
+        <div style="font-size:10px;color:#cdd6f4;">Transferability</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Kortvisning</h3>
+      <p>Søkbar/filtrerbar grid av kort, ett per elementtype. Klikk et kort for fullstendig attributtliste.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="split" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#0f1117;display:flex;gap:8px;height:140px;">
+      <div style="width:35%;background:#1e2030;border:1px solid #313244;border-radius:6px;padding:10px;overflow:hidden;">
+        <div style="font-size:10px;color:#6c7086;margin-bottom:8px;">ELEMENTER</div>
+        <div style="font-size:11px;color:#89b4fa;padding:3px 6px;background:#313244;border-radius:3px;margin-bottom:4px;">PreassignedFareProd...</div>
+        <div style="font-size:11px;color:#cdd6f4;padding:3px 6px;margin-bottom:4px;">AmountOfPriceUnit...</div>
+        <div style="font-size:11px;color:#cdd6f4;padding:3px 6px;margin-bottom:4px;">SaleDiscountRight</div>
+        <div style="font-size:11px;color:#cdd6f4;padding:3px 6px;margin-bottom:4px;">SalesOfferPackage</div>
+        <div style="font-size:11px;color:#cdd6f4;padding:3px 6px;">FarePrice</div>
+      </div>
+      <div style="flex:1;background:#1e2030;border:1px solid #313244;border-radius:6px;padding:10px;overflow:hidden;">
+        <div style="font-size:12px;color:#89b4fa;font-weight:bold;margin-bottom:6px;">PreassignedFareProduct</div>
+        <div style="font-size:10px;color:#6c7086;margin-bottom:6px;">Arver fra: FareProduct → PriceableObject</div>
+        <div style="font-size:10px;color:#cdd6f4;margin-bottom:3px;display:flex;justify-content:space-between;"><span>ProductType</span><span style="color:#fab387;">enum</span></div>
+        <div style="font-size:10px;color:#cdd6f4;margin-bottom:3px;display:flex;justify-content:space-between;"><span>ChargingMomentRef</span><span style="color:#a6e3a1;">ref</span></div>
+        <div style="font-size:10px;color:#cdd6f4;margin-bottom:3px;display:flex;justify-content:space-between;"><span>OperatorRef</span><span style="color:#a6e3a1;">ref</span></div>
+        <div style="font-size:10px;color:#cdd6f4;margin-bottom:3px;display:flex;justify-content:space-between;"><span>validableElements</span><span style="color:#89b4fa;">list</span></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Masterdetalj</h3>
+      <p>Liste til venstre, detaljpanel til høyre. Velg element → se alle attributter med type og beskrivelse.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">Klikk ett av kortene, eller beskriv hva du ønsker i terminalen.</p>

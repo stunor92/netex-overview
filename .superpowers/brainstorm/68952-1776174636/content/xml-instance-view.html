@@ -1,0 +1,121 @@
+<h2>XML-instansvisning</h2>
+<p class="subtitle">Hva skjer når du laster inn en NeTEx XML-fil eller velger et eksempel</p>
+
+<div class="mockup" style="max-width:900px;margin:0 auto;">
+  <div class="mockup-header">NeTEx Part 3 Overview — Netex_51.1_Bus_SimpleFares_PointToPoint_SingleProduct.xml</div>
+  <div class="mockup-body" style="padding:0;">
+
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#181825;border-bottom:1px solid #313244;">
+      <input class="mock-input" style="flex:1;max-width:260px;" placeholder="🔍  Søk etter element...">
+      <div style="display:flex;gap:6px;">
+        <span style="font-size:11px;padding:4px 10px;background:#313244;border-radius:12px;color:#cdd6f4;">FareProduct</span>
+        <span style="font-size:11px;padding:4px 10px;background:#313244;border-radius:12px;color:#cdd6f4;">FarePrice</span>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;">
+        <span style="font-size:10px;color:#a6e3a1;padding:3px 10px;background:#1e3a2f;border:1px solid #a6e3a1;border-radius:6px;">✓ Netex_51.1_Bus_SimpleFares.xml</span>
+        <span style="font-size:11px;padding:4px 10px;border:1px solid #45475a;border-radius:6px;color:#6c7086;cursor:pointer;">✕ Lukk fil</span>
+      </div>
+    </div>
+
+    <div style="display:flex;height:440px;">
+
+      <!-- Left: Tree — nå markert med instans-data -->
+      <div style="width:260px;border-right:1px solid #313244;overflow-y:auto;padding:10px 0;">
+        <div style="font-size:10px;color:#6c7086;padding:0 12px 4px;letter-spacing:0.05em;">SKJEMA</div>
+        <div style="padding:4px 12px;font-size:12px;color:#89b4fa;cursor:pointer;">▼ FareProduct</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;background:#313244;border-left:2px solid #89b4fa;display:flex;justify-content:space-between;align-items:center;">
+          <span>● PreassignedFareProduct</span>
+          <span style="font-size:10px;background:#1e3a2f;color:#a6e3a1;padding:1px 6px;border-radius:8px;">2</span>
+        </div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <span>● AmountOfPriceUnitProduct</span>
+          <span style="font-size:10px;background:#181825;color:#6c7086;padding:1px 6px;border-radius:8px;">0</span>
+        </div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <span>● SaleDiscountRight</span>
+          <span style="font-size:10px;background:#181825;color:#6c7086;padding:1px 6px;border-radius:8px;">0</span>
+        </div>
+        <div style="padding:4px 12px;font-size:12px;color:#a6e3a1;cursor:pointer;margin-top:4px;">▼ FarePrice</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+          <span>● FarePrice</span>
+          <span style="font-size:10px;background:#1e3a2f;color:#a6e3a1;padding:1px 6px;border-radius:8px;">3</span>
+        </div>
+        <div style="padding:4px 12px;font-size:12px;color:#fab387;cursor:pointer;margin-top:4px;">▶ SalesOfferPackage <span style="font-size:10px;background:#1e3a2f;color:#a6e3a1;padding:1px 6px;border-radius:8px;margin-left:4px;">1</span></div>
+        <div style="padding:4px 12px;font-size:12px;color:#f38ba8;cursor:pointer;">▶ FareStructureElement <span style="font-size:10px;background:#1e3a2f;color:#a6e3a1;padding:1px 6px;border-radius:8px;margin-left:4px;">2</span></div>
+        <div style="padding:4px 12px;font-size:12px;color:#cba6f7;cursor:pointer;">▶ UsageParameter <span style="font-size:10px;background:#1e3a2f;color:#a6e3a1;padding:1px 6px;border-radius:8px;margin-left:4px;">1</span></div>
+      </div>
+
+      <!-- Right: Detail with instance tab active -->
+      <div style="flex:1;padding:16px;overflow-y:auto;">
+
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+          <span style="font-size:16px;font-weight:700;color:#cdd6f4;">PreassignedFareProduct</span>
+          <span style="font-size:10px;padding:2px 8px;background:#313244;border-radius:10px;color:#89b4fa;">FareProduct</span>
+          <span style="font-size:10px;color:#a6e3a1;">2 instanser i filen</span>
+        </div>
+        <div style="font-size:11px;color:#6c7086;margin-bottom:12px;">Arver fra: FareProduct → ServiceAccessRight → PriceableObject → DataManagedObject</div>
+
+        <!-- Tabs -->
+        <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid #313244;">
+          <div style="font-size:12px;padding:6px 14px;color:#6c7086;cursor:pointer;">Skjema</div>
+          <div style="font-size:12px;padding:6px 14px;color:#cdd6f4;border-bottom:2px solid #89b4fa;cursor:pointer;">XML-instans</div>
+        </div>
+
+        <!-- Instance selector -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <div style="font-size:11px;padding:4px 12px;background:#313244;border-radius:6px;color:#cdd6f4;cursor:pointer;border:1px solid #89b4fa;">FP:SingleAdult@Network</div>
+          <div style="font-size:11px;padding:4px 12px;background:#181825;border-radius:6px;color:#6c7086;cursor:pointer;border:1px solid #313244;">FP:SingleChild@Network</div>
+        </div>
+
+        <!-- Instance attributes -->
+        <div style="font-size:10px;color:#6c7086;margin-bottom:8px;letter-spacing:0.05em;">ATTRIBUTTVERDIER I DENNE INSTANSEN</div>
+        <table style="width:100%;font-size:11px;border-collapse:collapse;">
+          <thead>
+            <tr style="color:#6c7086;">
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #313244;">Attributt</th>
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #313244;">Verdi</th>
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #313244;">Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #1e1e2e;">
+              <td style="padding:5px 8px;color:#cdd6f4;">id</td>
+              <td style="padding:5px 8px;color:#a6e3a1;font-family:monospace;">FP:SingleAdult@Network</td>
+              <td style="padding:5px 8px;color:#6c7086;">string</td>
+            </tr>
+            <tr style="border-bottom:1px solid #1e1e2e;">
+              <td style="padding:5px 8px;color:#cdd6f4;">ProductType</td>
+              <td style="padding:5px 8px;color:#fab387;font-family:monospace;">singleTrip</td>
+              <td style="padding:5px 8px;color:#6c7086;">enum</td>
+            </tr>
+            <tr style="border-bottom:1px solid #1e1e2e;">
+              <td style="padding:5px 8px;color:#cdd6f4;">ChargingMomentRef</td>
+              <td style="padding:5px 8px;color:#a6e3a1;font-family:monospace;">ChargingMoment:beforeTravel</td>
+              <td style="padding:5px 8px;color:#6c7086;">ref</td>
+            </tr>
+            <tr>
+              <td style="padding:5px 8px;color:#cdd6f4;">validableElements</td>
+              <td style="padding:5px 8px;color:#89b4fa;font-family:monospace;">→ 1 ValidableElement</td>
+              <td style="padding:5px 8px;color:#6c7086;">list</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Raw XML -->
+        <div style="font-size:10px;color:#6c7086;margin:14px 0 6px;letter-spacing:0.05em;">RÅ XML</div>
+        <div style="background:#181825;border:1px solid #313244;border-radius:6px;padding:10px;font-family:monospace;font-size:10px;color:#a6adc8;line-height:1.7;">
+          <span style="color:#89b4fa;">&lt;PreassignedFareProduct</span> <span style="color:#fab387;">id=</span><span style="color:#a6e3a1;">"FP:SingleAdult@Network"</span> <span style="color:#fab387;">version=</span><span style="color:#a6e3a1;">"any"</span><span style="color:#89b4fa;">&gt;</span><br>
+          &nbsp;&nbsp;<span style="color:#89b4fa;">&lt;Name&gt;</span>Single Adult<span style="color:#89b4fa;">&lt;/Name&gt;</span><br>
+          &nbsp;&nbsp;<span style="color:#89b4fa;">&lt;ChargingMomentRef</span> <span style="color:#fab387;">ref=</span><span style="color:#a6e3a1;">"ChargingMoment:beforeTravel"</span><span style="color:#89b4fa;">/&gt;</span><br>
+          &nbsp;&nbsp;<span style="color:#89b4fa;">&lt;ProductType&gt;</span>singleTrip<span style="color:#89b4fa;">&lt;/ProductType&gt;</span><br>
+          &nbsp;&nbsp;<span style="color:#89b4fa;">&lt;validableElements&gt;</span>...<span style="color:#89b4fa;">&lt;/validableElements&gt;</span><br>
+          <span style="color:#89b4fa;">&lt;/PreassignedFareProduct&gt;</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px;text-align:center;">Ser dette riktig ut? Si hva du ønsker å endre.</p>

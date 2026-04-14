@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
+    "test:ui": "vitest --ui",
     "fetch-schema": "node scripts/fetch-and-parse.js"
   },
   "dependencies": {

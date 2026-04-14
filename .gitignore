@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Generated data files
+src/data/netex-elements.json
+src/data/netex-examples.json
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
