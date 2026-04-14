@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import type { NeTExElement, LoadedFile, NeTExExample } from './types'
+import type { NeTExElement, LoadedFile, NeTExExample, ProfileData, ActiveProfile } from './types'
 import elementsData from './data/netex-elements.json'
 import examplesData from './data/netex-examples.json'
+import frProfileData from './data/profiles/fr.json'
+import nordicProfileData from './data/profiles/nordic.json'
 import { SearchBar } from './components/SearchBar'
 import { ElementTree } from './components/ElementTree'
 import { AttributePanel } from './components/AttributePanel'
@@ -10,13 +12,20 @@ import { ExampleLoader } from './components/ExampleLoader'
 const allElements = elementsData as NeTExElement[]
 const allExamples = examplesData as NeTExExample[]
 
+const PROFILES: Record<string, ProfileData> = {
+  fr: frProfileData as ProfileData,
+  nordic: nordicProfileData as ProfileData,
+}
+
 export default function App() {
   const [query, setQuery] = useState('')
   const [activeGroup, setActiveGroup] = useState<string | null>(null)
   const [selectedElement, setSelectedElement] = useState<NeTExElement | null>(null)
   const [loadedFile, setLoadedFile] = useState<LoadedFile | null>(null)
+  const [activeProfile, setActiveProfile] = useState<ActiveProfile>(null)
 
   const groups = [...new Set(allElements.map((e) => e.group))].sort()
+  const profileData = activeProfile ? PROFILES[activeProfile] : null
 
   return (
     <div style={{
@@ -75,6 +84,9 @@ export default function App() {
             selectedElement={selectedElement}
             loadedFile={loadedFile}
             onSelect={setSelectedElement}
+            profileData={profileData}
+            activeProfile={activeProfile}
+            onProfileChange={setActiveProfile}
           />
         </div>
 
@@ -89,6 +101,8 @@ export default function App() {
               element={selectedElement}
               allElements={allElements}
               loadedFile={loadedFile}
+              profileData={profileData}
+              activeProfile={activeProfile}
             />
           ) : (
             <div style={{
