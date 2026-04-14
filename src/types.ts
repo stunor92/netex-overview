@@ -80,3 +80,17 @@ export interface LoadedFile {
   filename: string
   instanceMap: InstanceMap
 }
+
+// --- Profile annotation types ---
+
+export type ProfileStatus = 'required' | 'optional' | 'not-in-profile'
+
+export interface ProfileElementData {
+  status: ProfileStatus
+  attributes: Record<string, ProfileStatus>
+}
+
+/** Keyed by NeTEx element name, e.g. "PreassignedFareProduct" */
+export type ProfileData = Record<string, ProfileElementData>
+
+export type ActiveProfile = 'fr' | 'nordic' | null
