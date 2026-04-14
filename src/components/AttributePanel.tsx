@@ -171,6 +171,7 @@ function InstanceTab({ element, loadedFile }: { element: NeTExElement; loadedFil
           {instances.map((inst, i) => (
             <button
               key={i}
+              type="button"
               onClick={() => setSelectedIdx(i)}
               style={{
                 fontSize: '12px',
