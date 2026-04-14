@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react'
+import { SecondaryButton, TertiaryButton, PrimaryButton } from '@entur/button'
+import { Modal } from '@entur/modal'
 import type { NeTExExample, LoadedFile } from '../types'
 import { parseXmlInstance } from '../utils/xml-instance-parser'
 
@@ -43,46 +45,104 @@ export function ExampleLoader({ examples, onFileLoaded }: ExampleLoaderProps) {
   }
 
   return (
-    <div className="flex items-center gap-2 relative">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
       {activeFilename && (
-        <div className="flex items-center gap-1.5 text-xs px-2 py-1 bg-[#1e3a2f] border border-[#a6e3a1] rounded text-[#a6e3a1]">
-          <span className="max-w-[200px] truncate">{activeFilename}</span>
-          <button onClick={clearFile} className="hover:text-white ml-1">✕</button>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          fontSize: '12px',
+          padding: '4px 8px',
+          background: 'var(--colors-greys-grey90, #f8f8f8)',
+          border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+          borderRadius: '4px',
+          color: 'var(--colors-greys-grey10, #2a2a2a)',
+        }}>
+          <span style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {activeFilename}
+          </span>
+          <TertiaryButton onClick={clearFile}>✕</TertiaryButton>
         </div>
       )}
 
-      <div className="relative">
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-1 text-xs px-3 py-1.5 border border-[#45475a] rounded text-[#cdd6f4] hover:border-[#cdd6f4] transition-colors"
-        >
+      <div style={{ position: 'relative' }}>
+        <SecondaryButton onClick={() => setOpen((v) => !v)}>
           Eksempler {open ? '▲' : '▼'}
-        </button>
+        </SecondaryButton>
 
         {open && (
-          <div className="absolute right-0 top-full mt-1 w-80 bg-[#1e2030] border border-[#313244] rounded-lg shadow-xl z-50 overflow-hidden">
-            <div className="px-3 py-2 text-xs text-[#6c7086] border-b border-[#313244]">Offisielle NeTEx-eksempler</div>
-            <div className="max-h-64 overflow-y-auto">
+          <div style={{
+            position: 'absolute',
+            right: 0,
+            top: '100%',
+            marginTop: '4px',
+            width: '320px',
+            background: 'var(--colors-greys-white, #ffffff)',
+            border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+            zIndex: 50,
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              padding: '8px 12px',
+              fontSize: '11px',
+              color: 'var(--colors-greys-grey50, #888)',
+              borderBottom: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+            }}>
+              Offisielle NeTEx-eksempler
+            </div>
+            <div style={{ maxHeight: '256px', overflowY: 'auto' }}>
               {examples.map((ex) => (
                 <button
+                  type="button"
                   key={ex.filename}
                   onClick={() => { loadXml(ex.xml, ex.filename); setOpen(false) }}
-                  className="w-full text-left px-3 py-2 text-xs text-[#cdd6f4] hover:bg-[#313244] transition-colors"
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '8px 12px',
+                    fontSize: '12px',
+                    color: 'var(--colors-greys-grey10, #2a2a2a)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}
                 >
                   {ex.label}
                 </button>
               ))}
             </div>
-            <div className="border-t border-[#313244]">
+            <div style={{ borderTop: '1px solid var(--colors-greys-grey80, #e0e0e0)' }}>
               <button
+                type="button"
                 onClick={() => { fileRef.current?.click(); setOpen(false) }}
-                className="w-full text-left px-3 py-2 text-xs text-[#a6adc8] hover:bg-[#313244]"
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '8px 12px',
+                  fontSize: '12px',
+                  color: 'var(--colors-greys-grey40, #555)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
               >
                 Last inn lokal XML-fil...
               </button>
               <button
+                type="button"
                 onClick={() => { setPasteOpen(true); setOpen(false) }}
-                className="w-full text-left px-3 py-2 text-xs text-[#a6adc8] hover:bg-[#313244]"
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '8px 12px',
+                  fontSize: '12px',
+                  color: 'var(--colors-greys-grey40, #555)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
               >
                 Lim inn XML...
               </button>
@@ -91,35 +151,41 @@ export function ExampleLoader({ examples, onFileLoaded }: ExampleLoaderProps) {
         )}
       </div>
 
-      <input ref={fileRef} type="file" accept=".xml" className="hidden" onChange={handleFileChange} />
+      <input ref={fileRef} type="file" accept=".xml" style={{ display: 'none' }} onChange={handleFileChange} />
 
-      {pasteOpen && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-[#1e2030] border border-[#313244] rounded-xl w-[600px] p-4 shadow-2xl">
-            <div className="text-sm font-semibold text-[#cdd6f4] mb-3">Lim inn NeTEx XML</div>
-            <textarea
-              value={pasteXml}
-              onChange={(e) => setPasteXml(e.target.value)}
-              className="w-full h-64 bg-[#181825] border border-[#45475a] rounded text-xs font-mono text-[#a6adc8] p-2 focus:outline-none focus:border-[#89b4fa] resize-none"
-              placeholder="<PublicationDelivery ...>...</PublicationDelivery>"
-            />
-            <div className="flex justify-end gap-2 mt-3">
-              <button
-                onClick={() => { setPasteOpen(false); setPasteXml('') }}
-                className="px-3 py-1.5 text-xs text-[#6c7086] border border-[#45475a] rounded hover:border-[#cdd6f4]"
-              >
-                Avbryt
-              </button>
-              <button
-                onClick={handlePaste}
-                className="px-3 py-1.5 text-xs bg-[#89b4fa] text-[#1e1e2e] rounded font-semibold hover:bg-[#b4d0ff]"
-              >
-                Last inn
-              </button>
-            </div>
-          </div>
+      <Modal
+        open={pasteOpen}
+        onDismiss={() => { setPasteOpen(false); setPasteXml('') }}
+        title="Lim inn NeTEx XML"
+        size="medium"
+      >
+        <textarea
+          value={pasteXml}
+          onChange={(e) => setPasteXml(e.target.value)}
+          style={{
+            width: '100%',
+            height: '256px',
+            background: 'var(--colors-greys-grey90, #f8f8f8)',
+            border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+            borderRadius: '4px',
+            fontSize: '12px',
+            fontFamily: 'monospace',
+            color: 'var(--colors-greys-grey10, #2a2a2a)',
+            padding: '8px',
+            resize: 'none',
+            boxSizing: 'border-box',
+          }}
+          placeholder="<PublicationDelivery ...>...</PublicationDelivery>"
+        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
+          <TertiaryButton onClick={() => { setPasteOpen(false); setPasteXml('') }}>
+            Avbryt
+          </TertiaryButton>
+          <PrimaryButton onClick={handlePaste}>
+            Last inn
+          </PrimaryButton>
         </div>
-      )}
+      </Modal>
     </div>
   )
 }
