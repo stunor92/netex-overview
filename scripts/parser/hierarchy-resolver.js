@@ -1,7 +1,10 @@
+// Framework base types that add no useful information for the UI
+const SKIP_TYPES = new Set(['DataManagedObject', 'EntityInVersion', 'VersionedChild', 'GroupOfEntities'])
+
 /**
  * @param {{ elements: Map, types: Map, groups: Map }} context
  * @param {string[]} topGroupNames
- * @returns {Array} NeTExElement[]
+ * @returns {import('../../src/types.js').NeTExElement[]}
  */
 export function resolveHierarchy(context, topGroupNames) {
   const { elements, types, groups } = context
@@ -10,21 +13,20 @@ export function resolveHierarchy(context, topGroupNames) {
   for (const [name, el] of elements) {
     if (el.abstract) continue
 
-    const group = findTopGroup(name, elements, topGroupNames)
+    const group = topGroupNames.includes(name) ? name : findTopGroup(name, elements, topGroupNames)
     const typeName = `${name}_VersionStructure`
-    const { chain } = resolveTypeChain(typeName, types)
+    const chain = resolveTypeChain(typeName, types)
 
     // inheritedFrom = ancestors in the substitution group chain, excluding self and framework base types
-    const SKIP = new Set(['DataManagedObject', 'EntityInVersion', 'VersionedChild', 'GroupOfEntities'])
     const subChain = resolveSubstitutionChain(el.substitutionGroup, elements)
     const inheritedFrom = subChain
       .map((n) => stripDummy(n))
-      .filter((n) => n !== name && !SKIP.has(n))
+      .filter((n) => n !== name && !SKIP_TYPES.has(n))
       .filter((v, i, a) => a.indexOf(v) === i)
 
-    // own attributes = from the first group ref of own type
-    const ownGroupRef = types.get(typeName)?.groupRefs?.[0]
-    const ownAttrs = ownGroupRef ? (groups.get(ownGroupRef) ?? []) : []
+    // own attributes = all group refs of own type (not just first — NeTEx types can have multiple)
+    const ownGroupRefs = types.get(typeName)?.groupRefs ?? []
+    const ownAttrs = ownGroupRefs.flatMap((ref) => groups.get(ref) ?? [])
 
     // inherited attributes = all group refs from ancestor types (chain[1] onward)
     const inheritedAttrs = []
@@ -42,6 +44,7 @@ export function resolveHierarchy(context, topGroupNames) {
     result.push({
       name,
       abstract: false,
+      // parent: closest named ancestor (stripping _Dummy suffix from substitutionGroup)
       parent: el.substitutionGroup ? stripDummy(el.substitutionGroup) : null,
       group: group ?? 'Other',
       description: el.description,
@@ -55,14 +58,17 @@ export function resolveHierarchy(context, topGroupNames) {
 }
 
 function stripDummy(name) {
-  return name?.replace(/_Dummy$/, '') ?? name
+  return name?.replace(/_Dummy$/, '').replace(/_$/, '') ?? name
 }
 
 function findTopGroup(elementName, elements, topGroupNames) {
+  const visited = new Set()
   let current = elements.get(elementName)
   while (current) {
     const parent = current.substitutionGroup
     if (!parent) return null
+    if (visited.has(parent)) break // cycle guard
+    visited.add(parent)
     const parentClean = stripDummy(parent)
     if (topGroupNames.includes(parentClean)) return parentClean
     current = elements.get(parent)
@@ -72,8 +78,11 @@ function findTopGroup(elementName, elements, topGroupNames) {
 
 function resolveSubstitutionChain(substitutionGroup, elements) {
   const chain = []
+  const visited = new Set()
   let current = substitutionGroup
   while (current) {
+    if (visited.has(current)) break // cycle guard
+    visited.add(current)
     chain.push(current)
     current = elements.get(current)?.substitutionGroup ?? null
   }
@@ -82,12 +91,15 @@ function resolveSubstitutionChain(substitutionGroup, elements) {
 
 function resolveTypeChain(typeName, types) {
   const chain = []
+  const visited = new Set()
   let current = typeName
   while (current && types.has(current)) {
+    if (visited.has(current)) break // cycle guard
+    visited.add(current)
     chain.push(current)
     current = types.get(current).extensionBase ?? null
   }
-  return { chain }
+  return chain
 }
 
 function inferKind(type, name) {
@@ -95,6 +107,8 @@ function inferKind(type, name) {
   if (type.endsWith('Enumeration') || type.endsWith('EnumType')) return 'enum'
   if (type.endsWith('RefStructure') || name.endsWith('Ref') || name.endsWith('Refs')) return 'ref'
   if (type.endsWith('RelStructure')) return 'list'
+  // complex = named structure that doesn't fit ref/list/enum — used for nested objects
+  if (type.endsWith('Structure') || type.endsWith('Group')) return 'complex'
   if (type === 'xsd:boolean') return 'boolean'
   if (type === 'xsd:integer') return 'integer'
   if (type === 'xsd:decimal') return 'decimal'
@@ -104,7 +118,8 @@ function inferKind(type, name) {
 function normaliseAttr(attr) {
   return {
     name: attr.name,
-    type: attr.type || attr.name,
+    // Empty type means inline anonymous type in XSD — use 'unknown' as a safe sentinel
+    type: attr.type || 'unknown',
     kind: inferKind(attr.type, attr.name),
     minOccurs: attr.minOccurs,
     maxOccurs: attr.maxOccurs,
