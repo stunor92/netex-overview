@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "fetch-schema": "node scripts/fetch-and-parse.js"
+    "fetch-schema": "node scripts/fetch-and-parse.js",
+    "fetch-profiles": "node scripts/fetch-profiles.js"
   },
   "dependencies": {
     "@entur/button": "^4.0.5",
