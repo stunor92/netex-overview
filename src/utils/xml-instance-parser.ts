@@ -1,5 +1,5 @@
 import { XMLParser, XMLBuilder } from 'fast-xml-parser'
-import type { InstanceMap, ParsedInstance, ParsedInstanceAttribute } from '../types'
+import type { InstanceMap, ParsedInstanceAttribute } from '../types'
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -50,7 +50,7 @@ function walkNode(node: unknown, result: InstanceMap): void {
 }
 
 /** Heuristic: a NeTEx element node is an object with an @_id attribute */
-function looksLikeNeTExElement(key: string, value: unknown): boolean {
+function looksLikeNeTExElement(_key: string, value: unknown): boolean {
   if (!value || typeof value !== 'object') return false
   const obj = value as Record<string, unknown>
   return '@_id' in obj || (Array.isArray(value) && value.some((v) => v && typeof v === 'object' && '@_id' in v))

@@ -117,6 +117,74 @@ function SchemaTab({ element }: { element: NeTExElement }) {
   )
 }
 
+function InstanceTab({ element, loadedFile }: { element: NeTExElement; loadedFile: LoadedFile }) {
+  const instances = loadedFile.instanceMap[element.name] ?? []
+  const [selectedIdx, setSelectedIdx] = useState(0)
+  const instance = instances[selectedIdx]
+
+  if (instances.length === 0) {
+    return (
+      <div className="px-4 py-6 text-sm text-[#6c7086]">
+        Ingen instanser av {element.name} funnet i {loadedFile.filename}
+      </div>
+    )
+  }
+
+  return (
+    <div className="px-4 pt-4">
+      {/* Instance selector */}
+      {instances.length > 1 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {instances.map((inst, i) => (
+            <button
+              key={i}
+              onClick={() => setSelectedIdx(i)}
+              className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                selectedIdx === i
+                  ? 'bg-[#89b4fa] text-[#1e1e2e] border-[#89b4fa] font-semibold'
+                  : 'border-[#45475a] text-[#6c7086] hover:border-[#cdd6f4]'
+              }`}
+            >
+              {inst.id || `Instans ${i + 1}`}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Attribute value table */}
+      {instance && (
+        <>
+          <div className="text-[10px] uppercase tracking-widest text-[#6c7086] mb-2">Attributtverdier</div>
+          <table className="w-full text-left mb-6">
+            <thead>
+              <tr className="text-[10px] uppercase tracking-wider text-[#6c7086]">
+                <th className="px-3 pb-2">Attributt</th>
+                <th className="px-3 pb-2">Verdi</th>
+                <th className="px-3 pb-2">Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {instance.attributes.map((a) => (
+                <tr key={a.name} className="border-b border-[#1e1e2e]">
+                  <td className="px-3 py-1.5 text-xs font-medium text-[#cdd6f4]">{a.name}</td>
+                  <td className="px-3 py-1.5 text-xs font-mono text-[#a6e3a1]">{a.value}</td>
+                  <td className="px-3 py-1.5 text-xs text-[#6c7086]">{a.kind}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Raw XML */}
+          <div className="text-[10px] uppercase tracking-widest text-[#6c7086] mb-2">Rå XML</div>
+          <pre className="bg-[#181825] border border-[#313244] rounded-lg p-3 text-[11px] font-mono text-[#a6adc8] overflow-x-auto whitespace-pre-wrap break-all">
+            {instance.rawXml}
+          </pre>
+        </>
+      )}
+    </div>
+  )
+}
+
 export function AttributePanel({ element, allElements: _allElements, loadedFile }: AttributePanelProps) {
   const [activeTab, setActiveTab] = useState<'schema' | 'instance'>('schema')
   const groupColour = GROUP_COLOURS[element.group] ?? '#cdd6f4'
@@ -167,7 +235,7 @@ export function AttributePanel({ element, allElements: _allElements, loadedFile 
 
       {activeTab === 'schema' && <SchemaTab element={element} />}
       {activeTab === 'instance' && loadedFile && (
-        <div className="px-4 py-4 text-sm text-[#6c7086]">Instance view — implementert i Task 12</div>
+        <InstanceTab element={element} loadedFile={loadedFile} />
       )}
     </div>
   )
