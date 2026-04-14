@@ -31,3 +31,4 @@ src/data/netex-examples.json
 *.njsproj
 *.sln
 *.sw?
+.superpowers/
