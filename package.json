@@ -13,13 +13,21 @@
     "fetch-schema": "node scripts/fetch-and-parse.js"
   },
   "dependencies": {
+    "@entur/button": "^4.0.5",
+    "@entur/chip": "^0.10.9",
+    "@entur/expand": "^3.7.6",
+    "@entur/form": "^9.3.1",
+    "@entur/modal": "^1.8.9",
+    "@entur/tab": "^0.6.6",
+    "@entur/table": "^4.10.9",
+    "@entur/tokens": "^3.22.4",
+    "@entur/typography": "^2.1.6",
     "fast-xml-parser": "^5.5.12",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
-    "@tailwindcss/vite": "^4.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.0.10",
@@ -31,7 +39,6 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
     "jsdom": "^26.1.0",
-    "tailwindcss": "^4.0.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.24.1",
     "vite": "^6.2.0",
