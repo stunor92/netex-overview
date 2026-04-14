@@ -60,13 +60,6 @@ async function buildFrenchProfile(headers) {
 
   // Load base element list to know all valid element names
   const allElements = JSON.parse(readFileSync(join(DATA_DIR, 'netex-elements.json'), 'utf8'))
-  const elementAttrMap = {}
-  for (const el of allElements) {
-    elementAttrMap[el.name] = new Set([
-      ...el.attributes.map((a) => a.name),
-      ...el.inheritedAttributes.map((a) => a.name),
-    ])
-  }
 
   // Fetch XSD file list from French profile repo
   let xsdPaths = []
