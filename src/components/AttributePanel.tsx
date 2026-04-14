@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@entur/tab'
+import { Table, TableHead, TableBody, TableRow, HeaderCell, DataCell } from '@entur/table'
+import { ExpandablePanel } from '@entur/expand'
 import type { NeTExElement, LoadedFile, NeTExAttribute, NeTExInheritedAttribute } from '../types'
 
 interface AttributePanelProps {
@@ -8,53 +11,31 @@ interface AttributePanelProps {
 }
 
 const KIND_COLOUR: Record<string, string> = {
-  enum: '#fab387',
-  ref: '#a6e3a1',
-  list: '#89b4fa',
-  complex: '#cba6f7',
-  string: '#cdd6f4',
-  boolean: '#f38ba8',
-  integer: '#f38ba8',
-  decimal: '#f38ba8',
+  enum: '#e65100',
+  ref: '#2e7d32',
+  list: '#1565c0',
+  complex: '#6a1b9a',
+  string: '#555',
+  boolean: '#555',
+  integer: '#555',
+  decimal: '#555',
 }
 
 const GROUP_COLOURS: Record<string, string> = {
-  FareProduct: '#89b4fa',
-  FarePrice: '#a6e3a1',
-  SalesOfferPackage: '#fab387',
-  FareStructureElement: '#f38ba8',
-  UsageParameter: '#cba6f7',
+  FareProduct: '#ff6c6c',
+  FarePrice: '#181c56',
+  SalesOfferPackage: '#e07b00',
+  FareStructureElement: '#c0392b',
+  UsageParameter: '#6a1b9a',
+  TimeStructureFactor: '#1565c0',
 }
 
-function cardinality(attr: NeTExAttribute) {
+function cardinality(attr: NeTExAttribute | NeTExInheritedAttribute) {
   const max = attr.maxOccurs === 'unbounded' ? '∞' : attr.maxOccurs
   return `${attr.minOccurs}..${max}`
 }
 
-function AttrRow({ attr, dim = false }: { attr: NeTExAttribute | NeTExInheritedAttribute; dim?: boolean }) {
-  const colour = KIND_COLOUR[attr.kind] ?? '#cdd6f4'
-  return (
-    <tr className={`border-b border-[#1e1e2e] ${dim ? 'opacity-60' : ''}`}>
-      <td className="px-3 py-1.5 text-xs font-medium text-[#cdd6f4]">{attr.name}</td>
-      <td className="px-3 py-1.5 text-xs font-mono" style={{ color: colour }}>{attr.kind}</td>
-      <td className="px-3 py-1.5 text-xs text-center text-[#a6adc8]">{cardinality(attr)}</td>
-      <td className="px-3 py-1.5 text-xs text-[#a6adc8]">{attr.description}</td>
-    </tr>
-  )
-}
-
 function SchemaTab({ element }: { element: NeTExElement }) {
-  const [expandedAncestors, setExpandedAncestors] = useState<Set<string>>(new Set())
-
-  function toggleAncestor(name: string) {
-    setExpandedAncestors((prev) => {
-      const next = new Set(prev)
-      next.has(name) ? next.delete(name) : next.add(name)
-      return next
-    })
-  }
-
-  // Group inherited attrs by ancestor
   const byAncestor = new Map<string, NeTExInheritedAttribute[]>()
   for (const a of element.inheritedAttributes) {
     if (!byAncestor.has(a.inheritedFrom)) byAncestor.set(a.inheritedFrom, [])
@@ -64,53 +45,100 @@ function SchemaTab({ element }: { element: NeTExElement }) {
   return (
     <div>
       {element.description && (
-        <p className="px-4 py-3 text-sm text-[#a6adc8] border-b border-[#313244]">
+        <div
+          style={{
+            borderLeft: '3px solid var(--colors-brand-coral, #ff6c6c)',
+            paddingLeft: '12px',
+            margin: '16px',
+            color: 'var(--colors-greys-grey40, #555)',
+            fontSize: '14px',
+          }}
+        >
           {element.description}
-        </p>
+        </div>
       )}
 
       {element.attributes.length > 0 && (
-        <div className="px-4 pt-3">
-          <div className="text-[10px] uppercase tracking-widest text-[#6c7086] mb-2">Egne attributter</div>
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-[10px] uppercase tracking-wider text-[#6c7086]">
-                <th className="px-3 pb-2">Navn</th>
-                <th className="px-3 pb-2">Type</th>
-                <th className="px-3 pb-2 text-center">Kard.</th>
-                <th className="px-3 pb-2">Beskrivelse</th>
-              </tr>
-            </thead>
-            <tbody>
-              {element.attributes.map((a) => <AttrRow key={a.name} attr={a} />)}
-            </tbody>
-          </table>
+        <div style={{ padding: '0 16px 16px' }}>
+          <div
+            style={{
+              fontSize: '10px',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              color: 'var(--colors-greys-grey50, #888)',
+              fontWeight: 600,
+              marginBottom: '8px',
+            }}
+          >
+            Egne attributter
+          </div>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <HeaderCell>Navn</HeaderCell>
+                <HeaderCell>Type</HeaderCell>
+                <HeaderCell align="center">Kard.</HeaderCell>
+                <HeaderCell>Beskrivelse</HeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {element.attributes.map((a) => (
+                <TableRow key={a.name}>
+                  <DataCell>{a.name}</DataCell>
+                  <DataCell>
+                    <span style={{ fontFamily: 'monospace', color: KIND_COLOUR[a.kind] ?? '#555' }}>
+                      {a.kind}
+                    </span>
+                  </DataCell>
+                  <DataCell align="center" style={{ color: 'var(--colors-greys-grey50, #888)' }}>
+                    {cardinality(a)}
+                  </DataCell>
+                  <DataCell style={{ color: 'var(--colors-greys-grey50, #888)' }}>
+                    {a.description}
+                  </DataCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
 
       {byAncestor.size > 0 && (
-        <div className="px-4 pt-4">
-          {[...byAncestor.entries()].map(([ancestor, attrs]) => {
-            const isOpen = expandedAncestors.has(ancestor)
-            return (
-              <div key={ancestor} className="mb-2">
-                <button
-                  onClick={() => toggleAncestor(ancestor)}
-                  className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-[#6c7086] hover:text-[#a6adc8] mb-1"
-                >
-                  <span>{isOpen ? '▼' : '▶'}</span>
-                  <span>Arvet fra {ancestor}</span>
-                </button>
-                {isOpen && (
-                  <table className="w-full text-left">
-                    <tbody>
-                      {attrs.map((a) => <AttrRow key={a.name} attr={a} dim />)}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-            )
-          })}
+        <div style={{ padding: '0 16px 16px' }}>
+          {[...byAncestor.entries()].map(([ancestor, attrs]) => (
+            <div key={ancestor} style={{ marginBottom: '8px' }}>
+              <ExpandablePanel title={`Arvet fra ${ancestor}`}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <HeaderCell>Navn</HeaderCell>
+                      <HeaderCell>Type</HeaderCell>
+                      <HeaderCell align="center">Kard.</HeaderCell>
+                      <HeaderCell>Beskrivelse</HeaderCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {attrs.map((a) => (
+                      <TableRow key={a.name}>
+                        <DataCell>{a.name}</DataCell>
+                        <DataCell>
+                          <span style={{ fontFamily: 'monospace', color: KIND_COLOUR[a.kind] ?? '#555' }}>
+                            {a.kind}
+                          </span>
+                        </DataCell>
+                        <DataCell align="center" style={{ color: 'var(--colors-greys-grey50, #888)' }}>
+                          {cardinality(a)}
+                        </DataCell>
+                        <DataCell style={{ color: 'var(--colors-greys-grey50, #888)' }}>
+                          {a.description}
+                        </DataCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </ExpandablePanel>
+            </div>
+          ))}
         </div>
       )}
     </div>
@@ -124,26 +152,43 @@ function InstanceTab({ element, loadedFile }: { element: NeTExElement; loadedFil
 
   if (instances.length === 0) {
     return (
-      <div className="px-4 py-6 text-sm text-[#6c7086]">
+      <div
+        style={{
+          padding: '24px 16px',
+          fontSize: '14px',
+          color: 'var(--colors-greys-grey50, #888)',
+        }}
+      >
         Ingen instanser av {element.name} funnet i {loadedFile.filename}
       </div>
     )
   }
 
   return (
-    <div className="px-4 pt-4">
-      {/* Instance selector */}
+    <div style={{ padding: '16px' }}>
       {instances.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
           {instances.map((inst, i) => (
             <button
               key={i}
               onClick={() => setSelectedIdx(i)}
-              className={`text-xs px-3 py-1 rounded-full border transition-colors ${
-                selectedIdx === i
-                  ? 'bg-[#89b4fa] text-[#1e1e2e] border-[#89b4fa] font-semibold'
-                  : 'border-[#45475a] text-[#6c7086] hover:border-[#cdd6f4]'
-              }`}
+              style={{
+                fontSize: '12px',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                border: selectedIdx === i
+                  ? '1px solid var(--colors-brand-coral, #ff6c6c)'
+                  : '1px solid var(--colors-greys-grey80, #e0e0e0)',
+                background: selectedIdx === i
+                  ? 'var(--colors-brand-coral, #ff6c6c)'
+                  : 'transparent',
+                color: selectedIdx === i
+                  ? 'var(--colors-greys-white, #ffffff)'
+                  : 'var(--colors-greys-grey40, #555)',
+                fontWeight: selectedIdx === i ? 600 : 400,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
             >
               {inst.id || `Instans ${i + 1}`}
             </button>
@@ -151,32 +196,71 @@ function InstanceTab({ element, loadedFile }: { element: NeTExElement; loadedFil
         </div>
       )}
 
-      {/* Attribute value table */}
       {instance && (
         <>
-          <div className="text-[10px] uppercase tracking-widest text-[#6c7086] mb-2">Attributtverdier</div>
-          <table className="w-full text-left mb-6">
-            <thead>
-              <tr className="text-[10px] uppercase tracking-wider text-[#6c7086]">
-                <th className="px-3 pb-2">Attributt</th>
-                <th className="px-3 pb-2">Verdi</th>
-                <th className="px-3 pb-2">Type</th>
-              </tr>
-            </thead>
-            <tbody>
-              {instance.attributes.map((a) => (
-                <tr key={a.name} className="border-b border-[#1e1e2e]">
-                  <td className="px-3 py-1.5 text-xs font-medium text-[#cdd6f4]">{a.name}</td>
-                  <td className="px-3 py-1.5 text-xs font-mono text-[#a6e3a1]">{a.value}</td>
-                  <td className="px-3 py-1.5 text-xs text-[#6c7086]">{a.kind}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div
+            style={{
+              fontSize: '10px',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              color: 'var(--colors-greys-grey50, #888)',
+              fontWeight: 600,
+              marginBottom: '8px',
+            }}
+          >
+            Attributtverdier
+          </div>
+          <div style={{ marginBottom: '24px' }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <HeaderCell>Attributt</HeaderCell>
+                  <HeaderCell>Verdi</HeaderCell>
+                  <HeaderCell>Type</HeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {instance.attributes.map((a) => (
+                  <TableRow key={a.name}>
+                    <DataCell>{a.name}</DataCell>
+                    <DataCell>
+                      <span style={{ fontFamily: 'monospace', color: 'var(--colors-greys-grey40, #555)' }}>
+                        {a.value}
+                      </span>
+                    </DataCell>
+                    <DataCell style={{ color: 'var(--colors-greys-grey50, #888)' }}>{a.kind}</DataCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
 
-          {/* Raw XML */}
-          <div className="text-[10px] uppercase tracking-widest text-[#6c7086] mb-2">Rå XML</div>
-          <pre className="bg-[#181825] border border-[#313244] rounded-lg p-3 text-[11px] font-mono text-[#a6adc8] overflow-x-auto whitespace-pre-wrap break-all">
+          <div
+            style={{
+              fontSize: '10px',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              color: 'var(--colors-greys-grey50, #888)',
+              fontWeight: 600,
+              marginBottom: '8px',
+            }}
+          >
+            Rå XML
+          </div>
+          <pre
+            style={{
+              background: 'var(--colors-greys-grey90, #f8f8f8)',
+              border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+              borderRadius: '8px',
+              padding: '12px',
+              fontSize: '11px',
+              fontFamily: 'monospace',
+              color: 'var(--colors-greys-grey40, #555)',
+              overflowX: 'auto',
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-all',
+            }}
+          >
             {instance.rawXml}
           </pre>
         </>
@@ -186,57 +270,80 @@ function InstanceTab({ element, loadedFile }: { element: NeTExElement; loadedFil
 }
 
 export function AttributePanel({ element, allElements: _allElements, loadedFile }: AttributePanelProps) {
-  const [activeTab, setActiveTab] = useState<'schema' | 'instance'>('schema')
-  const groupColour = GROUP_COLOURS[element.group] ?? '#cdd6f4'
+  const [activeTabIdx, setActiveTabIdx] = useState(0)
+  const groupColour = GROUP_COLOURS[element.group] ?? '#555'
   const hasInstances = !!loadedFile?.instanceMap[element.name]?.length
 
   return (
     <div>
       {/* Header */}
-      <div className="px-4 pt-4 pb-3 border-b border-[#313244]">
-        <div className="flex items-baseline gap-2 mb-1">
-          <span className="text-lg font-bold text-[#cdd6f4]">{element.name}</span>
+      <div
+        style={{
+          padding: '16px 16px 12px',
+          borderBottom: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '4px' }}>
           <span
-            className="text-xs px-2 py-0.5 rounded-full"
-            style={{ backgroundColor: '#313244', color: groupColour }}
+            style={{
+              fontSize: '18px',
+              fontWeight: 700,
+              color: 'var(--colors-greys-grey10, #2a2a2a)',
+            }}
+          >
+            {element.name}
+          </span>
+          <span
+            style={{
+              fontSize: '12px',
+              padding: '2px 8px',
+              borderRadius: '9999px',
+              background: 'var(--colors-greys-grey90, #f8f8f8)',
+              color: groupColour,
+              border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+            }}
           >
             {element.group}
           </span>
           {hasInstances && (
-            <span className="text-xs text-[#a6e3a1] ml-1">
+            <span
+              style={{
+                fontSize: '12px',
+                color: 'var(--colors-brand-coral, #ff6c6c)',
+                marginLeft: '4px',
+              }}
+            >
               {loadedFile!.instanceMap[element.name].length} instanser i filen
             </span>
           )}
         </div>
         {element.inheritedFrom.length > 0 && (
-          <div className="text-xs text-[#6c7086]">
+          <div
+            style={{
+              fontSize: '12px',
+              color: 'var(--colors-greys-grey50, #888)',
+            }}
+          >
             Arver fra: {element.inheritedFrom.join(' → ')}
           </div>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#313244]">
-        {(['schema', 'instance'] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            disabled={tab === 'instance' && !loadedFile}
-            className={`px-4 py-2 text-sm transition-colors ${
-              activeTab === tab
-                ? 'text-[#cdd6f4] border-b-2 border-[#89b4fa]'
-                : 'text-[#6c7086] hover:text-[#a6adc8]'
-            } disabled:opacity-30 disabled:cursor-not-allowed`}
-          >
-            {tab === 'schema' ? 'Skjema' : 'XML-instans'}
-          </button>
-        ))}
-      </div>
-
-      {activeTab === 'schema' && <SchemaTab element={element} />}
-      {activeTab === 'instance' && loadedFile && (
-        <InstanceTab element={element} loadedFile={loadedFile} />
-      )}
+      <Tabs index={activeTabIdx} onChange={setActiveTabIdx}>
+        <TabList>
+          <Tab>Skjema</Tab>
+          <Tab disabled={!loadedFile}>XML-instans</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <SchemaTab element={element} />
+          </TabPanel>
+          <TabPanel>
+            {loadedFile && <InstanceTab element={element} loadedFile={loadedFile} />}
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </div>
   )
 }
