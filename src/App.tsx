@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import type { NeTExElement, LoadedFile } from './types'
+import type { NeTExElement, LoadedFile, NeTExExample } from './types'
 import elementsData from './data/netex-elements.json'
 import examplesData from './data/netex-examples.json'
-import type { NeTExExample } from './types'
 import { SearchBar } from './components/SearchBar'
 import { ElementTree } from './components/ElementTree'
 import { AttributePanel } from './components/AttributePanel'
@@ -20,9 +19,33 @@ export default function App() {
   const groups = [...new Set(allElements.map((e) => e.group))].sort()
 
   return (
-    <div className="flex flex-col h-screen bg-[#1e1e2e] text-[#cdd6f4] overflow-hidden">
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh',
+      background: 'var(--colors-greys-grey90, #f8f8f8)',
+      color: 'var(--colors-greys-grey10, #2a2a2a)',
+      overflow: 'hidden',
+    }}>
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-4 py-2 border-b border-[#313244] bg-[#181825] shrink-0">
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '8px 16px',
+        borderBottom: '2px solid var(--colors-brand-coral, #ff6c6c)',
+        background: 'var(--colors-greys-white, #ffffff)',
+        flexShrink: 0,
+      }}>
+        <span style={{
+          fontWeight: 700,
+          fontSize: '14px',
+          whiteSpace: 'nowrap',
+          marginRight: '4px',
+          color: 'var(--colors-greys-grey10, #2a2a2a)',
+        }}>
+          NeTEx Part 3
+        </span>
         <SearchBar
           query={query}
           onQueryChange={setQuery}
@@ -30,18 +53,21 @@ export default function App() {
           activeGroup={activeGroup}
           onGroupChange={setActiveGroup}
         />
-        <div className="ml-auto">
-          <ExampleLoader
-            examples={allExamples}
-            onFileLoaded={setLoadedFile}
-          />
+        <div style={{ marginLeft: 'auto' }}>
+          <ExampleLoader examples={allExamples} onFileLoaded={setLoadedFile} />
         </div>
       </div>
 
       {/* Main area */}
-      <div className="flex flex-1 overflow-hidden">
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {/* Left: tree */}
-        <div className="w-[260px] shrink-0 border-r border-[#313244] overflow-y-auto">
+        <div style={{
+          width: '260px',
+          flexShrink: 0,
+          borderRight: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+          overflowY: 'auto',
+          background: 'var(--colors-greys-grey90, #f8f8f8)',
+        }}>
           <ElementTree
             elements={allElements}
             query={query}
@@ -53,7 +79,11 @@ export default function App() {
         </div>
 
         {/* Right: detail */}
-        <div className="flex-1 overflow-y-auto">
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          background: 'var(--colors-greys-white, #ffffff)',
+        }}>
           {selectedElement ? (
             <AttributePanel
               element={selectedElement}
@@ -61,7 +91,14 @@ export default function App() {
               loadedFile={loadedFile}
             />
           ) : (
-            <div className="flex items-center justify-center h-full text-[#6c7086] text-sm">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%',
+              color: 'var(--colors-greys-grey50, #888)',
+              fontSize: '14px',
+            }}>
               Velg et element i treet til venstre
             </div>
           )}
