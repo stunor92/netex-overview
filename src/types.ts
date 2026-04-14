@@ -1,3 +1,25 @@
+/** Top-level grouping categories for NeTEx Part 3 elements */
+export type ElementGroup =
+  | 'FareProduct'
+  | 'FarePrice'
+  | 'SalesOfferPackage'
+  | 'FareStructureElement'
+  | 'UsageParameter'
+  | 'ValidableElement'
+  | 'DistributionChannel'
+  | 'FulfilmentMethod'
+  | 'TypeOfTravelDocument'
+  | 'FareTable'
+  | 'FareSeries'
+  | 'GeographicStructureFactor'
+  | 'QualityStructureFactor'
+  | 'TimeStructureFactor'
+  | 'DistanceMatrixElement'
+  | 'FareZone'
+  | 'Tariff'
+  | 'PricingRule'
+  | 'Other'
+
 export type AttributeKind =
   | 'enum'
   | 'ref'
@@ -25,7 +47,7 @@ export interface NeTExElement {
   name: string
   abstract: boolean
   parent: string | null
-  group: string
+  group: ElementGroup
   description: string
   inheritedFrom: string[]       // ordered closest-first, e.g. ["FareProduct", "PriceableObject", "DataManagedObject"]
   attributes: NeTExAttribute[]
