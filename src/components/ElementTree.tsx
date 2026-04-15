@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import type { NeTExElement, LoadedFile, ProfileData, ActiveProfile } from '../types'
+import type { NeTExElement, LoadedFile, ProfileData, ActiveProfile, ProfileStatus } from '../types'
 
 const GROUP_COLOURS: Record<string, string> = {
   FareProduct: '#ff6c6c',
@@ -22,7 +22,7 @@ interface ElementTreeProps {
   onProfileChange: (p: ActiveProfile) => void
 }
 
-function ProfileBadge({ status }: { status: 'required' | 'optional' | 'not-in-profile' | undefined }) {
+function ProfileBadge({ status }: { status: ProfileStatus | undefined }) {
   if (!status) return null
   if (status === 'required') return (
     <span style={{ background: '#e8f5e9', color: '#2e7d32', fontSize: '9px', padding: '1px 5px', borderRadius: '6px', fontWeight: 600, flexShrink: 0 }}>✓</span>
