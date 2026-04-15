@@ -37,16 +37,19 @@ const PROFILE_LABEL: Record<string, string> = {
   nordic: '🇳🇴',
 }
 
+const BADGE_CONFIG: Record<ProfileStatus, { bg: string; color: string; label: string; fw?: number }> = {
+  required:       { bg: '#e8f5e9', color: '#2e7d32', label: 'påkrevd', fw: 600 },
+  optional:       { bg: '#e3f2fd', color: '#1565c0', label: 'valgfri', fw: 600 },
+  'not-in-profile': { bg: '#f5f5f5', color: '#aaa',    label: 'ikke i profil' },
+}
+
 function ProfileAttrBadge({ status }: { status: ProfileStatus | undefined }) {
   if (!status) return null
-  if (status === 'required') return (
-    <span style={{ background: '#e8f5e9', color: '#2e7d32', fontSize: '9px', padding: '1px 6px', borderRadius: '6px', fontWeight: 600, whiteSpace: 'nowrap' }}>påkrevd</span>
-  )
-  if (status === 'optional') return (
-    <span style={{ background: '#e3f2fd', color: '#1565c0', fontSize: '9px', padding: '1px 6px', borderRadius: '6px', fontWeight: 600, whiteSpace: 'nowrap' }}>valgfri</span>
-  )
+  const { bg, color, label, fw } = BADGE_CONFIG[status]
   return (
-    <span style={{ background: '#f5f5f5', color: '#aaa', fontSize: '9px', padding: '1px 6px', borderRadius: '6px', whiteSpace: 'nowrap' }}>ikke i profil</span>
+    <span style={{ background: bg, color, fontSize: '9px', padding: '1px 6px', borderRadius: '6px', fontWeight: fw, whiteSpace: 'nowrap' }}>
+      {label}
+    </span>
   )
 }
 
