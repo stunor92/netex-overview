@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@entur/tab'
 import type { StructureNode, NeTExElement, ProfileData, ActiveProfile, ProfileStatus } from '../types'
 import { SchemaTab } from './AttributePanel'
@@ -28,6 +28,10 @@ export interface ProfileGuidePanelProps {
 
 export function ProfileGuidePanel({ node, nodePath, allElements, profileData, activeProfile }: ProfileGuidePanelProps) {
   const [activeTabIdx, setActiveTabIdx] = useState(0)
+
+  useEffect(() => {
+    setActiveTabIdx(0)
+  }, [node.id])
 
   const element = node.elementRef
     ? allElements.find((e) => e.name === node.elementRef) ?? null
