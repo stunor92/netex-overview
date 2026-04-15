@@ -147,6 +147,18 @@ async function main() {
   writeFileSync(join(PROFILES_DIR, 'nordic.json'), JSON.stringify(nordicProfile, null, 2))
   console.log(`Wrote src/data/profiles/nordic.json (${Object.keys(nordicProfile).length} elements)\n`)
 
+  // Copy structure files verbatim from manual sources
+  for (const name of ['nordic-structure', 'fr-structure']) {
+    const src = join(MANUAL_DIR, `${name}-manual.json`)
+    const dst = join(PROFILES_DIR, `${name}.json`)
+    if (existsSync(src)) {
+      writeFileSync(dst, readFileSync(src))
+      console.log(`Copied ${name}.json`)
+    } else {
+      console.warn(`WARNING: ${src} not found — skipping`)
+    }
+  }
+
   console.log('Done.')
 }
 

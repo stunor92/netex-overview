@@ -1,0 +1,30 @@
+{
+  "profile": "fr",
+  "label": "Fransk profil — Eksportstruktur",
+  "root": {
+    "id": "pub-delivery",
+    "type": "container",
+    "label": "PublicationDelivery",
+    "description": "Rotelementet i alle NeTEx-filer. Inneholder versjonsinformasjon og dataene i én eller flere datarammer.",
+    "xmlSnippet": "<PublicationDelivery version=\"1.0\" xmlns=\"http://www.netex.org.uk/netex\">\n  <dataObjects> … </dataObjects>\n</PublicationDelivery>",
+    "children": [
+      {
+        "id": "composite-frame",
+        "type": "container",
+        "label": "CompositeFrame",
+        "description": "Samler alle datarammer for ett datasett.",
+        "xmlSnippet": "<CompositeFrame id=\"FR1:CompositeFrame:1\" version=\"1\">\n  <frames> … </frames>\n</CompositeFrame>",
+        "children": [
+          {
+            "id": "fare-frame",
+            "type": "container",
+            "label": "FareFrame",
+            "description": "Inneholder billettstrukturer for den franske profilen. Detaljert struktur er under utarbeidelse.",
+            "xmlSnippet": "<FareFrame id=\"FR1:FareFrame:1\" version=\"1\">\n  <!-- Innhold spesifiseres av den franske profilen -->\n</FareFrame>",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}
