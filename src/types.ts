@@ -94,3 +94,23 @@ export interface ProfileElementData {
 export type ProfileData = Record<string, ProfileElementData>
 
 export type ActiveProfile = 'fr' | 'nordic' | null
+
+// --- Profile structure guide types ---
+
+export type StructureNodeType = 'container' | 'collection' | 'element'
+
+export interface StructureNode {
+  id: string
+  type: StructureNodeType
+  label: string
+  description: string
+  xmlSnippet: string
+  elementRef?: string        // only for type === 'element'; matches NeTExElement.name
+  children: StructureNode[]
+}
+
+export interface ProfileStructure {
+  profile: string
+  label: string
+  root: StructureNode
+}
