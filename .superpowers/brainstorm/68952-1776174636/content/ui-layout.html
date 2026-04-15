@@ -1,0 +1,130 @@
+<h2>UI-layout — NeTEx Overview</h2>
+<p class="subtitle">Master-detail med hierarki-tre + skjema/instansvisning</p>
+
+<div class="mockup" style="max-width:900px;margin:0 auto;">
+  <div class="mockup-header">NeTEx Part 3 Overview</div>
+  <div class="mockup-body" style="padding:0;">
+
+    <!-- Top bar -->
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#181825;border-bottom:1px solid #313244;">
+      <input class="mock-input" style="flex:1;max-width:260px;" placeholder="🔍  Søk etter element...">
+      <div style="display:flex;gap:6px;">
+        <span style="font-size:11px;padding:4px 10px;background:#313244;border-radius:12px;color:#cdd6f4;cursor:pointer;">FareProduct</span>
+        <span style="font-size:11px;padding:4px 10px;background:#89b4fa;border-radius:12px;color:#1e1e2e;cursor:pointer;font-weight:600;">FarePrice</span>
+        <span style="font-size:11px;padding:4px 10px;background:#313244;border-radius:12px;color:#cdd6f4;cursor:pointer;">SalesOfferPackage</span>
+        <span style="font-size:11px;padding:4px 10px;background:#313244;border-radius:12px;color:#cdd6f4;cursor:pointer;">UsageParams</span>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:6px;">
+        <span style="font-size:11px;padding:4px 10px;border:1px solid #45475a;border-radius:6px;color:#cdd6f4;cursor:pointer;">📂 Last inn XML</span>
+        <span style="font-size:11px;padding:4px 10px;border:1px solid #45475a;border-radius:6px;color:#cdd6f4;cursor:pointer;">📋 Eksempler</span>
+      </div>
+    </div>
+
+    <!-- Main area -->
+    <div style="display:flex;height:420px;">
+
+      <!-- Left: Tree -->
+      <div style="width:260px;border-right:1px solid #313244;overflow-y:auto;padding:10px 0;">
+        <div style="font-size:10px;color:#6c7086;padding:0 12px 6px;letter-spacing:0.05em;">ELEMENTER</div>
+
+        <div style="padding:4px 12px;font-size:12px;color:#89b4fa;cursor:pointer;">▼ FareProduct</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;background:#313244;border-left:2px solid #89b4fa;">● PreassignedFareProduct</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;">● AmountOfPriceUnitProduct</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;">● SaleDiscountRight</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;">● SupplementProduct</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;">● CappingRule</div>
+
+        <div style="padding:4px 12px;font-size:12px;color:#a6e3a1;cursor:pointer;margin-top:4px;">▼ FarePrice</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;">● FarePrice</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;">▼ PriceGroup</div>
+        <div style="padding:4px 12px 4px 36px;font-size:12px;color:#cdd6f4;cursor:pointer;">● FarePriceGroup</div>
+        <div style="padding:4px 12px 4px 24px;font-size:12px;color:#cdd6f4;cursor:pointer;">▼ FareTable</div>
+        <div style="padding:4px 12px 4px 36px;font-size:12px;color:#cdd6f4;cursor:pointer;">● StandardFareTable</div>
+
+        <div style="padding:4px 12px;font-size:12px;color:#fab387;cursor:pointer;margin-top:4px;">▶ SalesOfferPackage</div>
+        <div style="padding:4px 12px;font-size:12px;color:#f38ba8;cursor:pointer;">▶ FareStructureElement</div>
+        <div style="padding:4px 12px;font-size:12px;color:#cba6f7;cursor:pointer;">▶ UsageParameter</div>
+      </div>
+
+      <!-- Right: Detail panel -->
+      <div style="flex:1;padding:16px;overflow-y:auto;">
+
+        <!-- Element header -->
+        <div style="margin-bottom:14px;">
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:4px;">
+            <span style="font-size:16px;font-weight:700;color:#cdd6f4;">PreassignedFareProduct</span>
+            <span style="font-size:10px;padding:2px 8px;background:#313244;border-radius:10px;color:#89b4fa;">FareProduct</span>
+          </div>
+          <div style="font-size:11px;color:#6c7086;margin-bottom:6px;">Arver fra: FareProduct → ServiceAccessRight → PriceableObject → DataManagedObject</div>
+          <div style="font-size:12px;color:#a6adc8;">A FARE PRODUCT consisting of one or more VALIDABLE ELEMENTs, specific to a CHARGING MOMENT, with possible access rights.</div>
+        </div>
+
+        <!-- Tabs: Skjema / Eksempel -->
+        <div style="display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid #313244;">
+          <div style="font-size:12px;padding:6px 14px;color:#cdd6f4;border-bottom:2px solid #89b4fa;cursor:pointer;">Skjema</div>
+          <div style="font-size:12px;padding:6px 14px;color:#6c7086;cursor:pointer;">XML-instans</div>
+        </div>
+
+        <!-- Attributes table -->
+        <div style="font-size:10px;color:#6c7086;margin-bottom:8px;letter-spacing:0.05em;">EGNE ATTRIBUTTER</div>
+        <table style="width:100%;font-size:11px;border-collapse:collapse;">
+          <thead>
+            <tr style="color:#6c7086;">
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #313244;">Navn</th>
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #313244;">Type</th>
+              <th style="text-align:center;padding:4px 8px;border-bottom:1px solid #313244;">Kard.</th>
+              <th style="text-align:left;padding:4px 8px;border-bottom:1px solid #313244;">Beskrivelse</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #1e1e2e;">
+              <td style="padding:5px 8px;color:#cdd6f4;font-weight:600;">ProductType</td>
+              <td style="padding:5px 8px;color:#fab387;">enum</td>
+              <td style="padding:5px 8px;color:#a6adc8;text-align:center;">0..1</td>
+              <td style="padding:5px 8px;color:#a6adc8;">singleTrip, dayReturn, periodPass, o.fl.</td>
+            </tr>
+            <tr style="border-bottom:1px solid #1e1e2e;">
+              <td style="padding:5px 8px;color:#cdd6f4;font-weight:600;">ChargingMomentRef</td>
+              <td style="padding:5px 8px;color:#a6e3a1;">ref</td>
+              <td style="padding:5px 8px;color:#a6adc8;text-align:center;">0..1</td>
+              <td style="padding:5px 8px;color:#a6adc8;">Referanse til ladetidspunkt</td>
+            </tr>
+            <tr style="border-bottom:1px solid #1e1e2e;">
+              <td style="padding:5px 8px;color:#cdd6f4;font-weight:600;">validableElements</td>
+              <td style="padding:5px 8px;color:#89b4fa;">list</td>
+              <td style="padding:5px 8px;color:#a6adc8;text-align:center;">0..1</td>
+              <td style="padding:5px 8px;color:#a6adc8;">Elementer som kan valideres</td>
+            </tr>
+            <tr>
+              <td style="padding:5px 8px;color:#cdd6f4;font-weight:600;">ConditionSummary</td>
+              <td style="padding:5px 8px;color:#cba6f7;">complex</td>
+              <td style="padding:5px 8px;color:#a6adc8;text-align:center;">0..1</td>
+              <td style="padding:5px 8px;color:#a6adc8;">Oppsummering av bruksvilkår</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="font-size:10px;color:#6c7086;margin:12px 0 8px;letter-spacing:0.05em;">ARVEDE ATTRIBUTTER (FareProduct)</div>
+        <table style="width:100%;font-size:11px;border-collapse:collapse;opacity:0.65;">
+          <tbody>
+            <tr style="border-bottom:1px solid #1e1e2e;">
+              <td style="padding:4px 8px;color:#cdd6f4;">TariffRef</td>
+              <td style="padding:4px 8px;color:#a6e3a1;">ref</td>
+              <td style="padding:4px 8px;color:#a6adc8;text-align:center;">0..*</td>
+              <td style="padding:4px 8px;color:#a6adc8;">Referanse til tariff</td>
+            </tr>
+            <tr>
+              <td style="padding:4px 8px;color:#cdd6f4;">OperatorRef</td>
+              <td style="padding:4px 8px;color:#a6e3a1;">ref</td>
+              <td style="padding:4px 8px;color:#a6adc8;text-align:center;">0..1</td>
+              <td style="padding:4px 8px;color:#a6adc8;">Operatør som eier produktet</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px;text-align:center;">Ser dette riktig ut? Si hva du vil endre i terminalen.</p>

@@ -1,0 +1,51 @@
+{
+  "PreassignedFareProduct": {
+    "status": "required",
+    "attributes": {
+      "id": "required",
+      "version": "required",
+      "Name": "required",
+      "ProductType": "required",
+      "ChargingMomentType": "optional",
+      "ConditionSummaryRef": "optional"
+    }
+  },
+  "AmountOfPriceUnitProduct": {
+    "status": "optional",
+    "attributes": {
+      "id": "required",
+      "version": "required",
+      "Name": "required",
+      "ProductType": "optional"
+    }
+  },
+  "SalesOfferPackage": {
+    "status": "required",
+    "attributes": {
+      "id": "required",
+      "version": "required",
+      "Name": "required",
+      "Description": "optional"
+    }
+  },
+  "FareStructureElement": {
+    "status": "optional",
+    "attributes": {
+      "id": "required",
+      "version": "required",
+      "Name": "optional",
+      "TypeOfFareStructureElementRef": "optional"
+    }
+  },
+  "UserProfile": {
+    "status": "optional",
+    "attributes": {
+      "id": "required",
+      "version": "required",
+      "Name": "required",
+      "UserType": "required",
+      "MinimumAge": "optional",
+      "MaximumAge": "optional"
+    }
+  }
+}

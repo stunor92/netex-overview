@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(bash:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git checkout:*)",
+      "Bash(npm create:*)",
+      "Bash(npx create-vite@latest . --template react-ts)",
+      "Bash(npx create-vite@latest . --template react-ts --force)",
+      "Bash(npx create-vite@9.0.4 --help)",
+      "Bash(npx:*)",
+      "Bash(npm install:*)",
+      "Bash(timeout 15 npm run dev)",
+      "Bash(git:*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); pkgs=d.get\\('packages',{}\\); print\\('Node version required:', d.get\\('nodeVersion','not set'\\)\\); print\\('Lock file version:', d.get\\('lockfileVersion','not set'\\)\\); print\\('fast-xml-parser version:', pkgs.get\\('node_modules/fast-xml-parser',{}\\).get\\('version','not found'\\)\\)\")",
+      "Bash(python3 -c ':*)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(k,':',v\\) for k,v in d['scripts'].items\\(\\)]\")",
+      "Bash(npm run:*)"
+    ]
+  }
+}
