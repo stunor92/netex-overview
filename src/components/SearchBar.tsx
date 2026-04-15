@@ -22,6 +22,7 @@ export function SearchBar({ query, onQueryChange, groups, activeGroup, onGroupCh
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
         <FilterChip
+          value=""
           checked={activeGroup === null}
           onChange={() => onGroupChange(null)}
         >
@@ -32,6 +33,7 @@ export function SearchBar({ query, onQueryChange, groups, activeGroup, onGroupCh
           return (
             <FilterChip
               key={g}
+              value={g}
               checked={isActive}
               onChange={() => onGroupChange(isActive ? null : g)}
             >
