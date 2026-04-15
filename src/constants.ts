@@ -11,9 +11,9 @@ export const EXPORT_CHIPS: {
     label: 'Tariff',
     sub: 'struktur',
     groups: [
-      'Tariff', 'FareZone', 'FareStructureElement', 'GeographicStructureFactor',
+      'Tariff', 'FareStructureElement',
       'QualityStructureFactor', 'TimeStructureFactor', 'DistanceMatrixElement',
-      'FareSeries', 'ValidableElement',
+      'ValidableElement',
     ],
   },
   {
