@@ -5,23 +5,167 @@
     "id": "pub-delivery",
     "type": "container",
     "label": "PublicationDelivery",
-    "description": "Rotelementet i alle NeTEx-filer. Inneholder versjonsinformasjon og dataene i én eller flere datarammer.",
-    "xmlSnippet": "<PublicationDelivery version=\"1.0\" xmlns=\"http://www.netex.org.uk/netex\">\n  <dataObjects> … </dataObjects>\n</PublicationDelivery>",
+    "description": "Rotelementet i alle NeTEx-filer for den franske profilen. Inneholder metadata (tidsstempel, avsender) og selve dataene i én CompositeFrame av typen NETEX_FRANCE.",
+    "xmlSnippet": "<PublicationDelivery xmlns=\"http://www.netex.org.uk/netex\"\n                     version=\"1.1\">\n  <PublicationTimestamp>2024-01-01T00:00:00Z</PublicationTimestamp>\n  <ParticipantRef>OPERATØR001</ParticipantRef>\n  <dataObjects>\n    <!-- Se CompositeFrame NETEX_FRANCE -->\n  </dataObjects>\n</PublicationDelivery>",
     "children": [
       {
         "id": "composite-frame",
         "type": "container",
-        "label": "CompositeFrame",
-        "description": "Samler alle datarammer for ett datasett.",
-        "xmlSnippet": "<CompositeFrame id=\"FR1:CompositeFrame:1\" version=\"1\">\n  <frames> … </frames>\n</CompositeFrame>",
+        "label": "CompositeFrame (NETEX_FRANCE)",
+        "description": "Samler alle delrammer for ett datasett. I den franske profilen har CompositeFrame alltid TypeOfFrameRef = FR:TypeOfFrame:NETEX_FRANCE. Én CompositeFrame per fil er normen.",
+        "xmlSnippet": "<CompositeFrame version=\"1\"\n               id=\"FR1:CompositeFrame:1:LOC\"\n               created=\"2024-01-01T00:00:00Z\">\n  <TypeOfFrameRef ref=\"FR:TypeOfFrame:NETEX_FRANCE\"\n    version=\"1.01:FR-NETEX_FRANCE-1.0\"/>\n  <frames>\n    <!-- GeneralFrame NETEX_COMMUN (valgfri) -->\n    <!-- GeneralFrame NETEX_TARIF (påkrevd for takstfiler) -->\n  </frames>\n</CompositeFrame>",
         "children": [
           {
-            "id": "fare-frame",
+            "id": "general-frame-commun",
             "type": "container",
-            "label": "FareFrame",
-            "description": "Inneholder billettstrukturer for den franske profilen. Detaljert struktur er under utarbeidelse.",
-            "xmlSnippet": "<FareFrame id=\"FR1:FareFrame:1\" version=\"1\">\n  <!-- Innhold spesifiseres av den franske profilen -->\n</FareFrame>",
+            "label": "GeneralFrame (NETEX_COMMUN)",
+            "description": "Felles ramme for delte ressurser som gjelder på tvers av takststrukturer: organisasjoner (Authority, Operator), datakilder, merknader og typedokumenter. Denne rammen er valgfri men anbefalt når fil-settet deles med andre datasett.",
+            "xmlSnippet": "<GeneralFrame version=\"1\"\n              id=\"FR1:GeneralFrame:NETEX_COMMUN:LOC\">\n  <TypeOfFrameRef ref=\"FR:TypeOfFrame:NETEX_COMMUN\"\n    version=\"1.01:FR-NETEX_COMMUN-1.0\"/>\n  <members modificationSet=\"all\">\n    <!-- Authority, Operator, DataSource, Notice, m.fl. -->\n  </members>\n</GeneralFrame>",
             "children": []
+          },
+          {
+            "id": "general-frame-tarif",
+            "type": "container",
+            "label": "GeneralFrame (NETEX_TARIF)",
+            "description": "Takstrammen i den franske profilen. Alle takstelementer ligger flatt i <members> — det er ingen nesting av FareFrame/tariffs. Rekkefølgen innenfor members er valgfri, men logisk rekkefølge anbefales: soner og tidsintervaller → takststruktur → brukerprofiler → takstprodukter → salgstilbud → pristabell.",
+            "xmlSnippet": "<GeneralFrame version=\"001\"\n              id=\"FR1:GeneralFrame:NETEX_TARIF:LOC\">\n  <TypeOfFrameRef ref=\"FR:TypeOfFrame:NETEX_TARIF\"\n    version=\"1.01:FR-NETEX_TARIF-1.0\"/>\n  <members modificationSet=\"all\">\n    <!-- FareZone (valgfri) -->\n    <!-- TimeInterval -->\n    <!-- FareStructureElement -->\n    <!-- ValidableElement -->\n    <!-- UserProfile (valgfri) -->\n    <!-- DistributionChannel (valgfri) -->\n    <!-- PreassignedFareProduct / SaleDiscountRight / UsageDiscountRight -->\n    <!-- TypeOfTravelDocument -->\n    <!-- SalesOfferPackageElement -->\n    <!-- SalesOfferPackage -->\n    <!-- FareTable -->\n  </members>\n</GeneralFrame>",
+            "children": [
+              {
+                "id": "members",
+                "type": "collection",
+                "label": "members",
+                "description": "Flat liste over alle takstelementer i rammen. Den franske profilen bruker ikke nøstede collection-elementer som <tariffs> eller <fareProducts> — alle elementer ligger direkte i <members>.",
+                "xmlSnippet": "<members modificationSet=\"all\">\n  <!-- Elementer i anbefalt rekkefølge -->\n</members>",
+                "children": [
+                  {
+                    "id": "FareZone",
+                    "type": "element",
+                    "label": "FareZone",
+                    "elementRef": "FareZone",
+                    "description": "Billettgeografisk sone — en spesialisering av TariffZone. Brukes ved sonebaserte tariffer. Inneholder StopPlace-referanser for stoppesteder som tilhører sonen. FareZone er valgfri; benyttes bare når taksten er sonebasert.",
+                    "xmlSnippet": "<FareZone id=\"FR1:FareZone:Zone1:LOC\" version=\"any\">\n  <Name>Sone 1</Name>\n  <members>\n    <ScheduledStopPointRef ref=\"FR1:ScheduledStopPoint:SP001:LOC\"/>\n    <!-- flere stoppesteder -->\n  </members>\n</FareZone>",
+                    "children": []
+                  },
+                  {
+                    "id": "TimeInterval",
+                    "type": "element",
+                    "label": "TimeInterval",
+                    "elementRef": "TimeInterval",
+                    "description": "Definerer et tidsbasert gyldighetsintervall for billetten — for eksempel 90 minutter eller 24 timer. Refereres av FareStructureElement. Brukes for tidsbaserte tariffer.",
+                    "xmlSnippet": "<TimeInterval id=\"FR1:TimeInterval:90min:LOC\" version=\"any\">\n  <Description>1h30 gyldighet</Description>\n  <Duration>PT90M</Duration>\n</TimeInterval>",
+                    "children": []
+                  },
+                  {
+                    "id": "FareStructureElement",
+                    "type": "element",
+                    "label": "FareStructureElement",
+                    "elementRef": "FareStructureElement",
+                    "description": "Grunnleggende takststrukturelement — definerer reglene for én bruksmulighet (access right). Kan referere til et TimeInterval (tidsbasert), DistanceMatrixElement (OD-basert) eller FareZone (sonebasert). Kan inneholde GenericParameterAssignment for bruksbetingelser.",
+                    "xmlSnippet": "<FareStructureElement id=\"FR1:FareStructureElement:001:LOC\"\n                      version=\"any\">\n  <!-- Tidsbasert: -->\n  <TimeIntervalRef ref=\"FR1:TimeInterval:90min:LOC\" version=\"any\"/>\n\n  <!-- Eller sonebasert: -->\n  <!-- <FareZoneRef ref=\"FR1:FareZone:Zone1:LOC\" version=\"any\"/> -->\n\n  <!-- Bruksbetingelser (valgfri): -->\n  <GenericParameterAssignment id=\"FR1:GPA:001:LOC\" version=\"any\"\n                               order=\"1\">\n    <limitations>\n      <FrequencyOfUse id=\"FR1:FrequencyOfUse:001:LOC\" version=\"any\">\n        <FrequencyOfUseType>unlimited</FrequencyOfUseType>\n      </FrequencyOfUse>\n    </limitations>\n  </GenericParameterAssignment>\n</FareStructureElement>",
+                    "children": []
+                  },
+                  {
+                    "id": "ValidableElement",
+                    "type": "element",
+                    "label": "ValidableElement",
+                    "elementRef": "ValidableElement",
+                    "description": "Et validerbart tilgangselement som samler referanser til FareStructureElement-er og eventuelt merknader. ValidableElement er det som faktisk valideres ved reisen, og refereres av FareProduct.",
+                    "xmlSnippet": "<ValidableElement id=\"FR1:ValidableElement:001:LOC\"\n                  version=\"any\">\n  <fareStructureElements>\n    <FareStructureElementRef\n      ref=\"FR1:FareStructureElement:001:LOC\"\n      version=\"any\"/>\n  </fareStructureElements>\n</ValidableElement>",
+                    "children": []
+                  },
+                  {
+                    "id": "UserProfile",
+                    "type": "element",
+                    "label": "UserProfile",
+                    "elementRef": "UserProfile",
+                    "description": "Brukerprofil — definerer passasjerkategori som voksen, barn, student, ungdom osv. Brukes av FareTable-celler for å knytte pris til brukertype. Valgfri dersom alle passasjerer har samme pris.",
+                    "xmlSnippet": "<UserProfile id=\"FR1:UserProfile:Adult:LOC\" version=\"any\">\n  <Name>Voksen</Name>\n  <UserType>adult</UserType>\n  <MinimumAge>26</MinimumAge>\n</UserProfile>",
+                    "children": []
+                  },
+                  {
+                    "id": "DistributionChannel",
+                    "type": "element",
+                    "label": "DistributionChannel",
+                    "elementRef": "DistributionChannel",
+                    "description": "Distribusjonskanal — definerer hvor og hvordan billetten kan kjøpes (app, billettautomat, sjåfør, nettsted). Knyttes til SalesOfferPackage via DistributionAssignment. Valgfri, men anbefalt for komplett salgsinformasjon.",
+                    "xmlSnippet": "<DistributionChannel id=\"FR1:DistributionChannel:App:LOC\"\n                     version=\"any\">\n  <Name>Mobilapp</Name>\n  <DistributionChannelType>mobileDevice</DistributionChannelType>\n  <IsObligatory>false</IsObligatory>\n</DistributionChannel>",
+                    "children": []
+                  },
+                  {
+                    "id": "PreassignedFareProduct",
+                    "type": "element",
+                    "label": "PreassignedFareProduct",
+                    "elementRef": "PreassignedFareProduct",
+                    "description": "Forhåndsdefinert takstprodukt — den vanligste produkttypen i den franske profilen. Representerer en billett eller et pass med faste regler. Inneholder ConditionSummary (kan avbrytes, refunderes, byttes) og ProductType (singleTrip, dayPass, weeklyPass osv.). Refererer ValidableElement-er.",
+                    "xmlSnippet": "<PreassignedFareProduct id=\"FR1:PreassignedFareProduct:T1:LOC\"\n                        version=\"any\">\n  <Name>Billett 1h30</Name>\n  <AuthorityRef ref=\"FR1:Authority:IDFM:\"/>\n  <ConditionSummary>\n    <TariffBasis>period</TariffBasis>\n    <CanBreakJourney>false</CanBreakJourney>\n    <IsRefundable>false</IsRefundable>\n    <IsExchangable>false</IsExchangable>\n  </ConditionSummary>\n  <validableElements>\n    <ValidableElementRef ref=\"FR1:ValidableElement:001:LOC\"\n                         version=\"any\"/>\n  </validableElements>\n  <ProductType>singleTrip</ProductType>\n</PreassignedFareProduct>",
+                    "children": []
+                  },
+                  {
+                    "id": "SaleDiscountRight",
+                    "type": "element",
+                    "label": "SaleDiscountRight",
+                    "elementRef": "SaleDiscountRight",
+                    "description": "Rabattrettighet (kupong) — gir rett til rabatt ved kjøp av en billett. Brukes for kampanjer eller engangskuponger. Alternativ til PreassignedFareProduct for rabattbaserte tilbud.",
+                    "xmlSnippet": "<SaleDiscountRight id=\"FR1:SaleDiscountRight:Coupon:LOC\"\n                   version=\"any\">\n  <Name>10% rabattkupong</Name>\n  <DiscountingRule>\n    <DiscountAsPercentage>10</DiscountAsPercentage>\n  </DiscountingRule>\n</SaleDiscountRight>",
+                    "children": []
+                  },
+                  {
+                    "id": "UsageDiscountRight",
+                    "type": "element",
+                    "label": "UsageDiscountRight",
+                    "elementRef": "UsageDiscountRight",
+                    "description": "Rabattrettighet (rabattkort) — gir rett til gjentatt rabatt ved bruk av et rabattkort. Typisk for nasjonale rabattkort (f.eks. jernbanerabattkort). Aktiveres ved kjøpstidspunktet og gjelder for en periode.",
+                    "xmlSnippet": "<UsageDiscountRight id=\"FR1:UsageDiscountRight:Card:LOC\"\n                    version=\"any\">\n  <Name>Rabattkort</Name>\n  <validableElements>\n    <ValidableElementRef ref=\"FR1:ValidableElement:Card:LOC\"\n                         version=\"any\"/>\n  </validableElements>\n</UsageDiscountRight>",
+                    "children": []
+                  },
+                  {
+                    "id": "AmountOfPriceUnitProduct",
+                    "type": "element",
+                    "label": "AmountOfPriceUnit",
+                    "elementRef": "AmountOfPriceUnitProduct",
+                    "description": "Lagret verdi — representerer et reisekort med forhåndsladet beløp eller enhet (f.eks. Navigo Liberté+). Trekkes per reise etter gjeldende takst. Alternativ til PreassignedFareProduct for fleksible kort.",
+                    "xmlSnippet": "<AmountOfPriceUnit id=\"FR1:AmountOfPriceUnit:Liberte:LOC\"\n                   version=\"any\">\n  <Name>Navigo Liberté+</Name>\n  <PriceUnit>currency</PriceUnit>\n</AmountOfPriceUnit>",
+                    "children": []
+                  },
+                  {
+                    "id": "TypeOfTravelDocument",
+                    "type": "element",
+                    "label": "TypeOfTravelDocument",
+                    "elementRef": "TypeOfTravelDocument",
+                    "description": "Type reisedokument — definerer det fysiske eller digitale mediet billetten leveres på (papir, magnetstrip, QR-kode, NFC-kort, mobilapp). Refereres av SalesOfferPackageElement.",
+                    "xmlSnippet": "<TypeOfTravelDocument id=\"FR1:TypeOfTravelDocument:MobileApp:LOC\"\n                      version=\"any\">\n  <Name>Mobilapp-billett</Name>\n  <MediaType>mobileApp</MediaType>\n  <MachineReadable>barCode</MachineReadable>\n</TypeOfTravelDocument>",
+                    "children": []
+                  },
+                  {
+                    "id": "SalesOfferPackageElement",
+                    "type": "element",
+                    "label": "SalesOfferPackageElement",
+                    "elementRef": "SalesOfferPackageElement",
+                    "description": "Element i salgstilbud — kobler ett FareProduct med ett TypeOfTravelDocument. SalesOfferPackage inneholder én eller flere SalesOfferPackageElement-er. RequiresValidation angir om validering kreves ved bruk.",
+                    "xmlSnippet": "<SalesOfferPackageElement\n  id=\"FR1:SalesOfferPackageElement:001:LOC\"\n  version=\"any\" order=\"1\">\n  <RequiresValidation>true</RequiresValidation>\n  <TypeOfTravelDocumentRef\n    ref=\"FR1:TypeOfTravelDocument:MobileApp:LOC\"/>\n  <PreassignedFareProductRef\n    ref=\"FR1:PreassignedFareProduct:T1:LOC\" version=\"any\"/>\n</SalesOfferPackageElement>",
+                    "children": []
+                  },
+                  {
+                    "id": "SalesOfferPackage",
+                    "type": "element",
+                    "label": "SalesOfferPackage",
+                    "elementRef": "SalesOfferPackage",
+                    "description": "Salgstilbud — det som faktisk tilbys og selges til kunden. Inneholder referanser til SalesOfferPackageElement-er og eventuelt distribusjonstildelinger. Priser knyttes via FareTable.Cell.SalesOfferPackageRef.",
+                    "xmlSnippet": "<SalesOfferPackage id=\"FR1:SalesOfferPackage:001:LOC\"\n                   version=\"any\">\n  <Name>Enkeltbillett via app</Name>\n  <salesOfferPackageElements>\n    <SalesOfferPackageElementRef\n      ref=\"FR1:SalesOfferPackageElement:001:LOC\"\n      version=\"any\"/>\n  </salesOfferPackageElements>\n  <!-- Distribusjon: -->\n  <distributionAssignments>\n    <DistributionAssignment id=\"FR1:DA:001:LOC\" version=\"any\"\n                            order=\"1\">\n      <DistributionChannelRef ref=\"FR1:DistributionChannel:App:LOC\"/>\n    </DistributionAssignment>\n  </distributionAssignments>\n</SalesOfferPackage>",
+                    "children": []
+                  },
+                  {
+                    "id": "FareTable",
+                    "type": "element",
+                    "label": "FareTable",
+                    "elementRef": "FareTable",
+                    "description": "Pristabell — samler alle prisceller for et tilbud. Hver Cell kobler én pris til ett SalesOfferPackage (og evt. én UserProfile). Dette er stedet der kroner og øre angis i den franske profilen. FareTable er alltid tilstede i et komplett taksteksport.",
+                    "xmlSnippet": "<FareTable id=\"FR1:FareTable:001:LOC\" version=\"any\">\n  <Name>Priser enkeltbillett</Name>\n  <cells>\n    <Cell id=\"FR1:Cell:001:LOC\" version=\"any\" order=\"1\">\n      <SalesOfferPackagePrice id=\"FR1:SalesOfferPackagePrice:001:LOC\"\n                              version=\"any\">\n        <Amount>2.10</Amount>\n        <Currency>EUR</Currency>\n      </SalesOfferPackagePrice>\n      <SalesOfferPackageRef\n        ref=\"FR1:SalesOfferPackage:001:LOC\" version=\"any\"/>\n      <!-- Valgfri brukerprofil: -->\n      <UserProfileRef ref=\"FR1:UserProfile:Adult:LOC\" version=\"any\"/>\n    </Cell>\n    <!-- Én Cell per kombinasjon av SalesOfferPackage + UserProfile -->\n  </cells>\n</FareTable>",
+                    "children": []
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
