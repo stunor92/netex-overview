@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@entur/tab'
 import type { StructureNode, NeTExElement, ProfileData, ActiveProfile, ProfileStatus } from '../types'
 import { SchemaTab } from './AttributePanel'
@@ -33,11 +33,14 @@ export function ProfileGuidePanel({ node, nodePath, allElements, profileData, ac
     setActiveTabIdx(0)
   }, [node.id])
 
-  const element = node.elementRef
-    ? allElements.find((e) => e.name === node.elementRef) ?? null
-    : null
+  const element = useMemo(
+    () => node.elementRef ? allElements.find((e) => e.name === node.elementRef) ?? null : null,
+    [node.elementRef, allElements],
+  )
   const elementProfile = node.elementRef ? profileData?.[node.elementRef] : undefined
   const isElement = node.type === 'element'
+  const tabCount = isElement ? 3 : 2
+  const safeTabIdx = Math.min(activeTabIdx, tabCount - 1)
   const breadcrumb = nodePath.slice(0, -1).join(' → ')
 
   const nodeTypeLabel =
@@ -68,7 +71,7 @@ export function ProfileGuidePanel({ node, nodePath, allElements, profileData, ac
       </div>
 
       {/* Tabs — outside the header div */}
-      <Tabs index={activeTabIdx} onChange={setActiveTabIdx}>
+      <Tabs index={safeTabIdx} onChange={setActiveTabIdx}>
         <TabList>
           <Tab>Beskrivelse</Tab>
           <Tab>XML-mal</Tab>
@@ -78,9 +81,11 @@ export function ProfileGuidePanel({ node, nodePath, allElements, profileData, ac
           {/* Tab 1: Beskrivelse */}
           <TabPanel>
             <div style={{ padding: '16px' }}>
-              <p style={{ fontSize: '13px', lineHeight: 1.7, color: 'var(--colors-greys-grey40, #555)', marginBottom: '16px', marginTop: 0 }}>
-                {node.description}
-              </p>
+              {node.description && (
+                <p style={{ fontSize: '13px', lineHeight: 1.7, color: 'var(--colors-greys-grey40, #555)', marginBottom: '16px', marginTop: 0 }}>
+                  {node.description}
+                </p>
+              )}
 
               {isElement && elementProfile && element && (
                 <>
