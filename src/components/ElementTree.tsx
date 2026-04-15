@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import type { NeTExElement, LoadedFile, ProfileData, ActiveProfile, ProfileStatus } from '../types'
+import { EXPORT_CHIPS } from '../constants'
 
 const GROUP_COLOURS: Record<string, string> = {
   FareProduct: '#ff6c6c',
@@ -13,7 +14,7 @@ const GROUP_COLOURS: Record<string, string> = {
 interface ElementTreeProps {
   elements: NeTExElement[]
   query: string
-  activeGroup: string | null
+  activeChip: string | null
   selectedElement: NeTExElement | null
   loadedFile: LoadedFile | null
   onSelect: (el: NeTExElement) => void
@@ -36,7 +37,7 @@ function ProfileBadge({ status }: { status: ProfileStatus | undefined }) {
 }
 
 export function ElementTree({
-  elements, query, activeGroup, selectedElement, loadedFile, onSelect,
+  elements, query, activeChip, selectedElement, loadedFile, onSelect,
   profileData, activeProfile, onProfileChange,
 }: ElementTreeProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set())
@@ -44,12 +45,13 @@ export function ElementTree({
   const [hoveredElement, setHoveredElement] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
+    const activeChipDef = activeChip ? EXPORT_CHIPS.find((c) => c.key === activeChip) : null
     return elements.filter((el) => {
-      if (activeGroup && el.group !== activeGroup) return false
+      if (activeChipDef && !activeChipDef.groups.includes(el.group)) return false
       if (query) return el.name.toLowerCase().includes(query.toLowerCase())
       return true
     })
-  }, [elements, query, activeGroup])
+  }, [elements, query, activeChip])
 
   const byGroup = useMemo(() => {
     const map = new Map<string, NeTExElement[]>()
