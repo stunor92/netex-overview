@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import type { NeTExElement, LoadedFile, ProfileData, ActiveProfile, ProfileStatus } from '../types'
 import { EXPORT_CHIPS } from '../constants'
+import { Label } from '@entur/typography'
 
 const GROUP_COLOURS: Record<string, string> = {
   FareProduct: '#ff6c6c',
@@ -100,9 +101,9 @@ export function ElementTree({
         background: 'var(--colors-greys-white, #ffffff)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px' }}>
-          <span style={{ fontSize: '10px', color: 'var(--colors-greys-grey50, #888)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>
+          <Label as="span" margin="none" style={{ fontSize: '10px', color: 'var(--colors-greys-grey50, #888)', textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap' }}>
             Profil
-          </span>
+          </Label>
           <select
             value={activeProfile ?? ''}
             onChange={(e) => onProfileChange((e.target.value || null) as ActiveProfile)}
@@ -133,9 +134,9 @@ export function ElementTree({
       </div>
 
       {/* Elementer label */}
-      <div style={{ padding: '8px 12px 4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--colors-greys-grey50, #888)', fontWeight: 600 }}>
+      <Label as="div" margin="none" style={{ padding: '8px 12px 4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--colors-greys-grey50, #888)', fontWeight: 600 }}>
         Elementer
-      </div>
+      </Label>
 
       {groups.length === 0 && (
         <div style={{ padding: '8px 12px', fontSize: '12px', color: 'var(--colors-greys-grey50, #888)' }}>

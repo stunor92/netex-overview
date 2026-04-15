@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { SecondaryButton, TertiaryButton, PrimaryButton } from '@entur/button'
 import { Modal } from '@entur/modal'
+import { TextArea } from '@entur/form'
 import type { NeTExExample, LoadedFile } from '../types'
 import { parseXmlInstance } from '../utils/xml-instance-parser'
 
@@ -159,22 +160,12 @@ export function ExampleLoader({ examples, onFileLoaded }: ExampleLoaderProps) {
         title="Lim inn NeTEx XML"
         size="medium"
       >
-        <textarea
+        <TextArea
+          label="NeTEx XML"
           value={pasteXml}
           onChange={(e) => setPasteXml(e.target.value)}
-          style={{
-            width: '100%',
-            height: '256px',
-            background: 'var(--colors-greys-grey90, #f8f8f8)',
-            border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontFamily: 'monospace',
-            color: 'var(--colors-greys-grey10, #2a2a2a)',
-            padding: '8px',
-            resize: 'none',
-            boxSizing: 'border-box',
-          }}
+          resize="none"
+          style={{ width: '100%', height: '256px', fontFamily: 'monospace', fontSize: '12px' }}
           placeholder="<PublicationDelivery ...>...</PublicationDelivery>"
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
