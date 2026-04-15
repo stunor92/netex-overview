@@ -58,7 +58,13 @@ function cardinality(attr: NeTExAttribute | NeTExInheritedAttribute) {
   return `${attr.minOccurs}..${max}`
 }
 
-function SchemaTab({ element, profileData, activeProfile }: { element: NeTExElement; profileData: ProfileData | null; activeProfile: ActiveProfile }) {
+export interface SchemaTabProps {
+  element: NeTExElement
+  profileData: ProfileData | null
+  activeProfile: ActiveProfile
+}
+
+export function SchemaTab({ element, profileData, activeProfile }: SchemaTabProps) {
   const byAncestor = new Map<string, NeTExInheritedAttribute[]>()
   for (const a of element.inheritedAttributes) {
     if (!byAncestor.has(a.inheritedFrom)) byAncestor.set(a.inheritedFrom, [])
