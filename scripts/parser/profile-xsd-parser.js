@@ -1,11 +1,5 @@
 import { XMLParser } from 'fast-xml-parser'
 
-const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: '@_',
-  isArray: (name) => ['xs:complexType', 'xs:element', 'xsd:complexType', 'xsd:element'].includes(name),
-})
-
 /**
  * Parse a single XSD string and return a map:
  *   { ElementName: { AttributeName: 'required' | 'optional' } }
@@ -18,6 +12,13 @@ const parser = new XMLParser({
  * @returns {Record<string, Record<string, 'required' | 'optional'>>}
  */
 export function parseXsdRestrictions(xsdText) {
+  // Construct per-call to avoid shared mutable state issues (matches xsd-parser.js convention)
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: '@_',
+    isArray: (name) => ['xs:complexType', 'xs:element', 'xsd:complexType', 'xsd:element'].includes(name),
+  })
+
   let doc
   try {
     doc = parser.parse(xsdText)

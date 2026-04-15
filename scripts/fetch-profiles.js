@@ -1,4 +1,4 @@
-import { writeFileSync, readFileSync, mkdirSync } from 'fs'
+import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { parseXsdRestrictions } from './parser/profile-xsd-parser.js'
@@ -128,8 +128,20 @@ async function main() {
   const headers = await getAuthHeaders()
 
   const frProfile = await buildFrenchProfile(headers)
-  writeFileSync(join(PROFILES_DIR, 'fr.json'), JSON.stringify(frProfile, null, 2))
-  console.log(`Wrote src/data/profiles/fr.json (${Object.keys(frProfile).length} elements)\n`)
+  const frPath = join(PROFILES_DIR, 'fr.json')
+  if (Object.keys(frProfile).length === 0) {
+    const existingEmpty = !existsSync(frPath) ||
+      Object.keys(JSON.parse(readFileSync(frPath, 'utf8'))).length === 0
+    if (existingEmpty) {
+      writeFileSync(frPath, JSON.stringify(frProfile, null, 2))
+      console.log('Wrote src/data/profiles/fr.json (0 elements — no XSD data found)\n')
+    } else {
+      console.warn('WARNING: French profile fetch returned no data; preserving existing fr.json\n')
+    }
+  } else {
+    writeFileSync(frPath, JSON.stringify(frProfile, null, 2))
+    console.log(`Wrote src/data/profiles/fr.json (${Object.keys(frProfile).length} elements)\n`)
+  }
 
   const nordicProfile = await buildNordicProfile()
   writeFileSync(join(PROFILES_DIR, 'nordic.json'), JSON.stringify(nordicProfile, null, 2))
