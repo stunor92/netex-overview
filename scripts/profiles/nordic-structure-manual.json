@@ -1,0 +1,213 @@
+{
+  "profile": "nordic",
+  "label": "Nordisk profil — Eksportstruktur",
+  "root": {
+    "id": "pub-delivery",
+    "type": "container",
+    "label": "PublicationDelivery",
+    "description": "Rotelementet i alle NeTEx-filer. Inneholder versjonsinformasjon og selve dataene i én eller flere datarammer.",
+    "xmlSnippet": "<PublicationDelivery version=\"1.0\" xmlns=\"http://www.netex.org.uk/netex\">\n  <PublicationTimestamp>2024-01-01T00:00:00</PublicationTimestamp>\n  <ParticipantRef>ENT</ParticipantRef>\n  <dataObjects>\n    <!-- Se CompositeFrame -->\n  </dataObjects>\n</PublicationDelivery>",
+    "children": [
+      {
+        "id": "composite-frame",
+        "type": "container",
+        "label": "CompositeFrame",
+        "description": "Samler alle datarammer for ett datasett. Påkrevd i nordisk profil — én CompositeFrame per fil.",
+        "xmlSnippet": "<CompositeFrame id=\"ENT:CompositeFrame:1\" version=\"1\">\n  <codespaces>\n    <Codespace>\n      <Xmlns>ENT</Xmlns>\n      <XmlnsUrl>http://www.entur.org/ns/v1</XmlnsUrl>\n    </Codespace>\n  </codespaces>\n  <FrameDefaults>\n    <DefaultLocale>\n      <TimeZone>Europe/Oslo</TimeZone>\n      <DefaultLanguage>no</DefaultLanguage>\n    </DefaultLocale>\n  </FrameDefaults>\n  <frames>\n    <!-- ResourceFrame, FareFrame, SalesOfferPackageFrame -->\n  </frames>\n</CompositeFrame>",
+        "children": [
+          {
+            "id": "resource-frame",
+            "type": "container",
+            "label": "ResourceFrame",
+            "description": "Inneholder organisasjonsressurser som myndigheter og operatører. Valgfri, men nødvendig hvis du refererer til operatører fra billettkonfigurasjonen.",
+            "xmlSnippet": "<ResourceFrame id=\"ENT:ResourceFrame:1\" version=\"1\">\n  <organisations>\n    <Authority id=\"ENT:Authority:ENT\" version=\"1\">\n      <Name>Entur</Name>\n    </Authority>\n    <Operator id=\"ENT:Operator:Ruter\" version=\"1\">\n      <Name>Ruter</Name>\n    </Operator>\n  </organisations>\n</ResourceFrame>",
+            "children": [
+              {
+                "id": "organisations",
+                "type": "collection",
+                "label": "organisations",
+                "description": "Liste over organisasjoner — myndigheter og operatører — som er relevante for billettkonfigurasjonen.",
+                "xmlSnippet": "<organisations>\n  <Authority id=\"ENT:Authority:1\" version=\"1\"> … </Authority>\n  <Operator id=\"ENT:Operator:1\" version=\"1\"> … </Operator>\n</organisations>",
+                "children": [
+                  {
+                    "id": "Authority",
+                    "type": "element",
+                    "elementRef": "Authority",
+                    "label": "Authority",
+                    "description": "Representerer en transportmyndighet (f.eks. Ruter, AtB, Skyss). Brukes som referanse i billettkonfigurasjonen for å angi hvem som eier tariffstrukturen.",
+                    "xmlSnippet": "<!-- Myndighet som eier billettkonfigurasjonen -->\n<Authority id=\"ENT:Authority:Ruter\" version=\"1\">\n  <!-- Påkrevd: Name -->\n  <Name>Ruter</Name>\n</Authority>",
+                    "children": []
+                  },
+                  {
+                    "id": "Operator",
+                    "type": "element",
+                    "elementRef": "Operator",
+                    "label": "Operator",
+                    "description": "Representerer en transportoperatør som leverer reiser. Kan refereres til fra FareFrame for å knytte produkter til spesifikke operatører.",
+                    "xmlSnippet": "<!-- Operatør som leverer transporten -->\n<Operator id=\"ENT:Operator:Ruter\" version=\"1\">\n  <!-- Påkrevd: Name -->\n  <Name>Ruter AS</Name>\n</Operator>",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "fare-frame",
+            "type": "container",
+            "label": "FareFrame",
+            "description": "Inneholder alle billettstrukturer: tariffer, produkter og bruksparametere. Kjernen i en NeTEx-billettkonfigurasjon — påkrevd i nordisk profil.",
+            "xmlSnippet": "<FareFrame id=\"ENT:FareFrame:1\" version=\"1\">\n  <tariffs> … </tariffs>\n  <fareProducts> … </fareProducts>\n  <usageParameters> … </usageParameters>\n</FareFrame>",
+            "children": [
+              {
+                "id": "tariffs",
+                "type": "collection",
+                "label": "tariffs",
+                "description": "Liste over tariffer. En Tariff definerer prisstrukturen og knyttes til FareStructureElements som beskriver gyldighetsregler.",
+                "xmlSnippet": "<tariffs>\n  <Tariff id=\"ENT:Tariff:Enkeltbillett\" version=\"1\"> … </Tariff>\n</tariffs>",
+                "children": [
+                  {
+                    "id": "Tariff",
+                    "type": "element",
+                    "elementRef": "Tariff",
+                    "label": "Tariff",
+                    "description": "Definerer den grunnleggende prisstrukturen for ett billettypenivå. Knyttes til FareStructureElements som beskriver gyldighetsregler (soner, tidsbegrensning osv.) og til FareProducts som bruker tariffen.",
+                    "xmlSnippet": "<Tariff id=\"ENT:Tariff:Enkeltbillett\" version=\"1\">\n  <!-- Valgfri: Name -->\n  <Name>Enkeltbillett</Name>\n  <!-- Påkrevd: minst ett FareStructureElement -->\n  <fareStructureElements>\n    <FareStructureElement id=\"ENT:FSE:Zone\" version=\"1\"> … </FareStructureElement>\n  </fareStructureElements>\n</Tariff>",
+                    "children": [
+                      {
+                        "id": "fare-structure-elements",
+                        "type": "collection",
+                        "label": "fareStructureElements",
+                        "description": "Liste over gyldighetsregler knyttet til tariffen. Minimum én regel er nødvendig.",
+                        "xmlSnippet": "<fareStructureElements>\n  <FareStructureElement id=\"ENT:FSE:Zone\" version=\"1\"> … </FareStructureElement>\n</fareStructureElements>",
+                        "children": [
+                          {
+                            "id": "FareStructureElement",
+                            "type": "element",
+                            "elementRef": "FareStructureElement",
+                            "label": "FareStructureElement",
+                            "description": "Definerer én dimensjon av gyldighet for en tariff — for eksempel soner, tidsbegrensning eller antall reiser. Et element kan referere til UsageParameters for mer detaljerte regler.",
+                            "xmlSnippet": "<FareStructureElement id=\"ENT:FSE:Zone\" version=\"1\">\n  <Name>Sonebasert gyldighet</Name>\n  <GenericParameterAssignment id=\"ENT:GPA:1\" version=\"1\" order=\"1\">\n    <limitations>\n      <UserProfile ref=\"ENT:UserProfile:Adult\" version=\"1\"/>\n    </limitations>\n  </GenericParameterAssignment>\n</FareStructureElement>",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "fare-products",
+                "type": "collection",
+                "label": "fareProducts",
+                "description": "Liste over billettprodukter. Et produkt kobles til en Tariff og definerer hva kunden kjøper.",
+                "xmlSnippet": "<fareProducts>\n  <PreassignedFareProduct id=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\"> … </PreassignedFareProduct>\n</fareProducts>",
+                "children": [
+                  {
+                    "id": "PreassignedFareProduct",
+                    "type": "element",
+                    "elementRef": "PreassignedFareProduct",
+                    "label": "PreassignedFareProduct",
+                    "description": "Et forhåndsbestemt billettprodukt med fast definerte gyldighetsregler — for eksempel enkeltbillett eller periodebillett. Den vanligste produkttypen i nordisk profil.",
+                    "xmlSnippet": "<PreassignedFareProduct id=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\">\n  <!-- Påkrevd: Name -->\n  <Name>Enkeltbillett voksen</Name>\n  <!-- Valgfri: ProductType -->\n  <ProductType>singleTrip</ProductType>\n  <!-- Valgfri: ChargingMomentType -->\n  <ChargingMomentType>beforeTravel</ChargingMomentType>\n  <fareStructureElements>\n    <FareStructureElementRef ref=\"ENT:FSE:Zone\" version=\"1\"/>\n  </fareStructureElements>\n</PreassignedFareProduct>",
+                    "children": []
+                  },
+                  {
+                    "id": "AmountOfPriceUnitProduct",
+                    "type": "element",
+                    "elementRef": "AmountOfPriceUnitProduct",
+                    "label": "AmountOfPriceUnitProduct",
+                    "description": "Et produkt definert som et antall priseenheter — for eksempel et klippekort med 10 reiser. Valgfri i nordisk profil.",
+                    "xmlSnippet": "<!-- Valgfri: AmountOfPriceUnitProduct -->\n<AmountOfPriceUnitProduct id=\"ENT:AmountOfPriceUnitProduct:Klipp10\" version=\"1\">\n  <Name>10-klipp voksen</Name>\n  <ProductType>multiStepTrip</ProductType>\n  <fareStructureElements>\n    <FareStructureElementRef ref=\"ENT:FSE:Zone\" version=\"1\"/>\n  </fareStructureElements>\n</AmountOfPriceUnitProduct>",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "usage-parameters",
+                "type": "collection",
+                "label": "usageParameters",
+                "description": "Liste over bruksparametere som styrer gyldighetsbetingelsene for produkter — hvem kan bruke dem, og under hvilke betingelser.",
+                "xmlSnippet": "<usageParameters>\n  <UserProfile id=\"ENT:UserProfile:Adult\" version=\"1\"> … </UserProfile>\n  <RoundTrip id=\"ENT:RoundTrip:Single\" version=\"1\"> … </RoundTrip>\n</usageParameters>",
+                "children": [
+                  {
+                    "id": "UserProfile",
+                    "type": "element",
+                    "elementRef": "UserProfile",
+                    "label": "UserProfile",
+                    "description": "Definerer hvilken passasjergruppe produktet gjelder for — voksen, barn, honnør, student osv. Refereres til fra FareStructureElement via GenericParameterAssignment.",
+                    "xmlSnippet": "<UserProfile id=\"ENT:UserProfile:Adult\" version=\"1\">\n  <Name>Voksen</Name>\n  <!-- Type bruker: adult, child, senior etc. -->\n  <UserType>adult</UserType>\n  <!-- Valgfri: aldersgrenser -->\n  <MinimumAge>16</MinimumAge>\n</UserProfile>",
+                    "children": []
+                  },
+                  {
+                    "id": "RoundTrip",
+                    "type": "element",
+                    "elementRef": "RoundTrip",
+                    "label": "RoundTrip",
+                    "description": "Definerer om produktet gjelder for enkeltreise eller tur-retur. Påvirker gyldigheten til produktet.",
+                    "xmlSnippet": "<RoundTrip id=\"ENT:RoundTrip:Single\" version=\"1\">\n  <Name>Enkeltreise</Name>\n  <TripType>single</TripType>\n</RoundTrip>",
+                    "children": []
+                  },
+                  {
+                    "id": "FrequencyOfUse",
+                    "type": "element",
+                    "elementRef": "FrequencyOfUse",
+                    "label": "FrequencyOfUse",
+                    "description": "Begrenser bruken av et produkt — for eksempel maks antall aktiveringer per dag. Brukes typisk for periodebilletter med bruksgrenser.",
+                    "xmlSnippet": "<FrequencyOfUse id=\"ENT:FrequencyOfUse:Once\" version=\"1\">\n  <Name>Én gang per validering</Name>\n  <FrequencyOfUseType>single</FrequencyOfUseType>\n</FrequencyOfUse>",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "sales-offer-package-frame",
+            "type": "container",
+            "label": "SalesOfferPackageFrame",
+            "description": "Inneholder salgspakker som definerer hvordan billetter selges og distribueres. Valgfri, men vanlig i nordisk profil for å spesifisere distribusjonskanaler og betalingsmetoder.",
+            "xmlSnippet": "<SalesOfferPackageFrame id=\"ENT:SalesOfferPackageFrame:1\" version=\"1\">\n  <salesOfferPackages>\n    <SalesOfferPackage id=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\"> … </SalesOfferPackage>\n  </salesOfferPackages>\n</SalesOfferPackageFrame>",
+            "children": [
+              {
+                "id": "sales-offer-packages",
+                "type": "collection",
+                "label": "salesOfferPackages",
+                "description": "Liste over salgspakker. Hver pakke kobler ett eller flere produkter til salgs- og distribusjonsbetingelser.",
+                "xmlSnippet": "<salesOfferPackages>\n  <SalesOfferPackage id=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\"> … </SalesOfferPackage>\n</salesOfferPackages>",
+                "children": [
+                  {
+                    "id": "SalesOfferPackage",
+                    "type": "element",
+                    "elementRef": "SalesOfferPackage",
+                    "label": "SalesOfferPackage",
+                    "description": "Definerer en komplett salgspakke — kombinasjonen av ett eller flere billettprodukt med distribusjonsregler, prisinfo og mediebegrensninger. Det er SalesOfferPackage-en som faktisk selges til kunden.",
+                    "xmlSnippet": "<SalesOfferPackage id=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\">\n  <!-- Påkrevd: Name -->\n  <Name>Enkeltbillett</Name>\n  <!-- Valgfri: Description -->\n  <Description>Enkeltbillett voksen, gyldig i alle soner</Description>\n  <salesOfferPackageElements>\n    <SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n      <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\"/>\n    </SalesOfferPackageElement>\n  </salesOfferPackageElements>\n</SalesOfferPackage>",
+                    "children": [
+                      {
+                        "id": "sales-offer-package-elements",
+                        "type": "collection",
+                        "label": "salesOfferPackageElements",
+                        "description": "Liste over elementer som kobler billettprodukt til salgspakken. Én pakke kan ha flere elementer for kombinasjonsprodukter.",
+                        "xmlSnippet": "<salesOfferPackageElements>\n  <SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n    <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:1\" version=\"1\"/>\n  </SalesOfferPackageElement>\n</salesOfferPackageElements>",
+                        "children": [
+                          {
+                            "id": "SalesOfferPackageElement",
+                            "type": "element",
+                            "elementRef": "SalesOfferPackageElement",
+                            "label": "SalesOfferPackageElement",
+                            "description": "Kobler ett billettprodukt (PreassignedFareProduct eller AmountOfPriceUnitProduct) til en salgspakke.",
+                            "xmlSnippet": "<SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n  <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\"/>\n</SalesOfferPackageElement>",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
