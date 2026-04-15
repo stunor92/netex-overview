@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { NeTExElement, LoadedFile, ProfileData, ActiveProfile } from '../types'
 
 const GROUP_COLOURS: Record<string, string> = {
@@ -60,7 +60,7 @@ export function ElementTree({
     return map
   }, [filtered])
 
-  useMemo(() => {
+  useEffect(() => {
     if (query) setExpandedGroups(new Set(byGroup.keys()))
   }, [query, byGroup])
 
