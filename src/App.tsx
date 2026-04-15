@@ -19,12 +19,11 @@ const PROFILES: Record<string, ProfileData> = {
 
 export default function App() {
   const [query, setQuery] = useState('')
-  const [activeGroup, setActiveGroup] = useState<string | null>(null)
+  const [activeChip, setActiveChip] = useState<string | null>(null)
   const [selectedElement, setSelectedElement] = useState<NeTExElement | null>(null)
   const [loadedFile, setLoadedFile] = useState<LoadedFile | null>(null)
   const [activeProfile, setActiveProfile] = useState<ActiveProfile>(null)
 
-  const groups = [...new Set(allElements.map((e) => e.group))].sort()
   const profileData = activeProfile ? PROFILES[activeProfile] : null
 
   return (
@@ -58,9 +57,8 @@ export default function App() {
         <SearchBar
           query={query}
           onQueryChange={setQuery}
-          groups={groups}
-          activeGroup={activeGroup}
-          onGroupChange={setActiveGroup}
+          activeChip={activeChip}
+          onChipChange={setActiveChip}
         />
         <div style={{ marginLeft: 'auto' }}>
           <ExampleLoader examples={allExamples} onFileLoaded={setLoadedFile} />
@@ -80,7 +78,7 @@ export default function App() {
           <ElementTree
             elements={allElements}
             query={query}
-            activeGroup={activeGroup}
+            activeChip={activeChip}
             selectedElement={selectedElement}
             loadedFile={loadedFile}
             onSelect={setSelectedElement}
