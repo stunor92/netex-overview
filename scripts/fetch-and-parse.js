@@ -16,6 +16,13 @@ const PART3_DIRS = [
   'xsd/netex_part_3/part3_salesTransactions',
 ]
 
+// Framework dirs providing base types (TypeOfValue, entity, assignment, dayType, versionFrame)
+const FRAMEWORK_DIRS = [
+  'xsd/netex_framework/netex_responsibility',
+  'xsd/netex_framework/netex_genericFramework',
+  'xsd/netex_framework/netex_reusableComponents',
+]
+
 const EXAMPLES_DIR = 'examples/functions/fares'
 
 const TOP_GROUP_NAMES = [
@@ -53,27 +60,44 @@ async function fetchText(path) {
   return res.text()
 }
 
-async function fetchAllXsdFiles() {
-  const allFiles = []
-  for (const dir of PART3_DIRS) {
+async function listXsdFiles(dirs) {
+  const files = []
+  for (const dir of dirs) {
     const entries = await listFiles(dir)
     for (const entry of entries) {
-      if (entry.name.endsWith('.xsd') && entry.name.includes('_version')) {
-        allFiles.push(entry.path)
+      if (entry.name.endsWith('.xsd') && (entry.name.includes('_version') || entry.name.includes('_support'))) {
+        files.push(entry.path)
       }
     }
   }
-  return allFiles
+  return files
 }
 
 async function buildElementsJson() {
-  console.log('Fetching XSD file list...')
-  const xsdPaths = await fetchAllXsdFiles()
-  console.log(`Found ${xsdPaths.length} version XSD files`)
+  console.log('Fetching Part 3 XSD file list...')
+  const part3Paths = await listXsdFiles(PART3_DIRS)
+  console.log(`Found ${part3Paths.length} Part 3 XSD files`)
 
+  console.log('Fetching framework XSD file list...')
+  const frameworkPaths = await listXsdFiles(FRAMEWORK_DIRS)
+  console.log(`Found ${frameworkPaths.length} framework XSD files`)
+
+  // Framework files: only import types and groups, NOT elements (to avoid polluting the element list)
   const merged = { elements: new Map(), types: new Map(), groups: new Map() }
 
-  for (const path of xsdPaths) {
+  console.log('Parsing framework files (types/groups only)...')
+  for (const path of frameworkPaths) {
+    process.stdout.write(`  Parsing ${path.split('/').pop()}...`)
+    const text = await fetchText(path)
+    if (!text) { console.log(' skipped (404)'); continue }
+    const { types, groups } = parseXsd(text)
+    for (const [k, v] of types) merged.types.set(k, v)
+    for (const [k, v] of groups) merged.groups.set(k, v)
+    console.log(' done')
+  }
+
+  console.log('Parsing Part 3 files...')
+  for (const path of part3Paths) {
     process.stdout.write(`  Parsing ${path.split('/').pop()}...`)
     const text = await fetchText(path)
     if (!text) { console.log(' skipped (404)'); continue }

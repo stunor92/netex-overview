@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import type { NeTExElement, LoadedFile, NeTExExample, ProfileData, ActiveProfile, StructureNode, ProfileStructure } from './types'
+import type { NeTExElement, LoadedFile, NeTExExample, ProfileData, ActiveProfile, StructureNode, ProfileStructure, NeTExEnums } from './types'
 import elementsData from './data/netex-elements.json'
 import examplesData from './data/netex-examples.json'
+import enumsData from './data/netex-enums.json'
 import frProfileData from './data/profiles/fr.json'
 import nordicProfileData from './data/profiles/nordic.json'
 import frStructureData from './data/profiles/fr-structure.json'
@@ -15,6 +16,7 @@ import { ProfileGuidePanel } from './components/ProfileGuidePanel'
 
 const allElements = elementsData as NeTExElement[]
 const allExamples = examplesData as NeTExExample[]
+const allEnums = enumsData as NeTExEnums
 
 const PROFILES: Record<string, ProfileData> = {
   fr: frProfileData as ProfileData,
@@ -152,6 +154,7 @@ export default function App() {
               allElements={allElements}
               profileData={profileData}
               activeProfile={activeProfile}
+              onSelectElement={(el) => { setActiveProfile(null); setSelectedElement(el) }}
             />
           ) : activeProfile ? (
             <div style={{
@@ -171,6 +174,8 @@ export default function App() {
               loadedFile={loadedFile}
               profileData={profileData}
               activeProfile={activeProfile}
+              onSelect={setSelectedElement}
+              enumValues={allEnums}
             />
           ) : (
             <div style={{

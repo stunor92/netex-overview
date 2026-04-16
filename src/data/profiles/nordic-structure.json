@@ -164,8 +164,8 @@
             "id": "sales-offer-package-frame",
             "type": "container",
             "label": "SalesOfferPackageFrame",
-            "description": "Inneholder salgspakker som definerer hvordan billetter selges og distribueres. Valgfri, men vanlig i nordisk profil for å spesifisere distribusjonskanaler og betalingsmetoder.",
-            "xmlSnippet": "<SalesOfferPackageFrame id=\"ENT:SalesOfferPackageFrame:1\" version=\"1\">\n  <salesOfferPackages>\n    <SalesOfferPackage id=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\"> … </SalesOfferPackage>\n  </salesOfferPackages>\n</SalesOfferPackageFrame>",
+            "description": "Inneholder salgspakker og pristabeller. salesOfferPackages kobler produkter til distribusjonskanaler og billettmedier; fareTables inneholder de faktiske prisene per pakke og brukertype. Valgfri ramme, men nødvendig for å angi priser og salgsbetingelser i nordisk profil.",
+            "xmlSnippet": "<SalesOfferPackageFrame id=\"ENT:SalesOfferPackageFrame:1\" version=\"1\">\n  <salesOfferPackages>\n    <SalesOfferPackage id=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\"> … </SalesOfferPackage>\n  </salesOfferPackages>\n  <fareTables>\n    <FareTable id=\"ENT:FareTable:Enkeltbillett\" version=\"1\"> … </FareTable>\n  </fareTables>\n</SalesOfferPackageFrame>",
             "children": [
               {
                 "id": "sales-offer-packages",
@@ -179,28 +179,64 @@
                     "type": "element",
                     "elementRef": "SalesOfferPackage",
                     "label": "SalesOfferPackage",
-                    "description": "Definerer en komplett salgspakke — kombinasjonen av ett eller flere billettprodukt med distribusjonsregler, prisinfo og mediebegrensninger. Det er SalesOfferPackage-en som faktisk selges til kunden.",
-                    "xmlSnippet": "<SalesOfferPackage id=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\">\n  <!-- Påkrevd: Name -->\n  <Name>Enkeltbillett</Name>\n  <!-- Valgfri: Description -->\n  <Description>Enkeltbillett voksen, gyldig i alle soner</Description>\n  <salesOfferPackageElements>\n    <SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n      <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\"/>\n    </SalesOfferPackageElement>\n  </salesOfferPackageElements>\n</SalesOfferPackage>",
+                    "description": "Det som faktisk selges til kunden — kombinasjonen av ett eller flere FareProduct med distribusjonsbetingelser og billettmedium. SalesOfferPackage kobler produkter (via SalesOfferPackageElement) til salgskanaler (via distributionAssignments). Priser knyttes til pakken i FareTable ved hjelp av SalesOfferPackageRef i en Cell. Nordisk profil har som regel én pakke per produkt/brukertype-kombinasjon.",
+                    "xmlSnippet": "<SalesOfferPackage id=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\">\n  <Name>Enkeltbillett</Name>\n  <Description>Enkeltbillett voksen, gyldig i alle soner</Description>\n\n  <!-- Steg 1: koble produkt og billettmedium -->\n  <salesOfferPackageElements>\n    <SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n      <TypeOfTravelDocumentRef ref=\"ENT:TypeOfTravelDocument:MobileApp\" version=\"1\"/>\n      <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\"/>\n    </SalesOfferPackageElement>\n  </salesOfferPackageElements>\n\n  <!-- Steg 2: angi distribusjonskanal og betalingsmetoder -->\n  <distributionAssignments>\n    <DistributionAssignment id=\"ENT:DA:1\" version=\"1\" order=\"1\">\n      <DistributionChannelType>mobileDevice</DistributionChannelType>\n      <PaymentMethods>creditCard debitCard mobilePhone</PaymentMethods>\n    </DistributionAssignment>\n  </distributionAssignments>\n</SalesOfferPackage>",
                     "children": [
                       {
                         "id": "sales-offer-package-elements",
                         "type": "collection",
                         "label": "salesOfferPackageElements",
-                        "description": "Liste over elementer som kobler billettprodukt til salgspakken. Én pakke kan ha flere elementer for kombinasjonsprodukter.",
-                        "xmlSnippet": "<salesOfferPackageElements>\n  <SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n    <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:1\" version=\"1\"/>\n  </SalesOfferPackageElement>\n</salesOfferPackageElements>",
+                        "description": "Liste over SalesOfferPackageElement-er som kobler billettprodukt og billettmedium til salgspakken. Én pakke kan ha flere elementer, f.eks. for kombinasjonsprodukter eller ulike medier (app + papir).",
+                        "xmlSnippet": "<salesOfferPackageElements>\n  <SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n    <TypeOfTravelDocumentRef ref=\"ENT:TypeOfTravelDocument:MobileApp\" version=\"1\"/>\n    <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\"/>\n  </SalesOfferPackageElement>\n</salesOfferPackageElements>",
                         "children": [
                           {
                             "id": "SalesOfferPackageElement",
                             "type": "element",
                             "elementRef": "SalesOfferPackageElement",
                             "label": "SalesOfferPackageElement",
-                            "description": "Kobler ett billettprodukt (PreassignedFareProduct eller AmountOfPriceUnitProduct) til en salgspakke.",
-                            "xmlSnippet": "<SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n  <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\"/>\n</SalesOfferPackageElement>",
+                            "description": "Kobler ett FareProduct til ett TypeOfTravelDocument (billettmedium) innenfor salgspakken. RequiresValidation angir om billetten må valideres ved ombordstigning. validityParameterAssignments kan legge til ekstra bruksbetingelser spesifikke for dette salgselementet, utover UsageParameters fra FareFrame.",
+                            "xmlSnippet": "<SalesOfferPackageElement id=\"ENT:SOPE:1\" version=\"1\" order=\"1\">\n  <!-- Billettmedium: mobilapp, papir, smartkort -->\n  <TypeOfTravelDocumentRef ref=\"ENT:TypeOfTravelDocument:MobileApp\" version=\"1\"/>\n  <!-- Produktkobling — velg én av disse: -->\n  <PreassignedFareProductRef ref=\"ENT:PreassignedFareProduct:Enkeltbillett\" version=\"1\"/>\n  <!-- <AmountOfPriceUnitProductRef ref=\"ENT:AmountOfPriceUnitProduct:Klipp10\" version=\"1\"/> -->\n  <!-- Valgfri: ekstra betingelser bare for dette salgselementet -->\n  <!-- <validityParameterAssignments>\n    <GenericParameterAssignment id=\"ENT:GPA:SOPE:1\" version=\"1\" order=\"1\">\n      <limitations>\n        <UserProfileRef ref=\"ENT:UserProfile:Adult\" version=\"1\"/>\n      </limitations>\n    </GenericParameterAssignment>\n  </validityParameterAssignments> -->\n</SalesOfferPackageElement>",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "id": "distribution-assignments",
+                        "type": "collection",
+                        "label": "distributionAssignments",
+                        "description": "Liste over DistributionAssignment-er som angir hvor og hvordan salgspakken kan kjøpes. Hvert element spesifiserer én salgskanal (app, nettsted, automat, sjåfør) med tilhørende betalingsmetoder og rettigheter. Nordisk profil bruker DistributionChannelType i stedet for eksplisitte DistributionChannel-objekter.",
+                        "xmlSnippet": "<distributionAssignments>\n  <!-- App-kjøp -->\n  <DistributionAssignment id=\"ENT:DA:1\" version=\"1\" order=\"1\">\n    <DistributionChannelType>mobileDevice</DistributionChannelType>\n    <PaymentMethods>creditCard debitCard mobilePhone</PaymentMethods>\n    <DistributionRights>sale</DistributionRights>\n  </DistributionAssignment>\n  <!-- Nettsted -->\n  <DistributionAssignment id=\"ENT:DA:2\" version=\"1\" order=\"2\">\n    <DistributionChannelType>online</DistributionChannelType>\n    <PaymentMethods>creditCard debitCard</PaymentMethods>\n  </DistributionAssignment>\n</distributionAssignments>",
+                        "children": [
+                          {
+                            "id": "DistributionAssignment",
+                            "type": "element",
+                            "elementRef": "DistributionAssignment",
+                            "label": "DistributionAssignment",
+                            "description": "Tildeling av én salgskanal til salgspakken. DistributionChannelType angir kanaltype (mobileDevice, online, agency, ticketMachineOnBoard m.fl.). PaymentMethods angir tillatte betalingsmetoder. DistributionRights angir om kanalen kan selge (sale), informere (inform) eller begge deler.",
+                            "xmlSnippet": "<DistributionAssignment id=\"ENT:DA:1\" version=\"1\" order=\"1\">\n  <!-- Kanaltype: mobileDevice | online | agency | ticketMachineOnBoard | etc. -->\n  <DistributionChannelType>mobileDevice</DistributionChannelType>\n  <!-- Betalingsmetoder: creditCard | debitCard | mobilePhone | cash | etc. -->\n  <PaymentMethods>creditCard debitCard mobilePhone</PaymentMethods>\n  <!-- Valgfri: sale | inform | free -->\n  <DistributionRights>sale</DistributionRights>\n</DistributionAssignment>",
                             "children": []
                           }
                         ]
                       }
                     ]
+                  }
+                ]
+              },
+              {
+                "id": "fare-tables",
+                "type": "collection",
+                "label": "fareTables",
+                "description": "Liste over pristabeller for salgspakkene. Nordisk profil plasserer FareTable inne i SalesOfferPackageFrame — priser knyttes til SalesOfferPackage via SalesOfferPackageRef i hver Cell. Én FareTable kan dekke alle pakker, eller det kan brukes én tabell per produkt.",
+                "xmlSnippet": "<fareTables>\n  <FareTable id=\"ENT:FareTable:Enkeltbillett\" version=\"1\">\n    <Name>Priser enkeltbillett</Name>\n    <cells>\n      <!-- Voksen -->\n      <Cell id=\"ENT:Cell:1\" version=\"1\" order=\"1\">\n        <SalesOfferPackagePrice id=\"ENT:SOPP:1\" version=\"1\">\n          <Amount>39</Amount>\n          <Currency>NOK</Currency>\n        </SalesOfferPackagePrice>\n        <SalesOfferPackageRef ref=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\"/>\n        <UserProfileRef ref=\"ENT:UserProfile:Adult\" version=\"1\"/>\n      </Cell>\n      <!-- Barn -->\n      <Cell id=\"ENT:Cell:2\" version=\"1\" order=\"2\">\n        <SalesOfferPackagePrice id=\"ENT:SOPP:2\" version=\"1\">\n          <Amount>20</Amount>\n          <Currency>NOK</Currency>\n        </SalesOfferPackagePrice>\n        <SalesOfferPackageRef ref=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\"/>\n        <UserProfileRef ref=\"ENT:UserProfile:Child\" version=\"1\"/>\n      </Cell>\n    </cells>\n  </FareTable>\n</fareTables>",
+                "children": [
+                  {
+                    "id": "FareTable",
+                    "type": "element",
+                    "elementRef": "FareTable",
+                    "label": "FareTable",
+                    "description": "Pristabell som samler alle prisceller for ett eller flere salgspakker. Kobler pris til SalesOfferPackage (og valgfritt UserProfile) via Cell-elementer. Én Cell = én pris for én kombinasjon av pakke og brukertype. FareTable er stedet der faktiske beløp angis i nordisk profil.",
+                    "xmlSnippet": "<FareTable id=\"ENT:FareTable:Enkeltbillett\" version=\"1\">\n  <Name>Priser enkeltbillett</Name>\n  <cells>\n    <!-- Én Cell per kombinasjon av SalesOfferPackage + UserProfile -->\n    <Cell id=\"ENT:Cell:1\" version=\"1\" order=\"1\">\n      <SalesOfferPackagePrice id=\"ENT:SOPP:1\" version=\"1\">\n        <Amount>39</Amount>\n        <Currency>NOK</Currency>\n      </SalesOfferPackagePrice>\n      <!-- Hvilken salgspakke prisen gjelder for: -->\n      <SalesOfferPackageRef ref=\"ENT:SalesOfferPackage:Enkeltbillett\" version=\"1\"/>\n      <!-- Valgfri: differensier per brukertype -->\n      <UserProfileRef ref=\"ENT:UserProfile:Adult\" version=\"1\"/>\n    </Cell>\n  </cells>\n</FareTable>",
+                    "children": []
                   }
                 ]
               }

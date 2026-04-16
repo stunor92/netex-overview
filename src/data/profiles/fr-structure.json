@@ -42,8 +42,8 @@
                     "type": "element",
                     "label": "FareZone",
                     "elementRef": "FareZone",
-                    "description": "Billettgeografisk sone — en spesialisering av TariffZone. Brukes ved sonebaserte tariffer. Inneholder StopPlace-referanser for stoppesteder som tilhører sonen. FareZone er valgfri; benyttes bare når taksten er sonebasert.",
-                    "xmlSnippet": "<FareZone id=\"FR1:FareZone:Zone1:LOC\" version=\"any\">\n  <Name>Sone 1</Name>\n  <members>\n    <ScheduledStopPointRef ref=\"FR1:ScheduledStopPoint:SP001:LOC\"/>\n    <!-- flere stoppesteder -->\n  </members>\n</FareZone>",
+                    "description": "Billettgeografisk sone — en spesialisering av TariffZone. Brukes ved sonebaserte tariffer. Kan inneholde både en geografisk beskrivelse (kommuneliste) og en liste over stoppesteder tilhørende sonen. Begge delene er nyttige: stoppestedslisten gir presis info til takstkalkulatorer, mens den geografiske beskrivelsen brukes for kartvisning. FareZone er valgfri; benyttes bare når taksten er sonebasert.",
+                    "xmlSnippet": "<FareZone id=\"FR1:FareZone:Zone1:LOC\" version=\"any\">\n  <Name>Sone 1</Name>\n  <!-- Stoppesteder som tilhører sonen (for takstkalkulatorer): -->\n  <members>\n    <ScheduledStopPointRef ref=\"FR1:ScheduledStopPoint:SP001:LOC\"/>\n    <!-- flere stoppesteder -->\n  </members>\n</FareZone>",
                     "children": []
                   },
                   {
@@ -56,13 +56,86 @@
                     "children": []
                   },
                   {
+                    "id": "DistanceMatrixElement",
+                    "type": "element",
+                    "label": "DistanceMatrixElement",
+                    "elementRef": "DistanceMatrixElement",
+                    "description": "OD-element (Origin–Destination) — definerer en relasjonsbasert takst mellom to punkter. Brukes for distanse- eller relasjonsbaserte tariffer. StartStopPointRef og EndTariffZoneRef (eller EndStopPointRef) angir start- og endepunkt. InverseAllowed angir om returen også er gyldig. Refereres av FareStructureElement via DistanceMatrixElementRef.",
+                    "xmlSnippet": "<DistanceMatrixElement id=\"FR1:DistanceMatrixElement:01:LOC\" version=\"any\">\n  <!-- Tur og retur gyldig: -->\n  <InverseAllowed>true</InverseAllowed>\n  <!-- Fra stoppested til sone (eller stoppested til stoppested): -->\n  <StartStopPointRef versionRef=\"any\"\n    ref=\"FR1:ScheduledStopPoint:SP001:LOC\"/>\n  <EndTariffZoneRef versionRef=\"any\"\n    ref=\"FR1:TariffZone:Zone01:LOC\"/>\n  <!-- Alternativt stoppested til stoppested: -->\n  <!-- <StartStopPointRef ref=\"FR1:SSP:001:LOC\"/> -->\n  <!-- <EndStopPointRef ref=\"FR1:SSP:002:LOC\"/> -->\n</DistanceMatrixElement>",
+                    "children": []
+                  },
+                  {
                     "id": "FareStructureElement",
                     "type": "element",
                     "label": "FareStructureElement",
                     "elementRef": "FareStructureElement",
-                    "description": "Grunnleggende takststrukturelement — definerer reglene for én bruksmulighet (access right). Kan referere til et TimeInterval (tidsbasert), DistanceMatrixElement (OD-basert) eller FareZone (sonebasert). Kan inneholde GenericParameterAssignment for bruksbetingelser.",
-                    "xmlSnippet": "<FareStructureElement id=\"FR1:FareStructureElement:001:LOC\"\n                      version=\"any\">\n  <!-- Tidsbasert: -->\n  <TimeIntervalRef ref=\"FR1:TimeInterval:90min:LOC\" version=\"any\"/>\n\n  <!-- Eller sonebasert: -->\n  <!-- <FareZoneRef ref=\"FR1:FareZone:Zone1:LOC\" version=\"any\"/> -->\n\n  <!-- Bruksbetingelser (valgfri): -->\n  <GenericParameterAssignment id=\"FR1:GPA:001:LOC\" version=\"any\"\n                               order=\"1\">\n    <limitations>\n      <FrequencyOfUse id=\"FR1:FrequencyOfUse:001:LOC\" version=\"any\">\n        <FrequencyOfUseType>unlimited</FrequencyOfUseType>\n      </FrequencyOfUse>\n    </limitations>\n  </GenericParameterAssignment>\n</FareStructureElement>",
-                    "children": []
+                    "description": "Takststrukturelement — definerer én dimensjon av bruksregler for et produkt. Kan kobles til TimeInterval (tidsbasert), DistanceMatrixElement (OD-basert) eller FareZone (sonebasert). Bruksregler angis via validityParameterAssignments/GenericParameterAssignment. Antall enheter (klippekort) angis via qualityStructureFactors. Merk: periodeinfo (månedskort, dagskort) legges HER — ikke på FareProduct.",
+                    "xmlSnippet": "<FareStructureElement id=\"FR1:FareStructureElement:90min:LOC\" version=\"any\">\n  <!-- Tidsbasert: pek på TimeInterval -->\n  <TimeIntervalRef ref=\"FR1:TimeInterval:90min:LOC\" version=\"any\"/>\n\n  <!-- OD-basert: pek på DistanceMatrixElement -->\n  <!-- <DistanceMatrixElementRef ref=\"FR1:DistanceMatrixElement:01:LOC\"/> -->\n\n  <!-- Bruksregler (se child-noder for varianter): -->\n  <validityParameterAssignments>\n    <GenericParameterAssignment id=\"FR1:GPA:001:LOC\" version=\"any\" order=\"1\">\n      <limitations>\n        <!-- UsageValidityPeriod | Interchanging | FrequencyOfUse | PenaltyPolicy -->\n      </limitations>\n    </GenericParameterAssignment>\n  </validityParameterAssignments>\n</FareStructureElement>",
+                    "children": [
+                      {
+                        "id": "fse-validity-parameter-assignments",
+                        "type": "collection",
+                        "label": "validityParameterAssignments",
+                        "description": "Liste over GenericParameterAssignment-er med bruksbetingelser. Hvert element inneholder én eller flere limitations som styrer hvordan billetten kan brukes.",
+                        "xmlSnippet": "<validityParameterAssignments>\n  <GenericParameterAssignment id=\"FR1:GPA:001:LOC\" version=\"any\" order=\"1\">\n    <limitations>\n      <!-- UsageValidityPeriod | Interchanging | FrequencyOfUse | PenaltyPolicy -->\n    </limitations>\n  </GenericParameterAssignment>\n</validityParameterAssignments>",
+                        "children": [
+                          {
+                            "id": "UsageValidityPeriod",
+                            "type": "element",
+                            "elementRef": "UsageValidityPeriod",
+                            "label": "UsageValidityPeriod",
+                            "description": "Gyldighetsperiode for bruken av billetten. UsageTrigger angir hva som starter perioden (purchase = kjøpstidspunkt, startOfPeriod = periodens start, useOfValidator = ved validering). ValidityPeriodType angir type (singleTrip, dayPass, weeklyPass, monthlyPass, carnet osv.). StandardDuration angir varigheten som ISO 8601-intervall. ActivationMeans=useOfValidator krever at billetten valideres for å aktiveres.",
+                            "xmlSnippet": "<!-- Periodepass (månedskort) -->\n<UsageValidityPeriod id=\"FR1:UVP:Monthly:LOC\" version=\"any\">\n  <UsageTrigger>startOfPeriod</UsageTrigger>\n  <ValidityPeriodType>monthlyPass</ValidityPeriodType>\n  <StandardDuration>P1M</StandardDuration>\n</UsageValidityPeriod>\n\n<!-- Enkeltbillett (aktiveres ved kjøp) -->\n<!-- <UsageValidityPeriod id=\"FR1:UVP:Single:LOC\" version=\"any\">\n  <UsageTrigger>purchase</UsageTrigger>\n  <StandardDuration>PT3H</StandardDuration>\n</UsageValidityPeriod> -->\n\n<!-- Validering obligatorisk for aktivering -->\n<!-- <UsageValidityPeriod id=\"FR1:UVP:Val:LOC\" version=\"any\">\n  <ActivationMeans>useOfValidator</ActivationMeans>\n</UsageValidityPeriod> -->",
+                            "children": []
+                          },
+                          {
+                            "id": "Interchanging",
+                            "type": "element",
+                            "elementRef": "Interchanging",
+                            "label": "Interchanging",
+                            "description": "Korrespondansetillatelse — angir om billetten gir rett til videreforbindelser innen en gitt tid. CanInterchange=true aktiverer korrespondanserett. MaximumTimeToMakeATransfer angir maks ventetid (ISO 8601). MaximumNumberOfInterchanges begrenser antall korrespondanser (valgfri).",
+                            "xmlSnippet": "<Interchanging id=\"FR1:Interchanging:01:LOC\" version=\"any\">\n  <CanInterchange>true</CanInterchange>\n  <!-- Valgfri: maks antall korrespondanser -->\n  <MaximumNumberOfInterchanges>3</MaximumNumberOfInterchanges>\n  <!-- Valgfri: maks ventetid ved korrespondanse -->\n  <MaximumTimeToMakeATransfer>PT30M</MaximumTimeToMakeATransfer>\n</Interchanging>",
+                            "children": []
+                          },
+                          {
+                            "id": "FSE-FrequencyOfUse",
+                            "type": "element",
+                            "elementRef": "FrequencyOfUse",
+                            "label": "FrequencyOfUse",
+                            "description": "Bruksfrekvens — styrer hvor mange ganger billetten kan brukes. FrequencyOfUseType=unlimited gir ubegrenset antall reiser (typisk for dagskort/ukeskort). FrequencyOfUseType=single begrenser til én bruk.",
+                            "xmlSnippet": "<!-- Dagskort: ubegrenset antall reiser -->\n<FrequencyOfUse id=\"FR1:FrequencyOfUse:Unlimited:LOC\" version=\"any\">\n  <FrequencyOfUseType>unlimited</FrequencyOfUseType>\n</FrequencyOfUse>\n\n<!-- Enkeltbruk: -->\n<!-- <FrequencyOfUse id=\"FR1:FrequencyOfUse:Once:LOC\" version=\"any\">\n  <FrequencyOfUseType>single</FrequencyOfUseType>\n</FrequencyOfUse> -->",
+                            "children": []
+                          },
+                          {
+                            "id": "PenaltyPolicy",
+                            "type": "element",
+                            "elementRef": "PenaltyPolicy",
+                            "label": "PenaltyPolicy",
+                            "description": "Sanksjonsregel — angir konsekvenser ved regelbrudd. PenaltyPolicyType=noValidation brukes for å angi at manglende validering kan medføre bot. Brukes typisk kombinert med UsageValidityPeriod/ActivationMeans=useOfValidator.",
+                            "xmlSnippet": "<PenaltyPolicy id=\"FR1:PenaltyPolicy:01:LOC\" version=\"any\">\n  <!-- Bot ved manglende validering: -->\n  <PenaltyPolicyType>noValidation</PenaltyPolicyType>\n</PenaltyPolicy>",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "id": "fse-quality-structure-factors",
+                        "type": "collection",
+                        "label": "qualityStructureFactors",
+                        "description": "Angir antall enheter for klippekort/carnet. Value angir antall klipp (f.eks. 5 eller 10). Kombineres med validityParameterAssignments/UsageValidityPeriod/ValidityPeriodType=carnet.",
+                        "xmlSnippet": "<qualityStructureFactors>\n  <QualityStructureFactor id=\"FR1:QSF:10:LOC\" version=\"1.0\">\n    <!-- Antall klipp i klippekortet: -->\n    <Value>10</Value>\n  </QualityStructureFactor>\n</qualityStructureFactors>",
+                        "children": [
+                          {
+                            "id": "QualityStructureFactor",
+                            "type": "element",
+                            "elementRef": "QualityStructureFactor",
+                            "label": "QualityStructureFactor",
+                            "description": "Definerer antall enheter i et klippekort (carnet). Value angir antallet. Elementet er del av FareStructureElement som også har ValidityPeriodType=carnet i GenericParameterAssignment.",
+                            "xmlSnippet": "<!-- Klippekort med 10 klipp: -->\n<FareStructureElement id=\"FR1:FSE:Carnet10:LOC\" version=\"any\">\n  <Name>Carnet 10 tickets</Name>\n  <qualityStructureFactors>\n    <QualityStructureFactor id=\"FR1:QSF:10:LOC\" version=\"1.0\">\n      <Value>10</Value>\n    </QualityStructureFactor>\n  </qualityStructureFactors>\n  <validityParameterAssignments>\n    <GenericParameterAssignment id=\"FR1:GPA:Carnet:LOC\" version=\"any\" order=\"1\">\n      <limitations>\n        <UsageValidityPeriod id=\"FR1:UVP:Carnet:LOC\" version=\"any\">\n          <ValidityPeriodType>carnet</ValidityPeriodType>\n        </UsageValidityPeriod>\n      </limitations>\n    </GenericParameterAssignment>\n  </validityParameterAssignments>\n</FareStructureElement>",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
                   },
                   {
                     "id": "ValidableElement",
@@ -78,9 +151,28 @@
                     "type": "element",
                     "label": "UserProfile",
                     "elementRef": "UserProfile",
-                    "description": "Brukerprofil — definerer passasjerkategori som voksen, barn, student, ungdom osv. Brukes av FareTable-celler for å knytte pris til brukertype. Valgfri dersom alle passasjerer har samme pris.",
-                    "xmlSnippet": "<UserProfile id=\"FR1:UserProfile:Adult:LOC\" version=\"any\">\n  <Name>Voksen</Name>\n  <UserType>adult</UserType>\n  <MinimumAge>26</MinimumAge>\n</UserProfile>",
-                    "children": []
+                    "description": "Brukerprofil — definerer passasjerkategori (voksen, barn, ungdom, student osv.). Brukes av FareTable-celler for å knytte pris til brukertype. Valgfri dersom alle betaler samme pris. ProofRequired angir hvilket dokumentasjonskrav som gjelder (f.eks. IdentityDocument). Merk: fransen profil bruker IKKE rabatt (DiscountBasis) på UserProfile — rabatter håndteres via SaleDiscountRight. Eventuell ledsagerplikt angis i en Notice (via noticeAssignments), ikke som et eget felt.",
+                    "xmlSnippet": "<UserProfile id=\"FR1:UserProfile:Young:LOC\" version=\"any\">\n  <Name>Tarif -26 ans</Name>\n  <UserType>youngPerson</UserType>\n  <Description>Profil unge (under 26 år)</Description>\n  <MinimumAge>4</MinimumAge>\n  <MaximumAge>25</MaximumAge>\n  <!-- Dokumentasjonskrav: identityDocument | medicalDocument | etc. -->\n  <ProofRequired>identityDocument</ProofRequired>\n  <!-- Merknad (f.eks. ledsagerplikt) — se noticeAssignments: -->\n  <noticeAssignments>\n    <NoticeAssignment id=\"FR1:NoticeAssignment:Young:LOC\" version=\"any\">\n      <NoticeRef ref=\"FR1:Notice:MustBeAccompanied:LOC\" version=\"any\"/>\n    </NoticeAssignment>\n  </noticeAssignments>\n</UserProfile>",
+                    "children": [
+                      {
+                        "id": "userprofile-notice-assignments",
+                        "type": "collection",
+                        "label": "noticeAssignments",
+                        "description": "Merknader knyttet til brukerprofilen. Brukes for å angi tilleggskrav som ikke passer i egne felt — f.eks. at barn må være ledsaget av voksen, eller spesielle legitimasjonskrav. Notice-objektet (tekst) defineres i GeneralFrame NETEX_COMMUN.",
+                        "xmlSnippet": "<noticeAssignments>\n  <NoticeAssignment id=\"FR1:NoticeAssignment:Young:LOC\" version=\"any\">\n    <NoticeRef ref=\"FR1:Notice:MustBeAccompanied:LOC\" version=\"any\"/>\n  </NoticeAssignment>\n</noticeAssignments>",
+                        "children": [
+                          {
+                            "id": "UP-NoticeAssignment",
+                            "type": "element",
+                            "elementRef": "NoticeAssignment",
+                            "label": "NoticeAssignment",
+                            "description": "Tildeler en Notice (merknadstekst) til brukerprofilen. Selve teksten ligger i et Notice-objekt i NETEX_COMMUN-rammen og refereres med NoticeRef. Typisk bruk: ledsagerplikt for barn, dokumentasjonskrav for studentbillett.",
+                            "xmlSnippet": "<NoticeAssignment id=\"FR1:NoticeAssignment:Young:LOC\" version=\"any\">\n  <!-- Refererer Notice definert i GeneralFrame NETEX_COMMUN -->\n  <NoticeRef ref=\"FR1:Notice:MustBeAccompanied:LOC\" version=\"any\"/>\n</NoticeAssignment>",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
                   },
                   {
                     "id": "DistributionChannel",
@@ -141,8 +233,8 @@
                     "type": "element",
                     "label": "SalesOfferPackageElement",
                     "elementRef": "SalesOfferPackageElement",
-                    "description": "Element i salgstilbud — kobler ett FareProduct med ett TypeOfTravelDocument. SalesOfferPackage inneholder én eller flere SalesOfferPackageElement-er. RequiresValidation angir om validering kreves ved bruk.",
-                    "xmlSnippet": "<SalesOfferPackageElement\n  id=\"FR1:SalesOfferPackageElement:001:LOC\"\n  version=\"any\" order=\"1\">\n  <RequiresValidation>true</RequiresValidation>\n  <TypeOfTravelDocumentRef\n    ref=\"FR1:TypeOfTravelDocument:MobileApp:LOC\"/>\n  <PreassignedFareProductRef\n    ref=\"FR1:PreassignedFareProduct:T1:LOC\" version=\"any\"/>\n</SalesOfferPackageElement>",
+                    "description": "Element i salgstilbud — kobler ett FareProduct (PreassignedFareProduct, SaleDiscountRight, AmountOfPriceUnit) med ett TypeOfTravelDocument som angir billettmediet (app, papir, NFC-kort). RequiresValidation angir om validering kreves ved bruk. SalesOfferPackage inneholder én eller flere slike elementer; rekkefølgen angis med order-attributtet.",
+                    "xmlSnippet": "<SalesOfferPackageElement\n  id=\"FR1:SalesOfferPackageElement:001:LOC\"\n  version=\"any\" order=\"1\">\n  <!-- Om billetten krever validering (stempling) -->\n  <RequiresValidation>true</RequiresValidation>\n  <!-- Billettmedium: mobilapp, papir, NFC-kort -->\n  <TypeOfTravelDocumentRef\n    ref=\"FR1:TypeOfTravelDocument:MobileApp:LOC\"/>\n  <!-- Produktkobling — velg én: -->\n  <PreassignedFareProductRef\n    ref=\"FR1:PreassignedFareProduct:T1:LOC\" version=\"any\"/>\n  <!-- Alternativt for rabattrett: -->\n  <!-- <SaleDiscountRightRef ref=\"FR1:SaleDiscountRight:Coupon:LOC\" version=\"any\"/> -->\n</SalesOfferPackageElement>",
                     "children": []
                   },
                   {
@@ -150,18 +242,101 @@
                     "type": "element",
                     "label": "SalesOfferPackage",
                     "elementRef": "SalesOfferPackage",
-                    "description": "Salgstilbud — det som faktisk tilbys og selges til kunden. Inneholder referanser til SalesOfferPackageElement-er og eventuelt distribusjonstildelinger. Priser knyttes via FareTable.Cell.SalesOfferPackageRef.",
-                    "xmlSnippet": "<SalesOfferPackage id=\"FR1:SalesOfferPackage:001:LOC\"\n                   version=\"any\">\n  <Name>Enkeltbillett via app</Name>\n  <salesOfferPackageElements>\n    <SalesOfferPackageElementRef\n      ref=\"FR1:SalesOfferPackageElement:001:LOC\"\n      version=\"any\"/>\n  </salesOfferPackageElements>\n  <!-- Distribusjon: -->\n  <distributionAssignments>\n    <DistributionAssignment id=\"FR1:DA:001:LOC\" version=\"any\"\n                            order=\"1\">\n      <DistributionChannelRef ref=\"FR1:DistributionChannel:App:LOC\"/>\n    </DistributionAssignment>\n  </distributionAssignments>\n</SalesOfferPackage>",
-                    "children": []
+                    "description": "Salgstilbud — det som faktisk tilbys og selges til kunden. Fire påkrevde/anbefalte hoveddeler per FAQ: (1) Name, (2) ConditionSummary med salgsbetingelser (GoesOnCard, IsPersonal, IsRefundable osv.), (3) distributionAssignments med én DistributionAssignment per kanal, (4) salesOfferPackageElements. I tillegg kan validityConditions angi salgperiode (AvailabilityCondition) og bruksperiode (ValidBetween). Priser legges i FareTable — ikke inni SalesOfferPackage.",
+                    "xmlSnippet": "<SalesOfferPackage id=\"FR1:SalesOfferPackage:001:LOC\" version=\"any\">\n  <Name>Mensuel Navigo</Name>\n\n  <!-- Valgfri: merknad (f.eks. om ledsagerplikt) -->\n  <noticeAssignments>\n    <NoticeAssignment id=\"FR1:NA:SOP:LOC\" version=\"any\">\n      <NoticeRef ref=\"FR1:Notice:Conditions:LOC\"/>\n    </NoticeAssignment>\n  </noticeAssignments>\n\n  <!-- Valgfri: periode for salg og/eller bruk -->\n  <validityConditions>\n    <!-- Salgperiode (når kan billetten kjøpes?): -->\n    <AvailabilityCondition id=\"FR1:AC:001:LOC\">\n      <FromDate>2025-09-15</FromDate>\n      <ToDate>2025-10-30</ToDate>\n    </AvailabilityCondition>\n    <!-- Bruksperiode (når kan billetten brukes?): -->\n    <ValidBetween>\n      <FromDate>2025-01-01</FromDate>\n      <ToDate>2025-12-31</ToDate>\n    </ValidBetween>\n  </validityConditions>\n\n  <!-- Påkrevd: sammendrag av salgsbetingelser -->\n  <ConditionSummary>\n    <GoesOnCard>true</GoesOnCard>           <!-- Lagres på kort -->\n    <IsPersonal>true</IsPersonal>           <!-- Personlig billett -->\n    <RequiresPhoto>true</RequiresPhoto>     <!-- Krever fotografi -->\n    <MustCarry>true</MustCarry>             <!-- Må bæres på reisen -->\n    <RequiresAccount>false</RequiresAccount><!-- Krever kundekonto -->\n    <IsRefundable>false</IsRefundable>      <!-- Kan refunderes -->\n    <IsExchangable>false</IsExchangable>    <!-- Kan byttes -->\n    <AvailableOnSubscription>true</AvailableOnSubscription>\n  </ConditionSummary>\n\n  <!-- Påkrevd: distribusjonskanaler -->\n  <distributionAssignments>\n    <DistributionAssignment id=\"FR1:DA:001:LOC\" version=\"any\" order=\"1\">\n      <DistributionChannelRef ref=\"FR1:DistributionChannel:App:LOC\"/>\n      <PaymentMethods>creditCard mobilePhone</PaymentMethods>\n      <DistributionRights>sale</DistributionRights>\n    </DistributionAssignment>\n  </distributionAssignments>\n\n  <!-- Påkrevd: kobling til SalesOfferPackageElement(er) -->\n  <salesOfferPackageElements>\n    <SalesOfferPackageElementRef\n      ref=\"FR1:SalesOfferPackageElement:001:LOC\" version=\"any\"/>\n  </salesOfferPackageElements>\n</SalesOfferPackage>",
+                    "children": [
+                      {
+                        "id": "sop-validity-conditions",
+                        "type": "collection",
+                        "label": "validityConditions",
+                        "description": "Tidsvilkår for salgspakken. To viktige subtyper: AvailabilityCondition angir salgperioden (når billetten kan kjøpes), ValidBetween angir bruksperioden (når billetten kan brukes). Begge er valgfrie, men anbefales for sesongbilletter og tidsbegrensede tilbud.",
+                        "xmlSnippet": "<validityConditions>\n  <!-- Salgperiode: når kan billetten kjøpes? -->\n  <AvailabilityCondition id=\"FR1:AC:001:LOC\">\n    <FromDate>2025-09-15</FromDate>\n    <ToDate>2025-10-30</ToDate>\n  </AvailabilityCondition>\n  <!-- Bruksperiode: når kan billetten brukes? -->\n  <ValidBetween>\n    <FromDate>2025-01-01</FromDate>\n    <ToDate>2025-12-31</ToDate>\n  </ValidBetween>\n</validityConditions>",
+                        "children": [
+                          {
+                            "id": "AvailabilityCondition",
+                            "type": "element",
+                            "elementRef": "AvailabilityCondition",
+                            "label": "AvailabilityCondition",
+                            "description": "Salgperiode — angir fra og til når salgspakken er tilgjengelig for kjøp. Typisk bruk: sesongbilletter, kampanjetilbud. Eksempel: månedskort for september settes til salg fra 15. august.",
+                            "xmlSnippet": "<AvailabilityCondition id=\"FR1:AC:001:LOC\">\n  <FromDate>2025-09-15</FromDate>\n  <ToDate>2025-10-30</ToDate>\n</AvailabilityCondition>",
+                            "children": []
+                          },
+                          {
+                            "id": "SOP-ValidBetween",
+                            "type": "element",
+                            "elementRef": "ValidBetween",
+                            "label": "ValidBetween",
+                            "description": "Bruksperiode — angir fra og til når billetten faktisk kan brukes (konsumeres). Skiller seg fra AvailabilityCondition (salgperiode) ved at dette handler om reiseperioden. Eksempel: skolebillett gyldig kun i skoleåret. Merk: 'etter kjøp'-perioder (f.eks. 90 min) angis i FareStructureElement/UsageValidityPeriod, ikke her.",
+                            "xmlSnippet": "<ValidBetween>\n  <FromDate>2025-01-01</FromDate>\n  <ToDate>2025-12-31</ToDate>\n</ValidBetween>",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "id": "sop-condition-summary",
+                        "type": "element",
+                        "label": "ConditionSummary",
+                        "description": "Sammendrag av salgsbetingelsene for pakken — påkrevd i den franske profilen. Åtte nøkkelfelt: GoesOnCard (lagres på kort), IsPersonal (personlig billett), RequiresPhoto (krever bilde), MustCarry (må medbringes), RequiresAccount (krever kundekonto), IsRefundable (kan refunderes), IsExchangable (kan byttes), AvailableOnSubscription (abonnementsbasert). Disse feltene er maskinlesbare og brukes av salgskanaler for å filtrere og presentere tilbud korrekt.",
+                        "xmlSnippet": "<ConditionSummary>\n  <GoesOnCard>true</GoesOnCard>              <!-- Lagres på smartkort -->\n  <IsPersonal>true</IsPersonal>              <!-- Personlig (ikke overførbar) -->\n  <RequiresPhoto>true</RequiresPhoto>        <!-- Krever fotografi -->\n  <MustCarry>true</MustCarry>               <!-- Må medbringes under reisen -->\n  <RequiresAccount>false</RequiresAccount>  <!-- Krever ikke kundekonto -->\n  <IsRefundable>false</IsRefundable>        <!-- Kan ikke refunderes -->\n  <IsExchangable>false</IsExchangable>      <!-- Kan ikke byttes -->\n  <AvailableOnSubscription>true</AvailableOnSubscription>\n</ConditionSummary>",
+                        "children": []
+                      },
+                      {
+                        "id": "fr-distribution-assignments",
+                        "type": "collection",
+                        "label": "distributionAssignments",
+                        "description": "Liste over DistributionAssignment-er for salgspakken. I den franske profilen refererer hvert element til et eksplisitt DistributionChannel-objekt (definert i members) i stedet for kun kanaltype. PaymentMethods og DistributionRights kan overstyres per kanal.",
+                        "xmlSnippet": "<distributionAssignments>\n  <DistributionAssignment id=\"FR1:DA:001:LOC\" version=\"any\" order=\"1\">\n    <DistributionChannelRef ref=\"FR1:DistributionChannel:App:LOC\"/>\n    <PaymentMethods>creditCard mobilePhone</PaymentMethods>\n    <DistributionRights>sale</DistributionRights>\n  </DistributionAssignment>\n</distributionAssignments>",
+                        "children": [
+                          {
+                            "id": "FR-DistributionAssignment",
+                            "type": "element",
+                            "elementRef": "DistributionAssignment",
+                            "label": "DistributionAssignment",
+                            "description": "Kobler salgspakken til én DistributionChannel via DistributionChannelRef. I motsetning til nordisk profil bruker den franske profilen eksplisitte DistributionChannel-objekter (definert i GeneralFrame members) i stedet for kun kanaltype-enumerasjoner. DistributionRights kan settes til sale, inform eller free.",
+                            "xmlSnippet": "<DistributionAssignment id=\"FR1:DA:001:LOC\" version=\"any\" order=\"1\">\n  <!-- Referanse til DistributionChannel definert i members -->\n  <DistributionChannelRef ref=\"FR1:DistributionChannel:App:LOC\"/>\n  <!-- Tillatte betalingsmetoder for denne kanalen -->\n  <PaymentMethods>creditCard mobilePhone</PaymentMethods>\n  <!-- Rettigheter: sale | inform | free -->\n  <DistributionRights>sale</DistributionRights>\n</DistributionAssignment>",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
                   },
                   {
                     "id": "FareTable",
                     "type": "element",
                     "label": "FareTable",
                     "elementRef": "FareTable",
-                    "description": "Pristabell — samler alle prisceller for et tilbud. Hver Cell kobler én pris til ett SalesOfferPackage (og evt. én UserProfile). Dette er stedet der kroner og øre angis i den franske profilen. FareTable er alltid tilstede i et komplett taksteksport.",
-                    "xmlSnippet": "<FareTable id=\"FR1:FareTable:001:LOC\" version=\"any\">\n  <Name>Priser enkeltbillett</Name>\n  <cells>\n    <Cell id=\"FR1:Cell:001:LOC\" version=\"any\" order=\"1\">\n      <SalesOfferPackagePrice id=\"FR1:SalesOfferPackagePrice:001:LOC\"\n                              version=\"any\">\n        <Amount>2.10</Amount>\n        <Currency>EUR</Currency>\n      </SalesOfferPackagePrice>\n      <SalesOfferPackageRef\n        ref=\"FR1:SalesOfferPackage:001:LOC\" version=\"any\"/>\n      <!-- Valgfri brukerprofil: -->\n      <UserProfileRef ref=\"FR1:UserProfile:Adult:LOC\" version=\"any\"/>\n    </Cell>\n    <!-- Én Cell per kombinasjon av SalesOfferPackage + UserProfile -->\n  </cells>\n</FareTable>",
-                    "children": []
+                    "description": "Pristabell — det eneste stedet der faktiske priser angis i den franske profilen. Koblingskjeden: Cell → SalesOfferPackageRef + UserProfileRef → pris. Én Cell per kombinasjon av SalesOfferPackage og UserProfile. MVA angis valgfritt via TypeOfPricingRuleRef og RuleStepResult — profilen foretrekker priser inkl. mva. (TTC).",
+                    "xmlSnippet": "<FareTable id=\"FR1:FareTable:001:LOC\" version=\"any\">\n  <Name>Priser enkeltbillett</Name>\n  <cells>\n    <Cell id=\"FR1:Cell:001:LOC\" version=\"any\" order=\"1\">\n      <SalesOfferPackagePrice id=\"FR1:SOPP:001:LOC\" version=\"any\">\n        <Amount>2.10</Amount>\n        <Currency>EUR</Currency>\n      </SalesOfferPackagePrice>\n      <SalesOfferPackageRef ref=\"FR1:SalesOfferPackage:001:LOC\" version=\"any\"/>\n      <UserProfileRef ref=\"FR1:UserProfile:Adult:LOC\" version=\"any\"/>\n    </Cell>\n  </cells>\n</FareTable>",
+                    "children": [
+                      {
+                        "id": "fare-table-cells",
+                        "type": "collection",
+                        "label": "cells",
+                        "description": "Liste over prisceller. Én Cell per kombinasjon av SalesOfferPackage og UserProfile. Rekkefølgen angis med order-attributtet.",
+                        "xmlSnippet": "<cells>\n  <Cell id=\"FR1:Cell:001:LOC\" version=\"any\" order=\"1\"> … </Cell>\n  <Cell id=\"FR1:Cell:002:LOC\" version=\"any\" order=\"2\"> … </Cell>\n</cells>",
+                        "children": [
+                          {
+                            "id": "Cell",
+                            "type": "element",
+                            "elementRef": "Cell",
+                            "label": "Cell",
+                            "description": "Én priscelle — kobler en SalesOfferPackagePrice til én SalesOfferPackage og én valgfri UserProfile. Utelat UserProfileRef dersom alle brukertyper betaler samme pris. Én Cell = én unik pris for én pakke/brukertype-kombinasjon.",
+                            "xmlSnippet": "<Cell id=\"FR1:Cell:001:LOC\" version=\"any\" order=\"1\">\n  <SalesOfferPackagePrice id=\"FR1:SOPP:001:LOC\" version=\"any\">\n    <!-- Prisgyldighetsperiode (valgfri): -->\n    <ValidBetween>\n      <FromDate>2025-01-01</FromDate>\n      <ToDate>2025-12-31</ToDate>\n    </ValidBetween>\n    <Amount>2.10</Amount>\n    <Currency>EUR</Currency>\n  </SalesOfferPackagePrice>\n  <!-- Hvilken salgspakke: -->\n  <SalesOfferPackageRef ref=\"FR1:SalesOfferPackage:001:LOC\" version=\"any\"/>\n  <!-- Hvilken brukertype (utelat om alle betaler likt): -->\n  <UserProfileRef ref=\"FR1:UserProfile:Adult:LOC\" version=\"any\"/>\n</Cell>",
+                            "children": [
+                              {
+                                "id": "SalesOfferPackagePrice",
+                                "type": "element",
+                                "elementRef": "SalesOfferPackagePrice",
+                                "label": "SalesOfferPackagePrice",
+                                "description": "Pris for salgspakken i denne cellen. Amount og Currency er påkrevd. ValidBetween angir prisgyldighetsperioden (nyttig ved prisendringer — opprett ny Cell for ny periode). MVA angis valgfritt via TypeOfPricingRuleRef + RuleStepResult. Profilen foretrekker priser inkl. mva. (TTC — toutes taxes comprises).",
+                                "xmlSnippet": "<SalesOfferPackagePrice id=\"FR1:SOPP:001:LOC\" version=\"any\">\n  <!-- Valgfri: gyldighetsperiode for denne prisen -->\n  <ValidBetween>\n    <FromDate>2025-01-01</FromDate>\n    <ToDate>2025-12-31</ToDate>\n  </ValidBetween>\n  <Amount>2.10</Amount>\n  <Currency>EUR</Currency>\n  <!-- Valgfri: MVA (anbefales kun dersom operatøren ønsker å kommunisere det) -->\n  <!-- <TypeOfPricingRuleRef ref=\"FR:TypeOfPricingRule:TVA\"/> -->\n  <!-- <ruleStepResults>\n    <RuleStepResult>\n      <Amount>0.19</Amount>\n      <DiscountingRuleRef ref=\"FR1:DiscountingRule:TVA10:LOC\"/>\n    </RuleStepResult>\n  </ruleStepResults> -->\n</SalesOfferPackagePrice>",
+                                "children": []
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
                   }
                 ]
               }

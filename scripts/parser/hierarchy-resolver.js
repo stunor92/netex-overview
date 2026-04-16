@@ -14,7 +14,7 @@ export function resolveHierarchy(context, topGroupNames) {
     if (el.abstract) continue
 
     const group = topGroupNames.includes(name) ? name : findTopGroup(name, elements, topGroupNames)
-    const typeName = `${name}_VersionStructure`
+    const typeName = resolveTypeName(name, types)
     const chain = resolveTypeChain(typeName, types)
 
     // inheritedFrom = ancestors in the substitution group chain, excluding self and framework base types
@@ -26,7 +26,7 @@ export function resolveHierarchy(context, topGroupNames) {
 
     // own attributes = all group refs of own type (not just first — NeTEx types can have multiple)
     const ownGroupRefs = types.get(typeName)?.groupRefs ?? []
-    const ownAttrs = ownGroupRefs.flatMap((ref) => groups.get(ref) ?? [])
+    const ownAttrs = ownGroupRefs.flatMap((ref) => resolveGroupAttrs(ref, groups))
 
     // inherited attributes = all group refs from ancestor types (chain[1] onward)
     const inheritedAttrs = []
@@ -35,7 +35,7 @@ export function resolveHierarchy(context, topGroupNames) {
       const ancestorGroupRefs = types.get(ancestorType)?.groupRefs ?? []
       const ancestorName = ancestorType.replace(/_VersionStructure$/, '').replace(/_Dummy$/, '')
       for (const ref of ancestorGroupRefs) {
-        for (const attr of (groups.get(ref) ?? [])) {
+        for (const attr of resolveGroupAttrs(ref, groups)) {
           inheritedAttrs.push({ ...attr, inheritedFrom: ancestorName })
         }
       }
@@ -55,6 +55,46 @@ export function resolveHierarchy(context, topGroupNames) {
   }
 
   return result
+}
+
+const TYPE_SUFFIXES = [
+  '_VersionStructure',
+  '_VersionedStructure',
+  '_VersionedChildStructure',
+  '_VersionFrameStructure',
+  '_DerivedViewStructure',
+]
+
+/**
+ * Find the actual type name for an element by trying known NeTEx suffixes.
+ * Returns the first matching type name, or the default `_VersionStructure` if none found.
+ * @param {string} name
+ * @param {Map} types
+ * @returns {string}
+ */
+function resolveTypeName(name, types) {
+  for (const suffix of TYPE_SUFFIXES) {
+    const candidate = `${name}${suffix}`
+    if (types.has(candidate)) return candidate
+  }
+  return `${name}_VersionStructure`
+}
+
+/**
+ * Recursively resolve all attributes from a group and its nested group refs.
+ * @param {string} ref
+ * @param {Map} groups
+ * @param {Set} [visited]
+ * @returns {object[]}
+ */
+function resolveGroupAttrs(ref, groups, visited = new Set()) {
+  if (visited.has(ref)) return []  // cycle guard
+  visited.add(ref)
+  const group = groups.get(ref)
+  if (!group) return []
+  const direct = group.attrs ?? []
+  const nested = (group.groupRefs ?? []).flatMap((r) => resolveGroupAttrs(r, groups, visited))
+  return [...direct, ...nested]
 }
 
 function stripDummy(name) {

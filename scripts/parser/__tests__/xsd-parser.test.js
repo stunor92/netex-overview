@@ -51,9 +51,9 @@ describe('parseXsd', () => {
 
   it('extracts group attributes', () => {
     const { groups } = parseXsd(FIXTURE)
-    const attrs = groups.get('PreassignedFareProductGroup')
-    expect(attrs).toHaveLength(1)
-    expect(attrs[0]).toMatchObject({
+    const group = groups.get('PreassignedFareProductGroup')
+    expect(group.attrs).toHaveLength(1)
+    expect(group.attrs[0]).toMatchObject({
       name: 'ProductType',
       minOccurs: '0',
       maxOccurs: '1',

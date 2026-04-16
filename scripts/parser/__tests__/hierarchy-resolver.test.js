@@ -16,9 +16,9 @@ const context = {
     ['PriceableObject_VersionStructure', { extensionBase: null, groupRefs: ['PriceableObjectGroup'] }],
   ]),
   groups: new Map([
-    ['PreassignedFareProductGroup', [{ name: 'ProductType', type: 'ProductTypeEnum', minOccurs: '0', maxOccurs: '1', description: 'Type of product.' }]],
-    ['FareProductGroup', [{ name: 'TariffRef', type: 'TariffRefStructure', minOccurs: '0', maxOccurs: 'unbounded', description: 'Ref to tariff.' }]],
-    ['PriceableObjectGroup', [{ name: 'Name', type: 'MultilingualString', minOccurs: '0', maxOccurs: '1', description: 'Name.' }]],
+    ['PreassignedFareProductGroup', { attrs: [{ name: 'ProductType', type: 'ProductTypeEnum', minOccurs: '0', maxOccurs: '1', description: 'Type of product.' }], groupRefs: [] }],
+    ['FareProductGroup', { attrs: [{ name: 'TariffRef', type: 'TariffRefStructure', minOccurs: '0', maxOccurs: 'unbounded', description: 'Ref to tariff.' }], groupRefs: [] }],
+    ['PriceableObjectGroup', { attrs: [{ name: 'Name', type: 'MultilingualString', minOccurs: '0', maxOccurs: '1', description: 'Name.' }], groupRefs: [] }],
   ]),
 }
 

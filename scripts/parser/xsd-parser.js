@@ -62,13 +62,28 @@ export function parseXsd(xsdString) {
     const container = grp['xsd:sequence'] ?? grp['xsd:choice'] ?? {}
     const rawEls = toArray(container['xsd:element'])
     const attrs = rawEls.map((el) => ({
-      name: el['@_name'] ?? '',
+      name: el['@_name'] ?? el['@_ref'] ?? '',
       type: el['@_type'] ?? '',
       minOccurs: el['@_minOccurs'] ?? '1',
       maxOccurs: el['@_maxOccurs'] ?? '1',
       description: extractDescription(el),
     })).filter((a) => a.name)
-    groups.set(name, attrs)
+    // Also capture nested group refs (NeTEx groups often nest other groups)
+    const nestedGroupRefs = toArray(container['xsd:group'])
+      .map((g) => g['@_ref'])
+      .filter(Boolean)
+    // xsd:choice may contain nested xsd:sequence blocks with elements
+    const choiceEls = toArray(container['xsd:choice'])
+      .flatMap((c) => toArray(c['xsd:element']))
+      .map((el) => ({
+        name: el['@_name'] ?? el['@_ref'] ?? '',
+        type: el['@_type'] ?? '',
+        minOccurs: '0',
+        maxOccurs: el['@_maxOccurs'] ?? '1',
+        description: extractDescription(el),
+      }))
+      .filter((a) => a.name)
+    groups.set(name, { attrs: [...attrs, ...choiceEls], groupRefs: nestedGroupRefs })
   }
 
   return { elements, types, groups }

@@ -18,6 +18,10 @@ export type ElementGroup =
   | 'FareZone'
   | 'Tariff'
   | 'PricingRule'
+  | 'Assignment'
+  | 'CustomerAccount'
+  | 'SecurityListing'
+  | 'Frame'
   | 'Other'
 
 export type AttributeKind =
@@ -114,3 +118,6 @@ export interface ProfileStructure {
   label: string
   root: StructureNode
 }
+
+/** Maps enum type name to array of allowed values */
+export type NeTExEnums = Record<string, string[]>

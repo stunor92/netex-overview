@@ -24,9 +24,10 @@ export interface ProfileGuidePanelProps {
   allElements: NeTExElement[]
   profileData: ProfileData | null
   activeProfile: ActiveProfile
+  onSelectElement?: (el: NeTExElement) => void
 }
 
-export function ProfileGuidePanel({ node, nodePath, allElements, profileData, activeProfile }: ProfileGuidePanelProps) {
+export function ProfileGuidePanel({ node, nodePath, allElements, profileData, activeProfile, onSelectElement }: ProfileGuidePanelProps) {
   const [activeTabIdx, setActiveTabIdx] = useState(0)
 
   useEffect(() => {
@@ -152,7 +153,7 @@ export function ProfileGuidePanel({ node, nodePath, allElements, profileData, ac
           {isElement && (
             <TabPanel>
               {element ? (
-                <SchemaTab element={element} profileData={profileData} activeProfile={activeProfile} />
+                <SchemaTab element={element} allElements={allElements} profileData={profileData} activeProfile={activeProfile} onSelect={onSelectElement} />
               ) : (
                 <div style={{ padding: '24px 16px', fontSize: '14px', color: '#888' }}>
                   Fant ikke skjemainfo for {node.label}.

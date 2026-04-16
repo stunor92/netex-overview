@@ -48,7 +48,19 @@
       "Bash(gh repo:*)",
       "Bash(grep:*)",
       "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); groups=set\\(e['group'] for e in data\\); print\\('\\\\n'.join\\(sorted\\(groups\\)\\)\\)\")",
-      "Bash(echo \"EXIT:$?\")"
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(python3 -c ' *)",
+      "Bash(awk '/TypeOfFrame : type spécifique/,/# Bibliographie/')",
+      "Bash(awk '/TypeOfFrame.*types spécifiques/,/CODESPACE/')",
+      "Bash(awk '/# Entêtes NeTEx/,/# Usage Parameters/')",
+      "Bash(awk '/## Les Produits Tarifaires/,/## Les Offres à la Vente/')",
+      "Bash(awk 'NR>=4000 && NR<=5500')",
+      "Bash(awk 'NR>=5500 && NR<=6500')",
+      "Bash(awk 'NR>=3500 && NR<=4000')",
+      "Bash(python3 *)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(yarn tsc *)",
+      "Bash(node_modules/.bin/tsc --noEmit)"
     ]
   }
 }

@@ -4,12 +4,36 @@ import { EXPORT_CHIPS } from '../constants'
 import { Label } from '@entur/typography'
 
 const GROUP_COLOURS: Record<string, string> = {
+  // Core fare modelling
   FareProduct: '#ff6c6c',
-  FarePrice: '#181c56',
-  SalesOfferPackage: '#e07b00',
   FareStructureElement: '#c0392b',
+  ValidableElement: '#d84315',
+  FareTable: '#bf360c',
+  FarePrice: '#181c56',
+  FareZone: '#1a6b3c',
+  Tariff: '#4a148c',
+  // Products & sales
+  SalesOfferPackage: '#e07b00',
+  DistributionChannel: '#f57c00',
+  FulfilmentMethod: '#ef6c00',
+  TypeOfTravelDocument: '#e65100',
+  // Usage & time
   UsageParameter: '#6a1b9a',
   TimeStructureFactor: '#1565c0',
+  QualityStructureFactor: '#0277bd',
+  GeographicStructureFactor: '#2e7d32',
+  DistanceMatrixElement: '#388e3c',
+  // Pricing & rules
+  PricingRule: '#283593',
+  // Assignments & constraints
+  Assignment: '#00796b',
+  // Infrastructure
+  Frame: '#37474f',
+  // Customer-facing
+  CustomerAccount: '#558b2f',
+  SecurityListing: '#4527a0',
+  // Meta
+  FareSeries: '#757575',
 }
 
 interface ElementTreeProps {
@@ -170,6 +194,7 @@ export function ElementTree({
               </span>
             </button>
             {isExpanded && children.map((el) => {
+              const noSchema = el.attributes.length === 0 && el.inheritedAttributes.length === 0
               const count = loadedFile?.instanceMap[el.name]?.length ?? 0
               const isSelected = selectedElement?.name === el.name
               const isElHovered = hoveredElement === el.name
@@ -205,6 +230,11 @@ export function ElementTree({
                     textDecoration: notInProfile ? 'line-through' : 'none',
                   }}>
                     ● {el.name}
+                    {noSchema && (
+                      <span style={{ fontSize: '9px', color: '#ccc', marginLeft: '4px', fontStyle: 'italic' }}>
+                        ingen data
+                      </span>
+                    )}
                   </span>
                   <span style={{ display: 'flex', gap: '3px', alignItems: 'center', flexShrink: 0, marginLeft: '4px' }}>
                     {profileData && profileStatus && <ProfileBadge status={profileStatus} />}

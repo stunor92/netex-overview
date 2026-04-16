@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@entur/tab'
 import { Table, TableHead, TableBody, TableRow, HeaderCell, DataCell } from '@entur/table'
 import { ExpandablePanel } from '@entur/expand'
-import type { NeTExElement, LoadedFile, NeTExAttribute, NeTExInheritedAttribute, ProfileData, ActiveProfile, ProfileStatus } from '../types'
+import type { NeTExElement, LoadedFile, NeTExAttribute, NeTExInheritedAttribute, ProfileData, ActiveProfile, ProfileStatus, NeTExEnums } from '../types'
 
 interface AttributePanelProps {
   element: NeTExElement
@@ -10,6 +10,8 @@ interface AttributePanelProps {
   loadedFile: LoadedFile | null
   profileData: ProfileData | null
   activeProfile: ActiveProfile
+  onSelect?: (el: NeTExElement) => void
+  enumValues?: NeTExEnums
 }
 
 const KIND_COLOUR: Record<string, string> = {
@@ -24,12 +26,36 @@ const KIND_COLOUR: Record<string, string> = {
 }
 
 const GROUP_COLOURS: Record<string, string> = {
+  // Core fare modelling
   FareProduct: '#ff6c6c',
-  FarePrice: '#181c56',
-  SalesOfferPackage: '#e07b00',
   FareStructureElement: '#c0392b',
+  ValidableElement: '#d84315',
+  FareTable: '#bf360c',
+  FarePrice: '#181c56',
+  FareZone: '#1a6b3c',
+  Tariff: '#4a148c',
+  // Products & sales
+  SalesOfferPackage: '#e07b00',
+  DistributionChannel: '#f57c00',
+  FulfilmentMethod: '#ef6c00',
+  TypeOfTravelDocument: '#e65100',
+  // Usage & time
   UsageParameter: '#6a1b9a',
   TimeStructureFactor: '#1565c0',
+  QualityStructureFactor: '#0277bd',
+  GeographicStructureFactor: '#2e7d32',
+  DistanceMatrixElement: '#388e3c',
+  // Pricing & rules
+  PricingRule: '#283593',
+  // Assignments & constraints
+  Assignment: '#00796b',
+  // Infrastructure
+  Frame: '#37474f',
+  // Customer-facing
+  CustomerAccount: '#558b2f',
+  SecurityListing: '#4527a0',
+  // Meta
+  FareSeries: '#757575',
 }
 
 const PROFILE_LABEL: Record<string, string> = {
@@ -60,11 +86,33 @@ function cardinality(attr: NeTExAttribute | NeTExInheritedAttribute) {
 
 export interface SchemaTabProps {
   element: NeTExElement
+  allElements: NeTExElement[]
   profileData: ProfileData | null
   activeProfile: ActiveProfile
+  onSelect?: (el: NeTExElement) => void
+  enumValues?: NeTExEnums
 }
 
-export function SchemaTab({ element, profileData, activeProfile }: SchemaTabProps) {
+function findLinkedElement(type: string, kind: string, allElements: NeTExElement[]): NeTExElement | null {
+  if (!type || type === 'unknown') return null
+  if (kind === 'ref') {
+    const name = type.replace(/RefStructure$/, '').replace(/Refs$/, '').replace(/Ref$/, '')
+    return allElements.find(e => e.name === name) ?? null
+  }
+  if (kind === 'complex' || kind === 'list') {
+    const name = type
+      .replace(/_VersionedChildStructure$/, '')
+      .replace(/_VersionedStructure$/, '')
+      .replace(/_VersionStructure$/, '')
+      .replace(/_RelStructure$/, '')
+    return allElements.find(e => e.name === name)
+      ?? allElements.find(e => e.name.toLowerCase() === name.toLowerCase())
+      ?? null
+  }
+  return null
+}
+
+export function SchemaTab({ element, allElements, profileData, activeProfile, onSelect, enumValues }: SchemaTabProps) {
   const byAncestor = new Map<string, NeTExInheritedAttribute[]>()
   for (const a of element.inheritedAttributes) {
     if (!byAncestor.has(a.inheritedFrom)) byAncestor.set(a.inheritedFrom, [])
@@ -77,18 +125,47 @@ export function SchemaTab({ element, profileData, activeProfile }: SchemaTabProp
   function attrRow(a: NeTExAttribute | NeTExInheritedAttribute, dim = false) {
     const attrStatus = elementProfile?.attributes[a.name]
     const notInProfile = attrStatus === 'not-in-profile'
+    const linkedEl = findLinkedElement(a.type, a.kind, allElements)
     return (
       <TableRow key={a.name} style={{ opacity: dim || notInProfile ? 0.4 : 1 }}>
         <DataCell style={{ textDecoration: notInProfile ? 'line-through' : 'none' }}>{a.name}</DataCell>
         <DataCell>
           <span style={{ fontFamily: 'monospace', color: KIND_COLOUR[a.kind] ?? '#555' }}>{a.kind}</span>
+          {linkedEl ? (
+            <button
+              type="button"
+              onClick={() => onSelect && onSelect(linkedEl)}
+              style={{ display: 'block', background: 'none', border: 'none', cursor: 'pointer', color: '#1565c0', textDecoration: 'underline', fontFamily: 'monospace', fontSize: '11px', padding: 0, textAlign: 'left' }}
+            >
+              {a.type}
+            </button>
+          ) : (
+            <span style={{ display: 'block', fontFamily: 'monospace', fontSize: '11px', color: 'var(--colors-greys-grey60, #aaa)' }}>{a.type}</span>
+          )}
         </DataCell>
         <DataCell align="center" style={{ color: 'var(--colors-greys-grey50, #888)' }}>{cardinality(a)}</DataCell>
-        <DataCell style={{ color: 'var(--colors-greys-grey50, #888)' }}>{a.description}</DataCell>
+        <DataCell style={{ color: 'var(--colors-greys-grey50, #888)' }}>
+          {a.description}
+          {a.kind === 'enum' && enumValues?.[a.type] && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '4px' }}>
+              {enumValues[a.type].map(v => (
+                <span key={v} style={{
+                  fontSize: '9px', padding: '1px 5px', borderRadius: '4px',
+                  background: '#fff3e0', color: '#e65100', fontFamily: 'monospace',
+                  border: '1px solid #ffe0b2'
+                }}>
+                  {v}
+                </span>
+              ))}
+            </div>
+          )}
+        </DataCell>
         {showProfileCol && <DataCell align="center"><ProfileAttrBadge status={attrStatus} /></DataCell>}
       </TableRow>
     )
   }
+
+  const noSchema = element.attributes.length === 0 && element.inheritedAttributes.length === 0
 
   return (
     <div>
@@ -98,7 +175,13 @@ export function SchemaTab({ element, profileData, activeProfile }: SchemaTabProp
         </div>
       )}
 
-      {element.attributes.length > 0 && (
+      {noSchema && (
+        <div style={{ padding: '24px 16px', fontSize: '14px', color: 'var(--colors-greys-grey50, #888)', fontStyle: 'italic' }}>
+          Ingen attributtskjemadata tilgjengelig for denne elementtypen i det nåværende datasettet.
+        </div>
+      )}
+
+      {!noSchema && element.attributes.length > 0 && (
         <div style={{ padding: '0 16px 16px' }}>
           <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--colors-greys-grey50, #888)', fontWeight: 600, marginBottom: '8px' }}>
             Egne attributter
@@ -120,7 +203,7 @@ export function SchemaTab({ element, profileData, activeProfile }: SchemaTabProp
         </div>
       )}
 
-      {byAncestor.size > 0 && (
+      {!noSchema && byAncestor.size > 0 && (
         <div style={{ padding: '0 16px 16px' }}>
           {[...byAncestor.entries()].map(([ancestor, attrs]) => (
             <div key={ancestor} style={{ marginBottom: '8px' }}>
@@ -223,7 +306,7 @@ function InstanceTab({ element, loadedFile }: { element: NeTExElement; loadedFil
   )
 }
 
-export function AttributePanel({ element, allElements: _allElements, loadedFile, profileData, activeProfile }: AttributePanelProps) {
+export function AttributePanel({ element, allElements, loadedFile, profileData, activeProfile, onSelect, enumValues }: AttributePanelProps) {
   const [activeTabIdx, setActiveTabIdx] = useState(0)
   const groupColour = GROUP_COLOURS[element.group] ?? '#555'
   const hasInstances = !!loadedFile?.instanceMap[element.name]?.length
@@ -258,7 +341,25 @@ export function AttributePanel({ element, allElements: _allElements, loadedFile,
         </div>
         {element.inheritedFrom.length > 0 && (
           <div style={{ fontSize: '12px', color: 'var(--colors-greys-grey50, #888)' }}>
-            Arver fra: {element.inheritedFrom.join(' → ')}
+            Arver fra:{' '}
+            {element.inheritedFrom.map((ancestorName, i) => {
+              const found = allElements.find(e => e.name === ancestorName)
+              return (
+                <span key={ancestorName}>
+                  {i > 0 && ' → '}
+                  <button
+                    type="button"
+                    onClick={() => found && onSelect && onSelect(found)}
+                    style={found && onSelect
+                      ? { background: 'none', border: 'none', cursor: 'pointer', color: '#1565c0', textDecoration: 'underline', fontSize: '12px', padding: 0 }
+                      : { background: 'none', border: 'none', cursor: 'default', color: '#bbb', fontSize: '12px', padding: 0 }
+                    }
+                  >
+                    {ancestorName}
+                  </button>
+                </span>
+              )
+            })}
           </div>
         )}
       </div>
@@ -271,7 +372,7 @@ export function AttributePanel({ element, allElements: _allElements, loadedFile,
         </TabList>
         <TabPanels>
           <TabPanel>
-            <SchemaTab element={element} profileData={profileData} activeProfile={activeProfile} />
+            <SchemaTab element={element} allElements={allElements} profileData={profileData} activeProfile={activeProfile} onSelect={onSelect} enumValues={enumValues} />
           </TabPanel>
           <TabPanel>
             {loadedFile && <InstanceTab element={element} loadedFile={loadedFile} />}
