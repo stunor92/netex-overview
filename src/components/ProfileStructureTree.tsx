@@ -135,6 +135,7 @@ export function ProfileStructureTree({
             <option value="">— Ingen profil</option>
             <option value="fr">🇫🇷 Fransk profil</option>
             <option value="nordic">🇳🇴 Nordisk profil</option>
+            <option value="uk">🇬🇧 Britisk profil</option>
           </select>
         </div>
       </div>

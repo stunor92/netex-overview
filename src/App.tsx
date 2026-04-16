@@ -5,8 +5,10 @@ import examplesData from './data/netex-examples.json'
 import enumsData from './data/netex-enums.json'
 import frProfileData from './data/profiles/fr.json'
 import nordicProfileData from './data/profiles/nordic.json'
+import ukProfileData from './data/profiles/uk.json'
 import frStructureData from './data/profiles/fr-structure.json'
 import nordicStructureData from './data/profiles/nordic-structure.json'
+import ukStructureData from './data/profiles/uk-structure.json'
 import { SearchBar } from './components/SearchBar'
 import { ElementTree } from './components/ElementTree'
 import { AttributePanel } from './components/AttributePanel'
@@ -21,11 +23,13 @@ const allEnums = enumsData as NeTExEnums
 const PROFILES: Record<string, ProfileData> = {
   fr: frProfileData as ProfileData,
   nordic: nordicProfileData as ProfileData,
+  uk: ukProfileData as ProfileData,
 }
 
 const PROFILE_STRUCTURES: Record<string, ProfileStructure> = {
   fr: frStructureData as ProfileStructure,
   nordic: nordicStructureData as ProfileStructure,
+  uk: ukStructureData as ProfileStructure,
 }
 
 function findPath(node: StructureNode, targetId: string, path: string[] = []): string[] | null {
@@ -89,7 +93,11 @@ export default function App() {
 
         {activeProfile ? (
           <span style={{ fontSize: '13px', color: 'var(--colors-greys-grey50, #888)', fontStyle: 'italic' }}>
-            {activeProfile === 'nordic' ? '🇳🇴 Nordisk profil — eksportstruktur' : '🇫🇷 Fransk profil — eksportstruktur'}
+            {activeProfile === 'nordic' 
+              ? '🇳🇴 Nordisk profil — eksportstruktur' 
+              : activeProfile === 'uk'
+              ? '🇬🇧 Britisk profil — eksportstruktur'
+              : '🇫🇷 Fransk profil — eksportstruktur'}
           </span>
         ) : (
           <SearchBar

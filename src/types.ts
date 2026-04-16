@@ -97,7 +97,7 @@ export interface ProfileElementData {
 /** Keyed by NeTEx element name, e.g. "PreassignedFareProduct" */
 export type ProfileData = Record<string, ProfileElementData>
 
-export type ActiveProfile = 'fr' | 'nordic' | null
+export type ActiveProfile = 'fr' | 'nordic' | 'uk' | null
 
 // --- Profile structure guide types ---
 

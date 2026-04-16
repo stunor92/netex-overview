@@ -1,0 +1,276 @@
+{
+  "profile": "uk",
+  "label": "Britisk profil — Eksportstruktur",
+  "root": {
+    "id": "pub-delivery",
+    "type": "container",
+    "label": "PublicationDelivery",
+    "description": "Rotelementet i alle NeTEx-filer for den britiske profilen (UK Profile). Inneholder metadata (tidsstempel, deltaker) og selve dataene i én CompositeFrame. Brukes for takstdata i England i henhold til Bus Open Data Service (BODS).",
+    "xmlSnippet": "<PublicationDelivery xmlns=\"http://www.netex.org.uk/netex\"\n                     version=\"1.1\">\n  <PublicationTimestamp>2024-01-01T00:00:00Z</PublicationTimestamp>\n  <ParticipantRef>SYS001</ParticipantRef>\n  <dataObjects>\n    <!-- Se CompositeFrame -->\n  </dataObjects>\n</PublicationDelivery>",
+    "children": [
+      {
+        "id": "composite-frame",
+        "type": "container",
+        "label": "CompositeFrame",
+        "description": "Samler alle delrammer for ett datasett. I den britiske profilen inneholder CompositeFrame flere FareFrame og andre spesialiserte frames. TypeOfFrameRef angir profiltype (f.eks. UK_PI_LINE_FARE_OFFER eller UK_PI_NETWORK_FARE_OFFER).",
+        "xmlSnippet": "<CompositeFrame version=\"1.0\"\n               id=\"UK:COMP:CompositeFrame:1:LOC\">\n  <ValidBetween>\n    <FromDate>2024-01-01T00:00:00</FromDate>\n    <ToDate>2025-12-31T23:59:59</ToDate>\n  </ValidBetween>\n  <Name>Bus Fares Example</Name>\n  <TypeOfFrameRef ref=\"fxc:UK:DFT:TypeOfFrame_UK_PI_LINE_FARE_OFFER:FXCP\"\n    version=\"fxc:v1.0\"/>\n  <frames>\n    <!-- ResourceFrame (valgfri) -->\n    <!-- ServiceFrame (anbefalt) -->\n    <!-- FareFrame (påkrevd for takst) -->\n    <!-- SalesTransactionFrame (valgfri) -->\n  </frames>\n</CompositeFrame>",
+        "children": [
+          {
+            "id": "resource-frame",
+            "type": "container",
+            "label": "ResourceFrame",
+            "description": "Felles ramme for organisasjoner, datakilder og andre ressurser. Inneholder operatører (Operator), autoriteter (Authority) og typedefinisjoner. Valgfri, men anbefalt for delte ressurser.",
+            "xmlSnippet": "<ResourceFrame version=\"1.0\"\n              id=\"UK:RES:ResourceFrame:1:LOC\">\n  <TypeOfFrameRef ref=\"fxc:UK:DFT:TypeOfFrame_UK_PI_COMMON:FXCP\"/>\n  <organisations>\n    <!-- Operator, Authority -->\n  </organisations>\n  <typesOfValue>\n    <!-- TypeOfFareProduct, TypeOfTravelDocument -->\n  </typesOfValue>\n</ResourceFrame>",
+            "children": []
+          },
+          {
+            "id": "fare-frame",
+            "type": "container",
+            "label": "FareFrame",
+            "description": "Hovedrammen for takstdata i den britiske profilen. Organisert rundt Tariff-objekter som inneholder hele takststrukturen: soner, takstelementer, produkter, salgstilbud og pristabeller. TypeOfFrameRef angir om det er linje-takst (LINE_FARE) eller nettverkstakst (NETWORK_FARE).",
+            "xmlSnippet": "<FareFrame version=\"1.0\"\n           id=\"UK:FARE:FareFrame:1:LOC\">\n  <Name>Fares for Line 1</Name>\n  <TypeOfFrameRef ref=\"fxc:UK:DFT:TypeOfFrame_UK_PI_FARE_PRODUCT:FXCP\"\n    versionRef=\"fxc:v1.0\"/>\n  <!-- Soner og stoppesteder: -->\n  <fareZones>\n    <!-- TariffZone / FareZone -->\n  </fareZones>\n  <!-- Takststrukturer: -->\n  <tariffs>\n    <!-- Tariff -->\n  </tariffs>\n  <!-- Produkter: -->\n  <fareProducts>\n    <!-- PreassignedFareProduct, AmountOfPriceUnitProduct -->\n  </fareProducts>\n  <!-- Salgstilbud: -->\n  <salesOfferPackages>\n    <!-- SalesOfferPackage -->\n  </salesOfferPackages>\n  <!-- Pristabeller: -->\n  <fareTables>\n    <!-- FareTable -->\n  </fareTables>\n  <!-- Prisgrupper (valgfri, for band-prising): -->\n  <priceGroups>\n    <!-- PriceGroup -->\n  </priceGroups>\n</FareFrame>",
+            "children": [
+              {
+                "id": "fare-zones",
+                "type": "collection",
+                "label": "fareZones",
+                "description": "Liste over takst-soner. Kan være TariffZone (generisk) eller FareZone (spesialisert for takst). Brukes for sonebaserte tariffer.",
+                "xmlSnippet": "<fareZones>\n  <TariffZone version=\"1.0\" id=\"UK:TZ:Zone1:LOC\">\n    <Name>Zone 1 - City Centre</Name>\n  </TariffZone>\n  <!-- Eller FareZone med medlemmer: -->\n  <FareZone version=\"1.0\" id=\"UK:FZ:Crawley:LOC\">\n    <Name>Crawley Area</Name>\n    <members>\n      <ScheduledStopPointRef ref=\"UK:SSP:Stop001:LOC\"/>\n    </members>\n  </FareZone>\n</fareZones>",
+                "children": [
+                  {
+                    "id": "TariffZone",
+                    "type": "element",
+                    "elementRef": "TariffZone",
+                    "label": "TariffZone",
+                    "description": "Generisk takst-sone. Definerer et geografisk område for takstberegning. Kan refereres av DistanceMatrixElement eller brukes i zonale pass-produkter.",
+                    "xmlSnippet": "<TariffZone version=\"1.0\" id=\"UK:TZ:Zone1:LOC\">\n  <Name>Zone 1 - City Centre</Name>\n  <ShortName>Z1</ShortName>\n</TariffZone>",
+                    "children": []
+                  },
+                  {
+                    "id": "UK-FareZone",
+                    "type": "element",
+                    "elementRef": "FareZone",
+                    "label": "FareZone",
+                    "description": "Spesialisert takst-sone med medlemmer (stoppesteder). Kan inneholde liste over ScheduledStopPoint som tilhører sonen. Brukes når man trenger eksplisitt kobling mellom sone og stoppesteder.",
+                    "xmlSnippet": "<FareZone version=\"1.0\" id=\"UK:FZ:Crawley:LOC\">\n  <Name>Crawley Area</Name>\n  <members>\n    <ScheduledStopPointRef ref=\"UK:SSP:Stop001:LOC\"/>\n    <ScheduledStopPointRef ref=\"UK:SSP:Stop002:LOC\"/>\n  </members>\n</FareZone>",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "tariffs",
+                "type": "collection",
+                "label": "tariffs",
+                "description": "Liste over Tariff-objekter. Hvert Tariff representerer en komplett takststruktur for et produkt eller produktfamilie (f.eks. enkeltbilletter for en linje, eller ukeskort for et område). Dette er kjernen i UK-profilen — alle takstelementer, intervaller og geografiske strukturer er organisert under Tariff.",
+                "xmlSnippet": "<tariffs>\n  <Tariff version=\"1.0\" id=\"UK:TAR:Single_Line1:LOC\">\n    <Name>Single Fares - Line 1</Name>\n    <OperatorRef ref=\"noc:METR\"/>\n    <LineRef ref=\"UK:LINE:1:LOC\"/>\n    <!-- FareStructureElements, TimeIntervals, GeographicalIntervals -->\n  </Tariff>\n</tariffs>",
+                "children": [
+                  {
+                    "id": "UK-Tariff",
+                    "type": "element",
+                    "elementRef": "Tariff",
+                    "label": "Tariff",
+                    "description": "Takststruktur — definerer komplett takst for et produkt eller produktfamilie. Inneholder OperatorRef, valgfri LineRef (for linjebaserte takster), og samlinger av FareStructureElement, TimeInterval, GeographicalInterval og QualityStructureFactor. Tariff er den sentrale organiserende enheten i UK-profilen.",
+                    "xmlSnippet": "<Tariff version=\"1.0\" id=\"UK:TAR:Single_Line1:LOC\">\n  <validityConditions>\n    <ValidBetween>\n      <FromDate>2024-01-01T00:00:00Z</FromDate>\n      <ToDate>2024-12-31T23:59:59Z</ToDate>\n    </ValidBetween>\n  </validityConditions>\n  <Name>Single Fares - Line 1</Name>\n  <Description>Point-to-point single fares</Description>\n  <OperatorRef version=\"1.0\" ref=\"noc:METR\"/>\n  <LineRef version=\"1.0\" ref=\"UK:LINE:1:LOC\"/>\n  <!-- Takstelementer: -->\n  <fareStructureElements>\n    <!-- FareStructureElement -->\n  </fareStructureElements>\n  <!-- Tidsintervaller (for pass): -->\n  <timeIntervals>\n    <!-- TimeInterval -->\n  </timeIntervals>\n  <!-- Geografiske intervaller (for prisband): -->\n  <geographicalIntervals>\n    <!-- GeographicalInterval -->\n  </geographicalIntervals>\n  <!-- Kvalitetsfaktorer (for carnet): -->\n  <qualityStructureFactors>\n    <!-- QualityStructureFactor -->\n  </qualityStructureFactors>\n</Tariff>",
+                    "children": [
+                      {
+                        "id": "tariff-fare-structure-elements",
+                        "type": "collection",
+                        "label": "fareStructureElements",
+                        "description": "Takststrukturelementer innenfor denne tariffen. UK-profilen bruker TypeOfFareStructureElement for å kategorisere: 'access' (geografisk/OD), 'eligibility' (brukerprofil), 'durations' (tidsperioder) osv. Hvert element kan inneholde distanceMatrixElements, validityParameterAssignments eller andre spesifikasjoner.",
+                        "xmlSnippet": "<fareStructureElements>\n  <!-- Access element (geografisk): -->\n  <FareStructureElement version=\"1.0\" id=\"UK:FSE:Access:LOC\">\n    <Name>O/D pairs for Line 1</Name>\n    <TypeOfFareStructureElementRef version=\"fxc:v1.0\"\n      ref=\"fxc:access\"/>\n    <distanceMatrixElements>\n      <!-- DistanceMatrixElement -->\n    </distanceMatrixElements>\n  </FareStructureElement>\n  <!-- Eligibility element (brukerprofil): -->\n  <FareStructureElement version=\"1.0\" id=\"UK:FSE:Eligibility:LOC\">\n    <Name>User types</Name>\n    <TypeOfFareStructureElementRef version=\"fxc:v1.0\"\n      ref=\"fxc:eligibility\"/>\n    <validityParameterAssignments>\n      <!-- GenericParameterAssignment med UserProfile -->\n    </validityParameterAssignments>\n  </FareStructureElement>\n</fareStructureElements>",
+                        "children": [
+                          {
+                            "id": "UK-FareStructureElement",
+                            "type": "element",
+                            "elementRef": "FareStructureElement",
+                            "label": "FareStructureElement",
+                            "description": "Takststrukturelement — definerer én dimensjon av taksten. TypeOfFareStructureElementRef angir type: 'access' (geografisk tilgang/OD-par), 'eligibility' (brukerprofil/rabattkrav), 'durations' (tidsperioder for pass), 'conditions' (spesielle betingelser). Kan inneholde distanceMatrixElements (for OD), validityParameterAssignments (for bruksregler), timeIntervals (referanser) eller qualityStructureFactors.",
+                            "xmlSnippet": "<!-- Access element med OD-par: -->\n<FareStructureElement version=\"1.0\" id=\"UK:FSE:Access:LOC\">\n  <Name>O/D pairs for Line 1</Name>\n  <TypeOfFareStructureElementRef version=\"fxc:v1.0\"\n    ref=\"fxc:access\"/>\n  <distanceMatrixElements>\n    <DistanceMatrixElement version=\"1.0\" id=\"UK:DME:A_to_B:LOC\">\n      <StartTariffZoneRef ref=\"UK:TZ:ZoneA:LOC\"/>\n      <EndTariffZoneRef ref=\"UK:TZ:ZoneB:LOC\"/>\n      <priceGroups>\n        <PriceGroupRef ref=\"UK:PG:Band1:LOC\"/>\n      </priceGroups>\n    </DistanceMatrixElement>\n  </distanceMatrixElements>\n</FareStructureElement>\n\n<!-- Eligibility element med brukerprofiler: -->\n<FareStructureElement version=\"1.0\" id=\"UK:FSE:Eligibility:LOC\">\n  <Name>User types</Name>\n  <TypeOfFareStructureElementRef version=\"fxc:v1.0\"\n    ref=\"fxc:eligibility\"/>\n  <validityParameterAssignments>\n    <GenericParameterAssignment version=\"1.0\"\n      id=\"UK:GPA:Adult:LOC\" order=\"1\">\n      <limitations>\n        <UserProfile version=\"1.0\" id=\"UK:UP:Adult:LOC\">\n          <Name>Adult</Name>\n          <UserType>adult</UserType>\n          <MinimumAge>16</MinimumAge>\n        </UserProfile>\n      </limitations>\n    </GenericParameterAssignment>\n  </validityParameterAssignments>\n</FareStructureElement>",
+                            "children": [
+                              {
+                                "id": "uk-distance-matrix-elements",
+                                "type": "collection",
+                                "label": "distanceMatrixElements",
+                                "description": "OD-elementer (Origin-Destination) — liste over relasjoner mellom soner eller stoppesteder. Brukes i 'access' FareStructureElement. Hvert element kan referere til en PriceGroup som inneholder prisband.",
+                                "xmlSnippet": "<distanceMatrixElements>\n  <DistanceMatrixElement version=\"1.0\" id=\"UK:DME:A_to_B:LOC\">\n    <priceGroups>\n      <PriceGroupRef ref=\"UK:PG:Band1:LOC\"/>\n    </priceGroups>\n    <StartTariffZoneRef ref=\"UK:TZ:ZoneA:LOC\"/>\n    <EndTariffZoneRef ref=\"UK:TZ:ZoneB:LOC\"/>\n  </DistanceMatrixElement>\n</distanceMatrixElements>",
+                                "children": [
+                                  {
+                                    "id": "UK-DistanceMatrixElement",
+                                    "type": "element",
+                                    "elementRef": "DistanceMatrixElement",
+                                    "label": "DistanceMatrixElement",
+                                    "description": "OD-element — definerer en relasjon mellom to punkter (sone-til-sone eller stopp-til-stopp). StartTariffZoneRef og EndTariffZoneRef angir start og slutt. PriceGroupRef peker til prisband (GeographicalIntervalPrice). UK-profilen bruker ofte priceGroups i stedet for direkte priser i DistanceMatrixElement.",
+                                    "xmlSnippet": "<DistanceMatrixElement version=\"1.0\" id=\"UK:DME:ZoneA_to_ZoneB:LOC\">\n  <!-- Prisband (referanse til PriceGroup med GeographicalIntervalPrice): -->\n  <priceGroups>\n    <PriceGroupRef ref=\"UK:PG:Band1:LOC\"/>\n  </priceGroups>\n  <!-- Fra-sone: -->\n  <StartTariffZoneRef ref=\"UK:TZ:ZoneA:LOC\"/>\n  <!-- Til-sone: -->\n  <EndTariffZoneRef ref=\"UK:TZ:ZoneB:LOC\"/>\n  <!-- Eller stopp-til-stopp: -->\n  <!-- <StartStopPointRef ref=\"UK:SSP:Stop001:LOC\"/> -->\n  <!-- <EndStopPointRef ref=\"UK:SSP:Stop002:LOC\"/> -->\n</DistanceMatrixElement>",
+                                    "children": []
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "uk-fse-validity-parameter-assignments",
+                                "type": "collection",
+                                "label": "validityParameterAssignments",
+                                "description": "Bruksparametere — brukes i 'eligibility' eller 'conditions' FareStructureElement. Inneholder GenericParameterAssignment med limitations som UserProfile, CompanionProfile, RoundTrip, FrequencyOfUse, Interchanging, etc.",
+                                "xmlSnippet": "<validityParameterAssignments>\n  <GenericParameterAssignment version=\"1.0\"\n    id=\"UK:GPA:Adult:LOC\" order=\"1\">\n    <limitations>\n      <UserProfile version=\"1.0\" id=\"UK:UP:Adult:LOC\">\n        <Name>Adult</Name>\n        <UserType>adult</UserType>\n        <MinimumAge>16</MinimumAge>\n      </UserProfile>\n    </limitations>\n  </GenericParameterAssignment>\n</validityParameterAssignments>",
+                                "children": [
+                                  {
+                                    "id": "UK-GenericParameterAssignment",
+                                    "type": "element",
+                                    "elementRef": "GenericParameterAssignment",
+                                    "label": "GenericParameterAssignment",
+                                    "description": "Parametertildeling — kobler bruksparametere til takststrukturen. Limitations kan inneholde UserProfile, CompanionProfile (gruppebillett), RoundTrip, FrequencyOfUse, Interchanging, UsageValidityPeriod osv.",
+                                    "xmlSnippet": "<GenericParameterAssignment version=\"1.0\"\n  id=\"UK:GPA:Adult:LOC\" order=\"1\">\n  <limitations>\n    <!-- UserProfile for voksen: -->\n    <UserProfile version=\"1.0\" id=\"UK:UP:Adult:LOC\">\n      <Name>Adult</Name>\n      <UserType>adult</UserType>\n      <MinimumAge>16</MinimumAge>\n    </UserProfile>\n  </limitations>\n</GenericParameterAssignment>\n\n<!-- Gruppebillett: -->\n<GenericParameterAssignment version=\"1.0\"\n  id=\"UK:GPA:Family:LOC\" order=\"2\">\n  <limitations>\n    <CompanionProfile version=\"1.0\" id=\"UK:CP:Family:LOC\">\n      <Name>Family Ticket</Name>\n      <MinimumNumberOfPersons>2</MinimumNumberOfPersons>\n      <MaximumNumberOfPersons>5</MaximumNumberOfPersons>\n    </CompanionProfile>\n  </limitations>\n</GenericParameterAssignment>",
+                                    "children": []
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "id": "uk-time-intervals",
+                        "type": "collection",
+                        "label": "timeIntervals",
+                        "description": "Tidsintervaller for pass-produkter. Definerer gyldighetsperioder som dag, uke, måned osv. Brukes i 'durations' FareStructureElement.",
+                        "xmlSnippet": "<timeIntervals>\n  <TimeInterval version=\"1.0\" id=\"UK:TI:Day:LOC\">\n    <Name>1 Day</Name>\n    <Description>Valid for one calendar day</Description>\n    <Duration>P1D</Duration>\n  </TimeInterval>\n  <TimeInterval version=\"1.0\" id=\"UK:TI:Week:LOC\">\n    <Name>7 Days</Name>\n    <Duration>P7D</Duration>\n  </TimeInterval>\n</timeIntervals>",
+                        "children": [
+                          {
+                            "id": "UK-TimeInterval",
+                            "type": "element",
+                            "elementRef": "TimeInterval",
+                            "label": "TimeInterval",
+                            "description": "Tidsintervall — definerer en gyldighetsperiode for pass-produkter. Duration angis som ISO 8601 (P1D = 1 dag, P7D = 7 dager, P1M = 1 måned). Refereres av FareStructureElement (durations) eller PreassignedFareProduct.",
+                            "xmlSnippet": "<TimeInterval version=\"1.0\" id=\"UK:TI:Week:LOC\">\n  <Name>7 Days</Name>\n  <Description>Valid for 7 consecutive days</Description>\n  <Duration>P7D</Duration>\n</TimeInterval>",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "id": "uk-geographical-intervals",
+                        "type": "collection",
+                        "label": "geographicalIntervals",
+                        "description": "Geografiske intervaller (prisband) — brukes for å gruppere OD-relasjoner med samme pris. Refereres av DistanceMatrixElement via PriceGroup. UK-profilen bruker GeographicalInterval for å definere prisband (f.eks. Band A = £1.60, Band B = £2.40).",
+                        "xmlSnippet": "<geographicalIntervals>\n  <GeographicalInterval version=\"1.0\" id=\"UK:GI:BandA:LOC\">\n    <Name>Price Band A</Name>\n    <NumberOfUnits>1</NumberOfUnits>\n  </GeographicalInterval>\n  <GeographicalInterval version=\"1.0\" id=\"UK:GI:BandB:LOC\">\n    <Name>Price Band B</Name>\n    <NumberOfUnits>2</NumberOfUnits>\n  </GeographicalInterval>\n</geographicalIntervals>",
+                        "children": [
+                          {
+                            "id": "UK-GeographicalInterval",
+                            "type": "element",
+                            "elementRef": "GeographicalInterval",
+                            "label": "GeographicalInterval",
+                            "description": "Geografisk intervall (prisband) — definerer en avstandskategori med tilhørende pris. Brukes sammen med PriceGroup og GeographicalIntervalPrice. Typisk bruk: Band A for korte distanser, Band B for mellom, Band C for lange.",
+                            "xmlSnippet": "<GeographicalInterval version=\"1.0\" id=\"UK:GI:BandA:LOC\">\n  <Name>Price Band A</Name>\n  <Description>Short distance - up to 5 stops</Description>\n  <NumberOfUnits>1</NumberOfUnits>\n</GeographicalInterval>",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "id": "uk-quality-structure-factors",
+                        "type": "collection",
+                        "label": "qualityStructureFactors",
+                        "description": "Kvalitetsfaktorer for klippekort/carnet. Definerer antall reiser i en multi-trip pakke (f.eks. 5, 10 eller 25 reiser). Brukes med AmountOfPriceUnitProduct.",
+                        "xmlSnippet": "<qualityStructureFactors>\n  <QualityStructureFactor version=\"1.0\" id=\"UK:QSF:10trips:LOC\">\n    <Name>10 trip carnet</Name>\n    <Value>10</Value>\n  </QualityStructureFactor>\n</qualityStructureFactors>",
+                        "children": [
+                          {
+                            "id": "UK-QualityStructureFactor",
+                            "type": "element",
+                            "elementRef": "QualityStructureFactor",
+                            "label": "QualityStructureFactor",
+                            "description": "Kvalitetsfaktor — angir antall enheter i et klippekort eller carnet. Value angir antallet (f.eks. 5, 10, 25 reiser). Brukes i Tariff/qualityStructureFactors og refereres av AmountOfPriceUnitProduct.",
+                            "xmlSnippet": "<QualityStructureFactor version=\"1.0\" id=\"UK:QSF:10trips:LOC\">\n  <Name>10 trip carnet</Name>\n  <Description>Book of 10 single journeys</Description>\n  <Value>10</Value>\n</QualityStructureFactor>",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "uk-fare-products",
+                "type": "collection",
+                "label": "fareProducts",
+                "description": "Takstprodukter — definerer billetter og pass som kan kjøpes. UK-profilen bruker hovedsakelig PreassignedFareProduct (forhåndsdefinert produkt som enkeltbillett eller dagskort) og AmountOfPriceUnitProduct (klippekort/carnet). Hvert produkt refererer til FareStructureElement(er) via validableElements.",
+                "xmlSnippet": "<fareProducts>\n  <PreassignedFareProduct version=\"1.0\" id=\"UK:PFP:Single:LOC\">\n    <Name>Single Ticket</Name>\n    <validableElements>\n      <ValidableElementRef ref=\"UK:VE:Single:LOC\"/>\n    </validableElements>\n    <accessRightsInProduct>\n      <AccessRightInProduct version=\"1.0\" id=\"UK:ARIP:Single:LOC\" order=\"1\">\n        <ValidableElementRef ref=\"UK:VE:Single:LOC\"/>\n      </AccessRightInProduct>\n    </accessRightsInProduct>\n  </PreassignedFareProduct>\n</fareProducts>",
+                "children": [
+                  {
+                    "id": "UK-PreassignedFareProduct",
+                    "type": "element",
+                    "elementRef": "PreassignedFareProduct",
+                    "label": "PreassignedFareProduct",
+                    "description": "Forhåndsdefinert takstprodukt — representerer en billett eller et pass (enkeltbillett, dagskort, ukeskort osv.). Kobles til FareStructureElement via ValidableElement. accessRightsInProduct angir hvilke tilgangsrettigheter produktet gir. ConditionSummary beskriver betingelser (refunderbar, kan byttes, etc.).",
+                    "xmlSnippet": "<PreassignedFareProduct version=\"1.0\" id=\"UK:PFP:DayPass:LOC\">\n  <Name>Day Pass</Name>\n  <Description>Unlimited travel for one day</Description>\n  <ConditionSummary>\n    <CanBreakJourney>true</CanBreakJourney>\n    <IsRefundable>false</IsRefundable>\n  </ConditionSummary>\n  <validableElements>\n    <ValidableElementRef ref=\"UK:VE:DayPass:LOC\"/>\n  </validableElements>\n  <accessRightsInProduct>\n    <AccessRightInProduct version=\"1.0\"\n      id=\"UK:ARIP:DayPass:LOC\" order=\"1\">\n      <ValidableElementRef ref=\"UK:VE:DayPass:LOC\"/>\n    </AccessRightInProduct>\n  </accessRightsInProduct>\n  <ProductType>dayPass</ProductType>\n</PreassignedFareProduct>",
+                    "children": []
+                  },
+                  {
+                    "id": "UK-AmountOfPriceUnitProduct",
+                    "type": "element",
+                    "elementRef": "AmountOfPriceUnitProduct",
+                    "label": "AmountOfPriceUnitProduct",
+                    "description": "Klippekort/carnet-produkt — representerer et forhåndsbetalt kort med flere reiser. Antall reiser angis via QualityStructureFactor. Typisk bruk: 5-reisekort, 10-reisekort osv.",
+                    "xmlSnippet": "<AmountOfPriceUnitProduct version=\"1.0\" id=\"UK:APUP:Carnet10:LOC\">\n  <Name>10 Trip Carnet</Name>\n  <Description>Book of 10 single journeys</Description>\n  <validableElements>\n    <ValidableElementRef ref=\"UK:VE:CarnetTrip:LOC\"/>\n  </validableElements>\n  <accessRightsInProduct>\n    <AccessRightInProduct version=\"1.0\"\n      id=\"UK:ARIP:Carnet:LOC\" order=\"1\">\n      <ValidableElementRef ref=\"UK:VE:CarnetTrip:LOC\"/>\n    </AccessRightInProduct>\n  </accessRightsInProduct>\n</AmountOfPriceUnitProduct>",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "uk-sales-offer-packages",
+                "type": "collection",
+                "label": "salesOfferPackages",
+                "description": "Salgstilbud — definerer hvordan produkter selges til kunder. SalesOfferPackage kobler FareProduct med TypeOfTravelDocument (billettmedium) og DistributionChannel (salgskanal). UK-profilen bruker ofte én SalesOfferPackage per kombinasjon av produkt og medium (f.eks. enkeltbillett på papir, enkeltbillett på app).",
+                "xmlSnippet": "<salesOfferPackages>\n  <SalesOfferPackage version=\"1.0\" id=\"UK:SOP:Single_Paper:LOC\">\n    <Name>Single - Paper Ticket</Name>\n    <distributionAssignments>\n      <DistributionAssignment version=\"1.0\"\n        id=\"UK:DA:OnBoard:LOC\" order=\"1\">\n        <DistributionChannelType>onBoard</DistributionChannelType>\n        <PaymentMethods>cash</PaymentMethods>\n      </DistributionAssignment>\n    </distributionAssignments>\n    <salesOfferPackageElements>\n      <SalesOfferPackageElement version=\"1.0\"\n        id=\"UK:SOPE:Single_Paper:LOC\" order=\"1\">\n        <TypeOfTravelDocumentRef ref=\"UK:TTD:Paper:LOC\"/>\n        <PreassignedFareProductRef ref=\"UK:PFP:Single:LOC\"/>\n      </SalesOfferPackageElement>\n    </salesOfferPackageElements>\n  </SalesOfferPackage>\n</salesOfferPackages>",
+                "children": [
+                  {
+                    "id": "UK-SalesOfferPackage",
+                    "type": "element",
+                    "elementRef": "SalesOfferPackage",
+                    "label": "SalesOfferPackage",
+                    "description": "Salgstilbud — definerer et salgbart produkt med medium og distribusjonskanaler. distributionAssignments angir hvor produktet kan kjøpes (ombord, app, automat, etc.) og betalingsmetoder. salesOfferPackageElements kobler FareProduct med TypeOfTravelDocument. UK-profilen bruker TypeOfSalesOfferPackageRef for kategorisering (f.eks. standard_product@operator).",
+                    "xmlSnippet": "<SalesOfferPackage version=\"1.0\" id=\"UK:SOP:DayPass_MobileApp:LOC\">\n  <Name>Day Pass - Mobile App</Name>\n  <Description>Day pass purchased via mobile app</Description>\n  <TypeOfSalesOfferPackageRef version=\"fxc:v1.0\"\n    ref=\"fxc:standard_product@operator\"/>\n  <!-- Distribusjonskanaler: -->\n  <distributionAssignments>\n    <DistributionAssignment version=\"1.0\"\n      id=\"UK:DA:App:LOC\" order=\"1\">\n      <DistributionChannelType>mobileDevice</DistributionChannelType>\n      <PaymentMethods>mobilePhone creditCard</PaymentMethods>\n      <DistributionRights>sale</DistributionRights>\n    </DistributionAssignment>\n  </distributionAssignments>\n  <!-- Produktelementer: -->\n  <salesOfferPackageElements>\n    <SalesOfferPackageElement version=\"1.0\"\n      id=\"UK:SOPE:DayPass_App:LOC\" order=\"1\">\n      <TypeOfTravelDocumentRef ref=\"UK:TTD:MobileApp:LOC\"/>\n      <PreassignedFareProductRef ref=\"UK:PFP:DayPass:LOC\"/>\n    </SalesOfferPackageElement>\n  </salesOfferPackageElements>\n</SalesOfferPackage>",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "uk-fare-tables",
+                "type": "collection",
+                "label": "fareTables",
+                "description": "Pristabeller — inneholder faktiske priser. UK-profilen bruker FareTable med columns (fra-soner) og rows (til-soner), og Cell for hver pris. Alternativt kan FareTable inneholde en flat liste av celler uten columns/rows. Hvert FareTable knytter sammen SalesOfferPackage, FareProduct og priser.",
+                "xmlSnippet": "<fareTables>\n  <FareTable version=\"1.0\" id=\"UK:FT:Single_Adult:LOC\">\n    <Name>Single Fares - Adult</Name>\n    <pricesFor>\n      <PreassignedFareProductRef ref=\"UK:PFP:Single:LOC\"/>\n      <SalesOfferPackageRef ref=\"UK:SOP:Single_Paper:LOC\"/>\n    </pricesFor>\n    <!-- Columns og Rows (matrise-struktur): -->\n    <columns>\n      <FareTableColumn version=\"1.0\"\n        id=\"UK:FTC:ZoneA:LOC\" order=\"1\">\n        <representing>\n          <TariffZoneRef ref=\"UK:TZ:ZoneA:LOC\"/>\n        </representing>\n      </FareTableColumn>\n    </columns>\n    <rows>\n      <FareTableRow version=\"1.0\"\n        id=\"UK:FTR:ZoneB:LOC\" order=\"1\">\n        <representing>\n          <TariffZoneRef ref=\"UK:TZ:ZoneB:LOC\"/>\n        </representing>\n      </FareTableRow>\n    </rows>\n    <!-- Priser i celler: -->\n    <cells>\n      <Cell version=\"1.0\" id=\"UK:C:A_to_B:LOC\" order=\"1\">\n        <DistanceMatrixElementPrice version=\"1.0\"\n          id=\"UK:DMEP:A_to_B_Adult:LOC\">\n          <Amount>2.40</Amount>\n        </DistanceMatrixElementPrice>\n        <ColumnRef ref=\"UK:FTC:ZoneA:LOC\"/>\n        <RowRef ref=\"UK:FTR:ZoneB:LOC\"/>\n      </Cell>\n    </cells>\n  </FareTable>\n</fareTables>",
+                "children": [
+                  {
+                    "id": "UK-FareTable",
+                    "type": "element",
+                    "elementRef": "FareTable",
+                    "label": "FareTable",
+                    "description": "Pristabell — inneholder priser for en kombinasjon av FareProduct og SalesOfferPackage. pricesFor angir hvilke produkter tabellen gjelder for. UK-profilen bruker to strukturer: (1) Matrise med columns/rows/cells for OD-priser, eller (2) Flat liste av cells for pass-priser. Columns og rows representerer soner eller brukerprofiler. Cell inneholder DistanceMatrixElementPrice eller TimeIntervalPrice.",
+                    "xmlSnippet": "<!-- OD-pristabell (matrise): -->\n<FareTable version=\"1.0\" id=\"UK:FT:Single_Adult_Line1:LOC\">\n  <Name>Single Fares - Adult - Line 1</Name>\n  <pricesFor>\n    <PreassignedFareProductRef ref=\"UK:PFP:Single:LOC\"/>\n    <SalesOfferPackageRef ref=\"UK:SOP:Single_Paper:LOC\"/>\n  </pricesFor>\n  <!-- Kolonner (fra-soner): -->\n  <columns>\n    <FareTableColumn version=\"1.0\"\n      id=\"UK:FTC:ZoneA:LOC\" order=\"1\">\n      <Name>From Zone A</Name>\n      <representing>\n        <TariffZoneRef ref=\"UK:TZ:ZoneA:LOC\"/>\n      </representing>\n    </FareTableColumn>\n  </columns>\n  <!-- Rader (til-soner): -->\n  <rows>\n    <FareTableRow version=\"1.0\"\n      id=\"UK:FTR:ZoneB:LOC\" order=\"1\">\n      <Name>To Zone B</Name>\n      <representing>\n        <TariffZoneRef ref=\"UK:TZ:ZoneB:LOC\"/>\n      </representing>\n    </FareTableRow>\n  </rows>\n  <!-- Prisceller: -->\n  <cells>\n    <Cell version=\"1.0\" id=\"UK:C:A_to_B:LOC\" order=\"1\">\n      <DistanceMatrixElementPrice version=\"1.0\"\n        id=\"UK:DMEP:A_to_B_Adult:LOC\">\n        <!-- Referanse til prisband (GeographicalIntervalPrice): -->\n        <GeographicalIntervalPriceRef ref=\"UK:GIP:BandB:LOC\"/>\n        <!-- Eller direkte pris: -->\n        <!-- <Amount>2.40</Amount> -->\n        <DistanceMatrixElementRef ref=\"UK:DME:A_to_B:LOC\"/>\n      </DistanceMatrixElementPrice>\n      <ColumnRef ref=\"UK:FTC:ZoneA:LOC\"/>\n      <RowRef ref=\"UK:FTR:ZoneB:LOC\"/>\n    </Cell>\n  </cells>\n</FareTable>\n\n<!-- Pass-pristabell (flat liste): -->\n<FareTable version=\"1.0\" id=\"UK:FT:WeekPass_Prices:LOC\">\n  <Name>Week Pass Prices</Name>\n  <pricesFor>\n    <PreassignedFareProductRef ref=\"UK:PFP:WeekPass:LOC\"/>\n    <SalesOfferPackageRef ref=\"UK:SOP:WeekPass:LOC\"/>\n  </pricesFor>\n  <cells>\n    <Cell version=\"1.0\" id=\"UK:C:Week_Adult:LOC\" order=\"1\">\n      <SalesOfferPackagePrice version=\"1.0\"\n        id=\"UK:SOPP:Week_Adult:LOC\">\n        <Amount>16.00</Amount>\n      </SalesOfferPackagePrice>\n      <!-- Brukerprofil: -->\n      <noticeAssignments>\n        <NoticeAssignmentView>\n          <Text>Adult 7-day pass</Text>\n        </NoticeAssignmentView>\n      </noticeAssignments>\n    </Cell>\n  </cells>\n</FareTable>",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "uk-price-groups",
+                "type": "collection",
+                "label": "priceGroups",
+                "description": "Prisgrupper — samler GeographicalIntervalPrice for prisband. Brukes for å gruppere priser som gjelder for flere OD-relasjoner. Typisk bruk: Band A = £1.60, Band B = £2.40. DistanceMatrixElement refererer til PriceGroup i stedet for å angi pris direkte.",
+                "xmlSnippet": "<priceGroups>\n  <PriceGroup version=\"1.0\" id=\"UK:PG:BandA:LOC\">\n    <Name>Price Band A</Name>\n    <members>\n      <GeographicalIntervalPrice version=\"1.0\"\n        id=\"UK:GIP:BandA_Adult:LOC\">\n        <Amount>1.60</Amount>\n      </GeographicalIntervalPrice>\n      <GeographicalIntervalPrice version=\"1.0\"\n        id=\"UK:GIP:BandA_Child:LOC\">\n        <Amount>0.80</Amount>\n        <!-- Viser at barnepris er avledet fra voksenpris: -->\n        <GeographicalIntervalPriceRef ref=\"UK:GIP:BandA_Adult:LOC\"/>\n        <DiscountingRuleRef ref=\"UK:DR:HalfPrice:LOC\"/>\n      </GeographicalIntervalPrice>\n    </members>\n  </PriceGroup>\n</priceGroups>",
+                "children": [
+                  {
+                    "id": "UK-PriceGroup",
+                    "type": "element",
+                    "elementRef": "PriceGroup",
+                    "label": "PriceGroup",
+                    "description": "Prisgruppe — samler flere GeographicalIntervalPrice som tilhører samme prisband. Typisk én pris per brukerprofil (voksen, barn) i hver gruppe. DistanceMatrixElement refererer til PriceGroup for å angi hvilket prisband som gjelder.",
+                    "xmlSnippet": "<PriceGroup version=\"1.0\" id=\"UK:PG:BandB:LOC\">\n  <Name>Price Band B - Medium distance</Name>\n  <members>\n    <!-- Voksenpris: -->\n    <GeographicalIntervalPrice version=\"1.0\"\n      id=\"UK:GIP:BandB_Adult:LOC\">\n      <Amount>2.40</Amount>\n    </GeographicalIntervalPrice>\n    <!-- Barnepris (avledet fra voksen): -->\n    <GeographicalIntervalPrice version=\"1.0\"\n      id=\"UK:GIP:BandB_Child:LOC\">\n      <Amount>1.20</Amount>\n      <GeographicalIntervalPriceRef ref=\"UK:GIP:BandB_Adult:LOC\"/>\n      <DiscountingRuleRef ref=\"UK:DR:HalfPrice:LOC\"/>\n    </GeographicalIntervalPrice>\n  </members>\n</PriceGroup>",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
