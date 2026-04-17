@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
 import type { NeTExElement, LoadedFile, ProfileData, ActiveProfile, ProfileStatus } from '../types'
-import { EXPORT_CHIPS } from '../constants'
 import { Label } from '@entur/typography'
 
 const GROUP_COLOURS: Record<string, string> = {
@@ -50,14 +49,13 @@ const GROUP_COLOURS: Record<string, string> = {
 
 interface ElementTreeProps {
   elements: NeTExElement[]
-  query: string
-  activeChip: string | null
   selectedElement: NeTExElement | null
   loadedFile: LoadedFile | null
   onSelect: (el: NeTExElement) => void
   profileData: ProfileData | null
   activeProfile: ActiveProfile
   onProfileChange: (p: ActiveProfile) => void
+  activePart: 1 | 2 | 3 | null   // replaces activeChip and query
 }
 
 function ProfileBadge({ status }: { status: ProfileStatus | undefined }) {
@@ -89,21 +87,22 @@ function LegendItem({ color, label }: { color: string; label: string }) {
 }
 
 export function ElementTree({
-  elements, query, activeChip, selectedElement, loadedFile, onSelect,
+  elements, activePart, selectedElement, loadedFile, onSelect,
   profileData, activeProfile, onProfileChange,
 }: ElementTreeProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set())
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
   const [hoveredElement, setHoveredElement] = useState<string | null>(null)
+  const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
-    const activeChipDef = activeChip ? EXPORT_CHIPS.find((c) => c.key === activeChip) : null
     return elements.filter((el) => {
-      if (activeChipDef && !activeChipDef.groups.includes(el.group)) return false
+      if (el.attributes.length === 0 && el.inheritedAttributes.length === 0) return false
+      if (activePart !== null && el.part !== activePart) return false
       if (query) return el.name.toLowerCase().includes(query.toLowerCase())
       return true
     })
-  }, [elements, query, activeChip])
+  }, [elements, query, activePart])
 
   const byGroup = useMemo(() => {
     const map = new Map<string, NeTExElement[]>()
@@ -170,6 +169,26 @@ export function ElementTree({
         )}
       </div>
 
+      {/* Search */}
+      <div style={{ padding: '6px 10px', borderBottom: '1px solid var(--colors-greys-grey80, #e0e0e0)' }}>
+        <input
+          type="search"
+          placeholder="Søk etter element..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{
+            width: '100%',
+            border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+            borderRadius: '4px',
+            padding: '4px 8px',
+            fontSize: '11px',
+            color: 'var(--colors-greys-grey10, #2a2a2a)',
+            background: 'var(--colors-greys-white, #ffffff)',
+            boxSizing: 'border-box',
+          }}
+        />
+      </div>
+
       {/* Elementer label */}
       <Label as="div" margin="none" style={{ padding: '8px 12px 4px', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--colors-greys-grey50, #888)', fontWeight: 600 }}>
         Elementer
@@ -207,7 +226,6 @@ export function ElementTree({
               </span>
             </button>
             {isExpanded && children.map((el) => {
-              const noSchema = el.attributes.length === 0 && el.inheritedAttributes.length === 0
               const count = loadedFile?.instanceMap[el.name]?.length ?? 0
               const isSelected = selectedElement?.name === el.name
               const isElHovered = hoveredElement === el.name
@@ -243,11 +261,6 @@ export function ElementTree({
                     textDecoration: notInProfile ? 'line-through' : 'none',
                   }}>
                     ● {el.name}
-                    {noSchema && (
-                      <span style={{ fontSize: '9px', color: '#ccc', marginLeft: '4px', fontStyle: 'italic' }}>
-                        ingen data
-                      </span>
-                    )}
                   </span>
                   <span style={{ display: 'flex', gap: '3px', alignItems: 'center', flexShrink: 0, marginLeft: '4px' }}>
                     {profileData && profileStatus && <ProfileBadge status={profileStatus} />}
