@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { NeTExElement, LoadedFile, NeTExExample, ProfileData, ActiveProfile, StructureNode, ProfileStructure, NeTExEnums } from './types'
+import { PARTS } from './constants'
 import elementsData from './data/netex-elements.json'
 import examplesData from './data/netex-examples.json'
 import enumsData from './data/netex-enums.json'
@@ -32,6 +33,26 @@ const PROFILE_STRUCTURES: Record<string, ProfileStructure> = {
   uk: ukStructureData as ProfileStructure,
 }
 
+function PartDescriptionCard({ activePart, allElements }: { activePart: 1 | 2 | 3; allElements: NeTExElement[] }) {
+  const partDef = PARTS.find((p) => p.key === activePart)!
+  const count = allElements.filter(
+    (el) => el.part === activePart && (el.attributes.length > 0 || el.inheritedAttributes.length > 0)
+  ).length
+  return (
+    <div style={{ padding: '48px 32px', maxWidth: '480px' }}>
+      <div style={{ fontSize: '22px', fontWeight: 700, marginBottom: '12px', color: 'var(--colors-greys-grey10, #2a2a2a)' }}>
+        {partDef.label}
+      </div>
+      <div style={{ fontSize: '14px', color: 'var(--colors-greys-grey40, #555)', marginBottom: '16px', lineHeight: 1.6 }}>
+        {partDef.description}
+      </div>
+      <div style={{ fontSize: '12px', color: 'var(--colors-greys-grey50, #888)' }}>
+        {count} elementer tilgjengelig
+      </div>
+    </div>
+  )
+}
+
 function findPath(node: StructureNode, targetId: string, path: string[] = []): string[] | null {
   const current = [...path, node.label]
   if (node.id === targetId) return current
@@ -43,8 +64,7 @@ function findPath(node: StructureNode, targetId: string, path: string[] = []): s
 }
 
 export default function App() {
-  const [query, setQuery] = useState('')
-  const [activeChip, setActiveChip] = useState<string | null>(null)
+  const [activePart, setActivePart] = useState<1 | 2 | 3 | null>(null)
   const [selectedElement, setSelectedElement] = useState<NeTExElement | null>(null)
   const [loadedFile, setLoadedFile] = useState<LoadedFile | null>(null)
   const [activeProfile, setActiveProfile] = useState<ActiveProfile>(null)
@@ -88,7 +108,7 @@ export default function App() {
           marginRight: '4px',
           color: 'var(--colors-greys-grey10, #2a2a2a)',
         }}>
-          NeTEx Part 3
+          NeTEx
         </span>
 
         {activeProfile ? (
@@ -101,10 +121,8 @@ export default function App() {
           </span>
         ) : (
           <SearchBar
-            query={query}
-            onQueryChange={setQuery}
-            activeChip={activeChip}
-            onChipChange={setActiveChip}
+            activePart={activePart}
+            onPartChange={setActivePart}
           />
         )}
 
@@ -137,8 +155,7 @@ export default function App() {
           ) : (
             <ElementTree
               elements={allElements}
-              query={query}
-              activeChip={activeChip}
+              activePart={activePart}
               selectedElement={selectedElement}
               loadedFile={loadedFile}
               onSelect={setSelectedElement}
@@ -185,6 +202,8 @@ export default function App() {
               onSelect={setSelectedElement}
               enumValues={allEnums}
             />
+          ) : activePart ? (
+            <PartDescriptionCard activePart={activePart} allElements={allElements} />
           ) : (
             <div style={{
               display: 'flex',
