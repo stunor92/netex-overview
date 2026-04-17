@@ -105,6 +105,23 @@ export interface SchemaTabProps {
   enumValues?: NeTExEnums
 }
 
+function getRefTargetDescription(
+  type: string,
+  kind: string,
+  allElements: NeTExElement[],
+): string | null {
+  if (kind !== 'ref') return null
+  const name = type
+    .replace(/RefStructure$/, '')
+    .replace(/Refs$/, '')
+    .replace(/Ref$/, '')
+  const target = allElements.find((e) => e.name === name)
+  if (!target) return null
+  const hasData = target.attributes.length > 0 || target.inheritedAttributes.length > 0
+  if (hasData) return null
+  return target.description || null
+}
+
 function findLinkedElement(type: string, kind: string, allElements: NeTExElement[]): NeTExElement | null {
   if (!type || type === 'unknown') return null
   if (kind === 'ref') {
@@ -137,23 +154,27 @@ export function SchemaTab({ element, allElements, profileData, activeProfile, on
   function attrRow(a: NeTExAttribute | NeTExInheritedAttribute, dim = false) {
     const attrStatus = elementProfile?.attributes[a.name]
     const notInProfile = attrStatus === 'not-in-profile'
-    const linkedEl = findLinkedElement(a.type, a.kind, allElements)
     return (
       <TableRow key={a.name} style={{ opacity: dim || notInProfile ? 0.4 : 1 }}>
         <DataCell style={{ textDecoration: notInProfile ? 'line-through' : 'none' }}>{a.name}</DataCell>
         <DataCell>
           <span style={{ fontFamily: 'monospace', color: KIND_COLOUR[a.kind] ?? '#555' }}>{a.kind}</span>
-          {linkedEl ? (
-            <button
-              type="button"
-              onClick={() => onSelect && onSelect(linkedEl)}
-              style={{ display: 'block', background: 'none', border: 'none', cursor: 'pointer', color: '#1565c0', textDecoration: 'underline', fontFamily: 'monospace', fontSize: '11px', padding: 0, textAlign: 'left' }}
-            >
-              {a.type}
-            </button>
-          ) : (
-            <span style={{ display: 'block', fontFamily: 'monospace', fontSize: '11px', color: 'var(--colors-greys-grey60, #aaa)' }}>{a.type}</span>
-          )}
+          {(() => {
+            const linkedEl = findLinkedElement(a.type, a.kind, allElements)
+            const hasData = linkedEl && (linkedEl.attributes.length > 0 || linkedEl.inheritedAttributes.length > 0)
+            if (hasData) {
+              return (
+                <button
+                  type="button"
+                  onClick={() => onSelect && onSelect(linkedEl!)}
+                  style={{ display: 'block', background: 'none', border: 'none', cursor: 'pointer', color: '#1565c0', textDecoration: 'underline', fontFamily: 'monospace', fontSize: '11px', padding: 0, textAlign: 'left' }}
+                >
+                  {a.type}
+                </button>
+              )
+            }
+            return <span style={{ display: 'block', fontFamily: 'monospace', fontSize: '11px', color: 'var(--colors-greys-grey60, #aaa)' }}>{a.type}</span>
+          })()}
         </DataCell>
         <DataCell align="center" style={{ color: 'var(--colors-greys-grey50, #888)' }}>{cardinality(a)}</DataCell>
         <DataCell style={{ color: 'var(--colors-greys-grey50, #888)' }}>
@@ -171,6 +192,15 @@ export function SchemaTab({ element, allElements, profileData, activeProfile, on
               ))}
             </div>
           )}
+          {(() => {
+            const refDesc = getRefTargetDescription(a.type, a.kind, allElements)
+            if (!refDesc) return null
+            return (
+              <div style={{ fontSize: '11px', color: 'var(--colors-greys-grey50, #888)', fontStyle: 'italic', marginTop: '2px' }}>
+                {refDesc}
+              </div>
+            )
+          })()}
         </DataCell>
         {showProfileCol && <DataCell align="center"><ProfileAttrBadge status={attrStatus} /></DataCell>}
       </TableRow>
