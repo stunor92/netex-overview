@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { SecondaryButton, TertiaryButton, PrimaryButton } from '@entur/button'
+import { TertiaryButton, PrimaryButton } from '@entur/button'
 import { Modal } from '@entur/modal'
 import { TextArea } from '@entur/form'
 import type { NeTExExample, LoadedFile } from '../types'
@@ -47,29 +47,46 @@ export function ExampleLoader({ examples, onFileLoaded }: ExampleLoaderProps) {
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
-      {activeFilename && (
+      {activeFilename ? (
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          fontSize: '12px',
-          padding: '4px 8px',
+          fontSize: '11px',
+          padding: '3px 8px',
           background: 'var(--colors-greys-grey90, #f8f8f8)',
           border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
           borderRadius: '4px',
           color: 'var(--colors-greys-grey10, #2a2a2a)',
         }}>
-          <span style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {activeFilename}
           </span>
           <TertiaryButton onClick={clearFile}>✕</TertiaryButton>
         </div>
+      ) : (
+        <span style={{ fontSize: '11px', color: 'var(--colors-greys-grey50, #888)', fontStyle: 'italic', whiteSpace: 'nowrap' }}>
+          Analyser NeTEx-filer
+        </span>
       )}
 
       <div style={{ position: 'relative' }}>
-        <SecondaryButton onClick={() => setOpen((v) => !v)}>
-          Eksempler {open ? '▲' : '▼'}
-        </SecondaryButton>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          style={{
+            fontSize: '11px',
+            padding: '4px 10px',
+            borderRadius: '4px',
+            border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+            background: 'var(--colors-greys-white, #ffffff)',
+            color: 'var(--colors-greys-grey40, #555)',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Last inn {open ? '▲' : '▼'}
+        </button>
 
         {open && (
           <div style={{
