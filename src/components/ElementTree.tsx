@@ -117,6 +117,10 @@ export function ElementTree({
     if (query) setExpandedGroups(new Set(byGroup.keys()))
   }, [query, byGroup])
 
+  useEffect(() => {
+    setQuery('')
+  }, [activePart])
+
   function toggleGroup(group: string) {
     setExpandedGroups((prev) => {
       const next = new Set(prev)
@@ -174,6 +178,7 @@ export function ElementTree({
         <input
           type="search"
           placeholder="Søk etter element..."
+          aria-label="Søk etter element"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           style={{
