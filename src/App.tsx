@@ -34,7 +34,8 @@ const PROFILE_STRUCTURES: Record<string, ProfileStructure> = {
 }
 
 function PartDescriptionCard({ activePart, allElements }: { activePart: 1 | 2 | 3; allElements: NeTExElement[] }) {
-  const partDef = PARTS.find((p) => p.key === activePart)!
+  const partDef = PARTS.find((p) => p.key === activePart)
+  if (!partDef) return null
   const count = allElements.filter(
     (el) => el.part === activePart && (el.attributes.length > 0 || el.inheritedAttributes.length > 0)
   ).length
@@ -113,8 +114,8 @@ export default function App() {
 
         {activeProfile ? (
           <span style={{ fontSize: '13px', color: 'var(--colors-greys-grey50, #888)', fontStyle: 'italic' }}>
-            {activeProfile === 'nordic' 
-              ? '🇳🇴 Nordisk profil — eksportstruktur' 
+            {activeProfile === 'nordic'
+              ? '🇳🇴 Nordisk profil — eksportstruktur'
               : activeProfile === 'uk'
               ? '🇬🇧 Britisk profil — eksportstruktur'
               : '🇫🇷 Fransk profil — eksportstruktur'}
@@ -122,7 +123,7 @@ export default function App() {
         ) : (
           <SearchBar
             activePart={activePart}
-            onPartChange={setActivePart}
+            onPartChange={(p) => { setActivePart(p); setSelectedElement(null) }}
           />
         )}
 
