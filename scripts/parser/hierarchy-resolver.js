@@ -145,9 +145,11 @@ function resolveTypeChain(typeName, types) {
 }
 
 function inferKind(type, name) {
+  // Name-based checks take priority — catches anonymous inline types where type is empty
+  if (name.endsWith('Ref') || name.endsWith('Refs')) return 'ref'
   if (!type) return 'string'
   if (type.endsWith('Enumeration') || type.endsWith('EnumType')) return 'enum'
-  if (type.endsWith('RefStructure') || name.endsWith('Ref') || name.endsWith('Refs')) return 'ref'
+  if (type.endsWith('RefStructure')) return 'ref'
   if (type.endsWith('RelStructure')) return 'list'
   // complex = named structure that doesn't fit ref/list/enum — used for nested objects
   if (type.endsWith('Structure') || type.endsWith('Group')) return 'complex'
@@ -158,11 +160,14 @@ function inferKind(type, name) {
 }
 
 function normaliseAttr(attr) {
+  const kind = inferKind(attr.type, attr.name)
+  // For ref attributes with no explicit XSD type, use the attribute name as type so
+  // findLinkedElement can strip the Ref/Refs suffix and navigate to the target element
+  const type = attr.type || (kind === 'ref' ? attr.name : 'unknown')
   return {
     name: attr.name,
-    // Empty type means inline anonymous type in XSD — use 'unknown' as a safe sentinel
-    type: attr.type || 'unknown',
-    kind: inferKind(attr.type, attr.name),
+    type,
+    kind,
     minOccurs: attr.minOccurs,
     maxOccurs: attr.maxOccurs,
     description: attr.description,

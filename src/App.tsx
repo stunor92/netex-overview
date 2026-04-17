@@ -109,7 +109,7 @@ export default function App() {
           marginRight: '4px',
           color: 'var(--colors-greys-grey10, #2a2a2a)',
         }}>
-          NeTEx
+          NeTEx-utforsker
         </span>
 
         {activeProfile ? (
@@ -127,8 +127,16 @@ export default function App() {
           />
         )}
 
-        <div style={{ marginLeft: 'auto' }}>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
           <ExampleLoader examples={allExamples} onFileLoaded={setLoadedFile} />
+          <a
+            href="https://github.com/NeTEx-CEN/NeTEx"
+            target="_blank"
+            rel="noreferrer"
+            style={{ fontSize: '12px', color: 'var(--colors-greys-grey50, #888)', textDecoration: 'none', whiteSpace: 'nowrap' }}
+          >
+            NeTEx på GitHub ↗
+          </a>
         </div>
       </div>
 
