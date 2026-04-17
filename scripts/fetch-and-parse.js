@@ -129,6 +129,7 @@ async function buildElementsJson() {
 
   // Part 1
   console.log('\nFetching Part 1 XSD file list...')
+  // Single root dir — listXsdFilesDeep traverses all subdirs recursively
   const part1Paths = await listXsdFilesDeep(PART1_DIRS[0])
   console.log(`Found ${part1Paths.length} Part 1 XSD files`)
   for (const path of part1Paths) {
@@ -144,6 +145,7 @@ async function buildElementsJson() {
 
   // Part 2
   console.log('\nFetching Part 2 XSD file list...')
+  // Single root dir — listXsdFilesDeep traverses all subdirs recursively
   const part2Paths = await listXsdFilesDeep(PART2_DIRS[0])
   console.log(`Found ${part2Paths.length} Part 2 XSD files`)
   for (const path of part2Paths) {
