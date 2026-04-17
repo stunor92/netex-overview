@@ -44,6 +44,8 @@ export type ElementGroup =
   | 'ValidableElement'
   // All parts
   | 'Other'
+  // Virtual group for enumerations
+  | 'Enumerations'
 
 export type AttributeKind =
   | 'enum'

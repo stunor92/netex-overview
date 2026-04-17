@@ -18,6 +18,7 @@ export function parseXsd(xsdString) {
   const elements = new Map()
   const types = new Map()
   const groups = new Map()
+  const enums = new Map()
 
   // --- elements ---
   for (const el of toArray(schema['xsd:element'])) {
@@ -86,7 +87,24 @@ export function parseXsd(xsdString) {
     groups.set(name, { attrs: [...attrs, ...choiceEls], groupRefs: nestedGroupRefs })
   }
 
-  return { elements, types, groups }
+  // --- simpleType enumerations ---
+  for (const st of toArray(schema['xsd:simpleType'])) {
+    const name = st['@_name']
+    if (!name || !name.endsWith('Enumeration')) continue
+    
+    const restriction = st['xsd:restriction']
+    if (!restriction) continue
+    
+    const enumValues = toArray(restriction['xsd:enumeration'])
+      .map((e) => e['@_value'])
+      .filter(Boolean)
+    
+    if (enumValues.length > 0) {
+      enums.set(name, enumValues)
+    }
+  }
+
+  return { elements, types, groups, enums }
 }
 
 /**

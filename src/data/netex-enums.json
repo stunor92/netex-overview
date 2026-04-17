@@ -1,52 +1,831 @@
 {
-  "ActivationMeansEnumeration": ["noneRequired", "checkIn", "useOfHomeReader", "useOfValidator", "useOfMobileDevice", "other"],
-  "AllVehicleModesOfTransportEnumeration": ["air", "bus", "trolleyBus", "tram", "coach", "rail", "intercityRail", "urbanRail", "metro", "water", "ferry", "cableway", "funicular", "lift", "taxi", "selfDrive", "foot", "bicycle", "motorcycle", "car", "shuttle", "other"],
-  "AmountOfPriceUnitEnumeration": ["trip", "section", "timeUnit", "usage", "other"],
-  "BaggageTypeEnumeration": ["handbag", "handLuggage", "smallBag", "bicycle", "largeBag", "suitcase", "trunk", "oversizeItem", "other"],
-  "BaggageUseTypeEnumeration": ["carryOn", "checkIn", "oversized", "other"],
-  "BlackoutStartEnumeration": ["fromStartOfPeriod", "fromFirstUse", "other"],
-  "CompanionRelationshipEnumeration": ["anyone", "parent", "grandparent", "guardian", "child", "grandchild", "spouseOrPartner", "colleague", "friend", "other"],
-  "CustomerPurchasePackageStatusEnumeration": ["unused", "reserved", "activated", "partially used", "used", "archived", "other"],
-  "DepositPolicyEnumeration": ["free", "discount", "singleTrip", "singleUse", "other"],
-  "DiscountBasisEnumeration": ["none", "free", "discount"],
-  "DistributionChannelTypeEnumeration": ["atStop", "onBoard", "online", "telephone", "agency", "tourOperator", "mobileDevice", "postal", "distributionOffice", "other"],
-  "EntitlementTypeEnumeration": ["entitledTo", "notEntitledTo"],
-  "ExchangableToEnumeration": ["anyProduct", "sameProductAnyProvider", "sameProductSameProvider", "upgradeOnly", "other"],
-  "FareClassEnumeration": ["any", "unknown", "first", "second", "third", "economy", "premiumEconomy", "business", "standardClass", "seatOnly", "other"],
-  "FareDemandTypeEnumeration": ["any", "normalFare", "offPeakFare", "superOffPeakFare", "peakFare", "specialFare", "other"],
-  "FrequencyOfUseTypeEnumeration": ["none", "single", "limited", "unlimited", "twiceADay", "daily", "weekly", "monthly"],
-  "FulfilmentMethodTypeEnumeration": ["collect", "post", "courier", "download", "printOnHome", "printAtKiosk", "ticket", "other"],
-  "IntervalTypeEnumeration": ["distance", "tariffZone", "timeInterval", "other"],
-  "LuggageAllowanceTypeEnumeration": ["noLuggage", "smallBag", "handLuggage", "oneSuitcase", "twoPieceLimit", "other"],
-  "LuggageChargingBasisEnumeration": ["free", "perLuggageItem", "perKg", "perExtraKg", "other"],
-  "MarkedAsEnumeration": ["unused", "reserved", "compostee", "activated", "partiallyUsed", "used", "archived", "cancelled", "other"],
-  "MediaTypeEnumeration": ["none", "paperTicket", "coupon", "voucher", "token", "card", "mobileApp", "wearable", "other"],
-  "MinimumStayTypeEnumeration": ["none", "overnight", "weekend", "other"],
-  "OnBecomingEnumeration": ["becomesEligible", "other"],
-  "OnCeasingEnumeration": ["givesRightsToPurchase", "other"],
-  "PartialRefundBasisEnumeration": ["unusedDays", "unusedTrips", "unusedValue", "other"],
-  "PenaltyPolicyTypeEnumeration": ["noBoarding", "noValidation", "noUse", "other"],
-  "PreassignedFareProductEnumeration": ["singleTrip", "returnTrip", "pointToPointTrip", "dayPass", "weeklyPass", "weekendPass", "shortTripPass", "monthlyPass", "seasonPass", "profileMembership", "supplement", "preference", "thirdPartyProduct", "other"],
-  "PurchaseActionEnumeration": ["purchase", "reserve", "orderWithoutPaying", "subscribe", "payOwnAccount", "other"],
-  "PurchaseWhenEnumeration": ["advanceAndDayOfTravel", "advanceOnly", "dayOfTravelOnly", "timeOfTravelOnly", "subscriptionChargeMoment", "other"],
-  "RefundTypeEnumeration": ["unused", "unusedDayOfWeek", "earlyTermination", "cancellation", "delay", "other"],
-  "RegisterBreakOfJourneyEnumeration": ["noRegisterRequired", "registerOnBoard", "registerAtStopOnBoard", "other"],
-  "ResellTypeEnumeration": ["none", "free", "withFee"],
-  "ResidenceTypeEnumeration": ["none", "live", "work", "study", "other"],
-  "RoundTripTypeEnumeration": ["single", "return", "returnOut", "returnBack", "day", "other"],
-  "SaleDiscountRightEnumeration": ["free", "discount", "allowance", "deduction", "allowanceCeilingPerLeg", "other"],
-  "SameStationReentryPolicyEnumeration": ["allowed", "notAllowed", "restricted", "other"],
-  "SeatAllocationMethodEnumeration": ["any", "firstComeFirstServed", "allocated", "free", "other"],
-  "SharedUsageEnumeration": ["singleUser", "concurrentUsers", "severalUsers"],
-  "StepLimitUnitEnumeration": ["stops", "stops", "zones", "sections", "km", "miles", "other"],
-  "StopUseConstraintEnumeration": ["noExchangeAllowed", "noCheckInAllowed", "noCheckOutAllowed", "other"],
-  "SupplementProductEnumeration": ["seatReservation", "bicycle", "dog", "animal", "luggage", "ski", "musicalInstrument", "porterage", "mealServices", "other"],
-  "TariffBasisEnumeration": ["distance", "flat", "free", "network", "route", "stop", "unit", "zone", "other"],
-  "TaxCategoryEnumeration": ["fullFare", "halfFare", "free", "unknown"],
-  "TravelBillingPolicyEnumeration": ["beforeTravel", "afterTravel", "other"],
-  "TravelCreditPolicyEnumeration": ["any", "noAction", "returnFare", "creditAccount", "other"],
-  "UsageDiscountRightEnumeration": ["free", "discount"],
-  "UsageEndEnumeration": ["standardDuration", "endOfCalendarPeriod", "endOfRide", "endOfTrip", "endOfFareDay", "endOfFarePeriod", "productExpiry", "other"],
-  "UsageTriggerEnumeration": ["purchase", "startOutwardRide", "endOutwardRide", "startReturnRide", "startOfPeriod", "startOfFirstTrip", "enrolment", "reservation", "dayOffsetBeforeCalendarPeriod", "other"],
-  "UsageValidityTypeEnumeration": ["singleRide", "return", "carnet", "dayTravelCard", "profileMembership", "openEnded", "other"]
+  "AccountStatusTypeEnumeration": [
+    "unused",
+    "unverified",
+    "active",
+    "dormant",
+    "suspended",
+    "archived",
+    "closed"
+  ],
+  "ActivationMeansEnumeration": [
+    "noneRequired",
+    "checkIn",
+    "useOfValidator",
+    "useOfMobileDevice",
+    "automaticByTime",
+    "automaticByProximity",
+    "accessCode",
+    "other"
+  ],
+  "AmountOfPriceUnitEnumeration": [
+    "tripCarnet",
+    "passCarnet",
+    "unitCoupon",
+    "storedValue",
+    "other"
+  ],
+  "BaggageTypeEnumeration": [
+    "handbag",
+    "handLuggage",
+    "smallSuitcase",
+    "suitcase",
+    "trunk",
+    "oversizeItem",
+    "bicycle",
+    "motorcycle",
+    "sportingEquipment",
+    "skis",
+    "musicalInstrument",
+    "pushChair",
+    "wheelchair",
+    "motorizedWheelchair",
+    "largeMotorizedWheelchair",
+    "smallAnimal",
+    "animal",
+    "game",
+    "other"
+  ],
+  "BaggageUseTypeEnumeration": [
+    "carryOn",
+    "checkIn",
+    "oversizeCheckIn",
+    "baggageCompartment"
+  ],
+  "BlackoutStartEnumeration": [
+    "mayTravelAnytime",
+    "noTravelWithinPeriod",
+    "noTravelWithinTimeband",
+    "mayCompleteIfStartedBefore"
+  ],
+  "CappingPeriodEnumeration": [
+    "day",
+    "week",
+    "month",
+    "none"
+  ],
+  "CappingPeriodStartConstraintTypeEnumeration": [
+    "variable",
+    "fixed"
+  ],
+  "ChargingBasisEnumeration": [
+    "normalFare",
+    "discounted",
+    "free",
+    "various",
+    "any"
+  ],
+  "ChargingMomentEnumeration": [
+    "beforeTravel",
+    "onStartOfTravel",
+    "beforeEndOfTravel",
+    "beforeTravelThenAdjustAtEndOfTravel",
+    "onStartThenAdjustAtEndOfTravel",
+    "onStarThenAdjustAtEndOfFareDay",
+    "onStartThenAdjustAtEndOfFareDay",
+    "onStartThenAdjustAtEndOfChargePeriod",
+    "atEndOfTravel",
+    "atEndOfFareDay",
+    "atEndOfChargePeriod",
+    "free",
+    "anyTime",
+    "other"
+  ],
+  "CommercialProfileTypeEnumeration": [
+    "none",
+    "unlimited",
+    "limited",
+    "single"
+  ],
+  "CompanionRelationshipEnumeration": [
+    "anyone",
+    "parent",
+    "grandparent",
+    "child",
+    "grandchild",
+    "family",
+    "spouse",
+    "partner",
+    "dependent",
+    "colleague",
+    "pupil",
+    "teacher",
+    "carer"
+  ],
+  "ConnectionCertaintyEnumeration": [
+    "guaranteed",
+    "normallyGuaranteed",
+    "notGuaranteed",
+    "neverGuaranteed"
+  ],
+  "CustomerPurchasePackageStatusEnumeration": [
+    "reserved",
+    "ordered",
+    "paidFor",
+    "unused",
+    "activated",
+    "partiallyUsed",
+    "used",
+    "archived",
+    "other"
+  ],
+  "DeadRunTypeEnumeration": [
+    "garageRunOut",
+    "garageRunIn",
+    "turningManoeuvre",
+    "other"
+  ],
+  "DepositPolicyEnumeration": [
+    "none",
+    "depositTaken",
+    "depositBlocked",
+    "other"
+  ],
+  "DiscountBasisEnumeration": [
+    "none",
+    "free",
+    "discount"
+  ],
+  "DistributionChannelTypeEnumeration": [
+    "atStop",
+    "onBoard",
+    "online",
+    "onlineAccount",
+    "telephone",
+    "electronicPass",
+    "postal",
+    "mobileDevice",
+    "agency",
+    "tourOperator",
+    "other"
+  ],
+  "DistributionRightsEnumeration": [
+    "none",
+    "sell",
+    "exchange",
+    "refund",
+    "inform",
+    "book",
+    "private",
+    "other"
+  ],
+  "EffectiveFromEnumeration": [
+    "never",
+    "nextInterval",
+    "nextInstallment",
+    "anyTime",
+    "other"
+  ],
+  "EntitlementTypeEnumeration": [
+    "none",
+    "purchase",
+    "purchaseAtDiscount",
+    "use",
+    "other"
+  ],
+  "ExchangableToEnumeration": [
+    "anyProduct",
+    "sameProductSameDay",
+    "sameProductAnyDay",
+    "sameProductLongerJourney",
+    "sameProductShorterJourney",
+    "upgradeToStandardFare",
+    "upgradeToSpecifiedFare",
+    "downgradeToSpecifiedFare",
+    "equivalentProduct",
+    "changeGroupSize",
+    "other"
+  ],
+  "FareBasisEnumeration": [
+    "route",
+    "distance"
+  ],
+  "FareDemandTypeEnumeration": [
+    "peak",
+    "middle",
+    "offPeak",
+    "superOffPeak",
+    "night",
+    "specialEvent"
+  ],
+  "FareStructureTypeEnumeration": [
+    "networkFlatFare",
+    "lineFlatFare",
+    "zonalFare",
+    "zoneToZoneFare",
+    "zoneSequenceFare",
+    "cappedFlatFare",
+    "cappedPointToPointFare",
+    "cappedZonalFare",
+    "pointToPointFare",
+    "pointToPointDistanceFare",
+    "stageFare",
+    "penaltyFare",
+    "other"
+  ],
+  "FlexibleServiceEnumeration": [
+    "dynamicPassingTimes",
+    "fixedHeadwayFrequency",
+    "fixedPassingTimes",
+    "notFlexible",
+    "other"
+  ],
+  "FrequencyOfUseTypeEnumeration": [
+    "none",
+    "unlimited",
+    "limited",
+    "twiceADay",
+    "single"
+  ],
+  "FulfilmentMethodTypeEnumeration": [
+    "ticketOffice",
+    "ticketMachine",
+    "conductor",
+    "agent",
+    "post",
+    "courier",
+    "selfprint",
+    "sms",
+    "email",
+    "topUpDevice",
+    "validator",
+    "mobileApp",
+    "other"
+  ],
+  "GroupCheckInEnumeration": [
+    "none",
+    "required",
+    "allowed"
+  ],
+  "GroupDiscountBasisEnumeration": [
+    "none",
+    "free",
+    "discountForFirstPersonOnly",
+    "discountForSecondAndSubsequentPersons",
+    "stepDiscount",
+    "other"
+  ],
+  "GroupSizeChangesEnumeration": [
+    "noChanges",
+    "free",
+    "charge",
+    "purchaseWindowSteppedCharge",
+    "numberOfPassengersSteppedCharge"
+  ],
+  "GroupTicketingEnumeration": [
+    "allOnOneTicket",
+    "separateTickets",
+    "ticketWithCoupons",
+    "other"
+  ],
+  "HeadwayUseEnumeration": [
+    "DisplayPassingTimesOnly",
+    "DisplayAsWellAsPassingTimes",
+    "DisplayInsteadOfPassingTimes"
+  ],
+  "InterchangingTypeEnumeration": [
+    "none",
+    "unlimited",
+    "limited",
+    "single"
+  ],
+  "IntervalTypeEnumeration": [
+    "stop",
+    "tariffZone",
+    "distance",
+    "section",
+    "coupon",
+    "other"
+  ],
+  "JourneyAccountingEnumeration": [
+    "contract",
+    "subsidy",
+    "other"
+  ],
+  "JourneyPartEnumeration": [
+    "joiningTo",
+    "splittingFrom",
+    "splittingTo",
+    "joinFrom",
+    "connectTo",
+    "identificationNumberChange"
+  ],
+  "LuggageAllowanceTypeEnumeration": [
+    "none",
+    "singleBag",
+    "limited",
+    "unlimited"
+  ],
+  "LuggageChargingBasisEnumeration": [
+    "free",
+    "chargedByItem",
+    "chargedByWeight",
+    "other"
+  ],
+  "MachineReadableEnumeration": [
+    "none",
+    "magneticStrip",
+    "chip",
+    "ocr",
+    "apnr",
+    "barCode",
+    "shotCode",
+    "nfc",
+    "other"
+  ],
+  "MarkedAsEnumeration": [
+    "unused",
+    "activated",
+    "marked",
+    "used",
+    "expired"
+  ],
+  "MediaTypeEnumeration": [
+    "none",
+    "paperTicket",
+    "paperTicketWithCoupons",
+    "coupon",
+    "selfPrintPaperTicket",
+    "smartCard",
+    "mobileApp",
+    "licencePlate",
+    "card",
+    "mms",
+    "sms",
+    "other"
+  ],
+  "MinimumStayTypeEnumeration": [
+    "none",
+    "specifiedNightsAway",
+    "countNightsAway",
+    "both",
+    "either"
+  ],
+  "NormalDatedVehicleJourneyTypeEnumeration": [
+    "garageRunOut",
+    "garageRunIn",
+    "turningManoeuvre",
+    "other"
+  ],
+  "OnBecomingEnumeration": [
+    "automatic",
+    "invite",
+    "noAction",
+    "other"
+  ],
+  "OnCeasingEnumeration": [
+    "immediateTermination",
+    "useUntilExpiry",
+    "terminateAfterGracePeriod",
+    "automaticallySubstituteProduct",
+    "noAction",
+    "other"
+  ],
+  "OperatorRestrictionsEnumeration": [
+    "anyTrain",
+    "restricted",
+    "specifiedOperatorOnly"
+  ],
+  "PartialRefundBasisEnumeration": [
+    "unusedDays",
+    "unusedWeeks",
+    "unusedMonths",
+    "unusedSemesters",
+    "other"
+  ],
+  "PenaltyPolicyTypeEnumeration": [
+    "noTicket",
+    "noCheckIn",
+    "noCheckOut",
+    "noValidation",
+    "other"
+  ],
+  "PerBasisEnumeration": [
+    "perOffer",
+    "perPerson"
+  ],
+  "PlaceUseEnumeration": [
+    "startAt",
+    "endAt",
+    "via",
+    "restrictTo",
+    "other"
+  ],
+  "PreassignedFareProductEnumeration": [
+    "singleTrip",
+    "shortTrip",
+    "timeLimitedSingleTrip",
+    "dayReturnTrip",
+    "periodReturnTrip",
+    "multistepTrip",
+    "dayPass",
+    "periodPass",
+    "supplement",
+    "other"
+  ],
+  "ProofOfIdentityEnumeration": [
+    "noneRequired",
+    "creditCard",
+    "passport",
+    "drivingLicence",
+    "birthCertificate",
+    "membershipCard",
+    "identityDocument",
+    "medicalDocument",
+    "studentCard",
+    "letterWIthAddress",
+    "mobileDevice",
+    "emailAccount",
+    "measurement",
+    "other"
+  ],
+  "PurchaseActionEnumeration": [
+    "purchase",
+    "orderWithoutPayment",
+    "reserve",
+    "payForPreviousOrder",
+    "subscribe",
+    "payInstallment",
+    "other"
+  ],
+  "ReasonForMeetingEnumeration": [
+    "serviceFacility",
+    "joining",
+    "tariffSection",
+    "splitting"
+  ],
+  "RefundPolicyEnumeration": [
+    "any",
+    "illness",
+    "death",
+    "maternity",
+    "redundancy",
+    "changeOfEmployment",
+    "changeOfResidence",
+    "none",
+    "other"
+  ],
+  "RefundTypeEnumeration": [
+    "unused",
+    "delay",
+    "cancellation",
+    "partialJourney",
+    "earlyTermination",
+    "changeOfGroupSize",
+    "other"
+  ],
+  "RegisterBreakOfJourneyEnumeration": [
+    "none",
+    "markByStaff",
+    "markByValidator",
+    "markByMobileApp",
+    "other"
+  ],
+  "ResellTypeEnumeration": [
+    "none",
+    "partial",
+    "slidingScale",
+    "full"
+  ],
+  "ResellWhenEnumeration": [
+    "never",
+    "withinPurchaseGracePeriod",
+    "beforeStartOfValidity",
+    "afterStartOfValidity",
+    "afterEndOfValidity",
+    "beforeFirstUse",
+    "afterFirstUse",
+    "beforeValidation",
+    "afterValidation",
+    "withinSpecifiedWindow",
+    "anyTime",
+    "other"
+  ],
+  "ReservationChargeTypeEnumeration": [
+    "noFee",
+    "fee",
+    "singleFeeForReturnTrip",
+    "feeForEachDirection",
+    "feeForEachLeg"
+  ],
+  "ResidenceTypeEnumeration": [
+    "live",
+    "work",
+    "study",
+    "exchange",
+    "born",
+    "nonResident"
+  ],
+  "RoundingMethodEnumeration": [
+    "none",
+    "down",
+    "up",
+    "split",
+    "stepTable"
+  ],
+  "RoundTripTypeEnumeration": [
+    "single",
+    "return",
+    "returnOut",
+    "returnBack",
+    "returnOnly",
+    "multiple"
+  ],
+  "RoutingTypeEnumeration": [
+    "direct",
+    "indirect",
+    "both"
+  ],
+  "SaleDiscountRightEnumeration": [
+    "travelCard",
+    "payAsYouGoRight",
+    "statutoryRight",
+    "other"
+  ],
+  "SameClassOfUseEnumeration": [
+    "any",
+    "same",
+    "sameOrEquivalent",
+    "different"
+  ],
+  "SameJourneyEnumeration": [
+    "any",
+    "same",
+    "similar",
+    "different"
+  ],
+  "SameOperatorEnumeration": [
+    "any",
+    "same",
+    "participating",
+    "different"
+  ],
+  "SamePeriodEnumeration": [
+    "any",
+    "samePeriod",
+    "withinSamePeriod",
+    "sameDay",
+    "sameDayOfReturn",
+    "sameFareDay",
+    "nextDay",
+    "different"
+  ],
+  "SameRouteEnumeration": [
+    "any",
+    "same",
+    "oppositeDirection",
+    "different"
+  ],
+  "SameStationReentryPolicyEnumeration": [
+    "blocked",
+    "newFare",
+    "maximumFare",
+    "allowed"
+  ],
+  "SameStopEnumeration": [
+    "any",
+    "sameAsOrigin",
+    "sameAsDestination",
+    "sameAsOriginOrDestination",
+    "anyStopOnRoute",
+    "anyStopInZone",
+    "different"
+  ],
+  "SameTypeOfProductCategoryEnumeration": [
+    "any",
+    "same",
+    "sameOrEquivalent",
+    "different"
+  ],
+  "SameTypeOfTravelDocumentEnumeration": [
+    "any",
+    "same",
+    "sameMedia",
+    "sameSmartcard",
+    "sameMobileApp",
+    "different"
+  ],
+  "SameUserEnumeration": [
+    "samePerson",
+    "differentPerson",
+    "anyOne",
+    "specific"
+  ],
+  "SameZoneEnumeration": [
+    "any",
+    "same",
+    "sameAsOrigin",
+    "sameAsDestination",
+    "sameAsOriginOrDestination",
+    "within",
+    "containing",
+    "equivalent",
+    "different"
+  ],
+  "SeriesTypeEnumeration": [
+    "stationToStation",
+    "originToBorder",
+    "borderToDestination",
+    "border",
+    "transit"
+  ],
+  "ServiceAlterationEnumeration": [
+    "extraJourney",
+    "cancellation",
+    "planned",
+    "replaced"
+  ],
+  "SharedUsageEnumeration": [
+    "singleUser",
+    "concurrentUsers",
+    "concurrentDesignatedUsers"
+  ],
+  "StepLimitUnitEnumeration": [
+    "stops",
+    "stopsIncludingPassThroughStops",
+    "sections",
+    "zones",
+    "networks",
+    "operators",
+    "countries"
+  ],
+  "StopUseConstraintEnumeration": [
+    "arriving",
+    "departing",
+    "passingThrough"
+  ],
+  "SubscriptionRenewalPolicyEnumeration": [
+    "automatic",
+    "manual",
+    "automaticOnConfirmation",
+    "none",
+    "other"
+  ],
+  "SubscriptionTermTypeEnumeration": [
+    "fixed",
+    "variable",
+    "openEnded"
+  ],
+  "SupplementProductEnumeration": [
+    "seatReservation",
+    "bicycle",
+    "dog",
+    "animal",
+    "meal",
+    "wifi",
+    "extraLuggage",
+    "penalty",
+    "upgrade",
+    "journeyExtension",
+    "journeyAddOn",
+    "eventAddOn",
+    "parking",
+    "topUp",
+    "other"
+  ],
+  "SuspensionPolicyEnumeration": [
+    "none",
+    "forCertifiedIllness",
+    "forParentalLeave",
+    "forHoliday",
+    "forAnyReason"
+  ],
+  "TariffBasisEnumeration": [
+    "flat",
+    "distance",
+    "unitSection",
+    "zone",
+    "zoneToZone",
+    "pointToPoint",
+    "route",
+    "tour",
+    "group",
+    "discount",
+    "period",
+    "free",
+    "other"
+  ],
+  "TaxCategoryEnumeration": [
+    "exempt",
+    "general",
+    "transportation",
+    "parking",
+    "food",
+    "alcoholicBeverage",
+    "other"
+  ],
+  "TemplateVehicleJourneyTypeEnumeration": [
+    "headway",
+    "rhythmic",
+    "other"
+  ],
+  "TrainRestrictionsEnumeration": [
+    "anyTrain",
+    "restricted",
+    "specifiedTrainOnly",
+    "specifiedTrainsOnly",
+    "specifiedTrainAndConnections"
+  ],
+  "TravelBillingPolicyEnumeration": [
+    "billAsYouGo",
+    "billOnThreshold",
+    "billAtFareDayEnd",
+    "billAtPeriodEnd"
+  ],
+  "TravelCreditPolicyEnumeration": [
+    "allowTravel",
+    "blockAllTravel",
+    "blockPayAsYouGoTravel",
+    "other"
+  ],
+  "TypeOfCouplingEnumeration": [
+    "serviceFacility",
+    "coupling",
+    "tariffSection",
+    "uncoupled"
+  ],
+  "TypeOfPricingEnumeration": [
+    "valueAddedTax",
+    "salesTax",
+    "other"
+  ],
+  "UsageDiscountRightEnumeration": [
+    "mileagePoints",
+    "usageRebate",
+    "other"
+  ],
+  "UsageEndEnumeration": [
+    "standardDuration",
+    "endOfCalendarPeriod",
+    "endOfRide",
+    "endOfTrip",
+    "endOfFareDay",
+    "endOfFarePeriod",
+    "productExpiry",
+    "profileExpiry",
+    "deregistration",
+    "other"
+  ],
+  "UsageStartConstraintTypeEnumeration": [
+    "variable",
+    "fixed",
+    "fixedWindow"
+  ],
+  "UsageTriggerEnumeration": [
+    "enrolment",
+    "reservation",
+    "purchase",
+    "fulfilment",
+    "activation",
+    "specifiedStartDate",
+    "startOutboundRide",
+    "endOutboundRide",
+    "startReturnRide",
+    "startOfPeriod",
+    "dayOffsetBeforeCalendarPeriod"
+  ],
+  "UsageValidityTypeEnumeration": [
+    "singleRide",
+    "singleTrip",
+    "returnTrip",
+    "carnet",
+    "dayPass",
+    "weeklyPass",
+    "weekendPass",
+    "monthlyPass",
+    "annualPass",
+    "seasonTicket",
+    "profileMembership",
+    "subscription",
+    "openEnded",
+    "cap",
+    "other"
+  ],
+  "UserTypeEnumeration": [
+    "adult",
+    "child",
+    "infant",
+    "senior",
+    "student",
+    "youngPerson",
+    "schoolPupil",
+    "military",
+    "disabled",
+    "disabledCompanion",
+    "jobSeeker",
+    "employee",
+    "animal",
+    "guideDog",
+    "member",
+    "other",
+    "anyone"
+  ],
+  "VehicleCollectionEnumeration": [
+    "onSite",
+    "offSiteShuttle",
+    "offSite",
+    "meetAndGreet",
+    "floating",
+    "other"
+  ]
 }

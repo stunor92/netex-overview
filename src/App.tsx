@@ -174,6 +174,7 @@ export default function App() {
               profileData={profileData}
               activeProfile={activeProfile}
               onProfileChange={handleProfileChange}
+              enumValues={allEnums}
             />
           )}
         </div>

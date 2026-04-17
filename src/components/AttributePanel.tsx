@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from '@entur/tab'
 import { Table, TableHead, TableBody, TableRow, HeaderCell, DataCell } from '@entur/table'
 import { ExpandablePanel } from '@entur/expand'
+import { Label } from '@entur/typography'
 import type { NeTExElement, LoadedFile, NeTExAttribute, NeTExInheritedAttribute, ProfileData, ActiveProfile, ProfileStatus, NeTExEnums } from '../types'
 
 interface AttributePanelProps {
@@ -151,11 +152,11 @@ export function SchemaTab({ element, allElements, profileData, activeProfile, on
   const elementProfile = profileData?.[element.name]
   const showProfileCol = !!profileData
 
-  function attrRow(a: NeTExAttribute | NeTExInheritedAttribute, dim = false) {
+  function attrRow(a: NeTExAttribute | NeTExInheritedAttribute) {
     const attrStatus = elementProfile?.attributes[a.name]
     const notInProfile = attrStatus === 'not-in-profile'
     return (
-      <TableRow key={a.name} style={{ opacity: dim || notInProfile ? 0.4 : 1 }}>
+      <TableRow key={a.name} style={{ opacity: notInProfile ? 0.4 : 1 }}>
         <DataCell style={{ textDecoration: notInProfile ? 'line-through' : 'none' }}>{a.name}</DataCell>
         <DataCell>
           <span style={{ fontFamily: 'monospace', color: KIND_COLOUR[a.kind] ?? '#555' }}>{a.kind}</span>
@@ -190,6 +191,11 @@ export function SchemaTab({ element, allElements, profileData, activeProfile, on
                   {v}
                 </span>
               ))}
+            </div>
+          )}
+          {a.kind === 'enum' && !enumValues?.[a.type] && (
+            <div style={{ fontSize: '10px', color: '#d84315', background: '#ffebee', padding: '4px 8px', borderRadius: '4px', marginTop: '4px', display: 'inline-block' }}>
+              ⚠ Ingen verdier definert
             </div>
           )}
           {(() => {
@@ -261,7 +267,7 @@ export function SchemaTab({ element, allElements, profileData, activeProfile, on
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {attrs.map((a) => attrRow(a, true))}
+                    {attrs.map((a) => attrRow(a))}
                   </TableBody>
                 </Table>
               </ExpandablePanel>
@@ -349,6 +355,81 @@ function InstanceTab({ element, loadedFile }: { element: NeTExElement; loadedFil
 }
 
 export function AttributePanel({ element, allElements, loadedFile, profileData, activeProfile, onSelect, enumValues }: AttributePanelProps) {
+  // Check if this is an enum (virtual element from Enumerations group)
+  const isEnum = element.group === 'Enumerations'
+  const enumVals = isEnum ? enumValues?.[element.name] : undefined
+
+  if (isEnum && enumVals) {
+    return (
+      <div style={{ padding: '24px' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px', color: 'var(--colors-greys-grey10, #2a2a2a)', fontFamily: 'monospace' }}>
+            {element.name}
+          </div>
+          <div style={{ fontSize: '14px', color: 'var(--colors-greys-grey50, #888)' }}>
+            {enumVals.length} {enumVals.length === 1 ? 'verdi' : 'verdier'} definert
+          </div>
+        </div>
+
+        <div>
+          <Label style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--colors-greys-grey50, #888)', marginBottom: '12px' }}>
+            Gyldige verdier
+          </Label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {enumVals.map((value) => (
+              <span
+                key={value}
+                style={{
+                  fontFamily: 'monospace',
+                  fontSize: '12px',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  background: '#fff3e0',
+                  color: '#e65100',
+                  border: '1px solid #ffe0b2',
+                }}
+              >
+                {value}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop: '32px' }}>
+          <Label style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--colors-greys-grey50, #888)', marginBottom: '12px' }}>
+            Brukes av
+          </Label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {allElements
+              .filter((el) => 
+                [...el.attributes, ...el.inheritedAttributes].some(
+                  (attr) => attr.kind === 'enum' && attr.type === element.name
+                )
+              )
+              .map((el) => (
+                <button
+                  key={el.name}
+                  onClick={() => onSelect?.(el)}
+                  style={{
+                    fontFamily: 'monospace',
+                    fontSize: '11px',
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    background: 'var(--colors-greys-grey90, #f8f8f8)',
+                    color: 'var(--colors-greys-grey40, #555)',
+                    border: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {el.name}
+                </button>
+              ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const [activeTabIdx, setActiveTabIdx] = useState(0)
   const groupColour = GROUP_COLOURS[element.group] ?? '#555'
   const hasInstances = !!loadedFile?.instanceMap[element.name]?.length

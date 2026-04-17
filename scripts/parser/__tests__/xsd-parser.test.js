@@ -60,4 +60,23 @@ describe('parseXsd', () => {
       description: 'Type of product.',
     })
   })
+
+  it('extracts simpleType enumerations', () => {
+    const enumFixture = `<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:simpleType name="AccessModeEnumeration">
+    <xsd:annotation>
+      <xsd:documentation>Allowed values for Access MODEs.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="foot"/>
+      <xsd:enumeration value="bicycle"/>
+      <xsd:enumeration value="car"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>`
+    const { enums } = parseXsd(enumFixture)
+    expect(enums.has('AccessModeEnumeration')).toBe(true)
+    expect(enums.get('AccessModeEnumeration')).toEqual(['foot', 'bicycle', 'car'])
+  })
 })

@@ -112,6 +112,7 @@ async function listXsdFilesDeep(topDir) {
 async function buildElementsJson() {
   const merged = { elements: new Map(), types: new Map(), groups: new Map() }
   const partMap = new Map()
+  const allEnums = new Map()
 
   // Framework: types/groups only, no elements
   console.log('Fetching framework XSD file list...')
@@ -152,10 +153,11 @@ async function buildElementsJson() {
     process.stdout.write(`  Parsing ${path.split('/').pop()}...`)
     const text = await fetchText(path)
     if (!text) { console.log(' skipped (404)'); continue }
-    const { elements, types, groups } = parseXsd(text)
+    const { elements, types, groups, enums } = parseXsd(text)
     for (const [k, v] of elements) { merged.elements.set(k, v); partMap.set(k, 2) }
     for (const [k, v] of types) merged.types.set(k, v)
     for (const [k, v] of groups) merged.groups.set(k, v)
+    for (const [k, v] of enums) allEnums.set(k, v)
     console.log(' done')
   }
 
@@ -167,10 +169,11 @@ async function buildElementsJson() {
     process.stdout.write(`  Parsing ${path.split('/').pop()}...`)
     const text = await fetchText(path)
     if (!text) { console.log(' skipped (404)'); continue }
-    const { elements, types, groups } = parseXsd(text)
+    const { elements, types, groups, enums } = parseXsd(text)
     for (const [k, v] of elements) { merged.elements.set(k, v); partMap.set(k, 3) }
     for (const [k, v] of types) merged.types.set(k, v)
     for (const [k, v] of groups) merged.groups.set(k, v)
+    for (const [k, v] of enums) allEnums.set(k, v)
     console.log(' done')
   }
 
@@ -182,6 +185,13 @@ async function buildElementsJson() {
   mkdirSync(DATA_DIR, { recursive: true })
   writeFileSync(join(DATA_DIR, 'netex-elements.json'), JSON.stringify(netexElements, null, 2))
   console.log('Wrote src/data/netex-elements.json')
+
+  // Convert enums Map to sorted object and write to file
+  const enumsObject = Object.fromEntries(
+    Array.from(allEnums.entries()).sort(([a], [b]) => a.localeCompare(b))
+  )
+  writeFileSync(join(DATA_DIR, 'netex-enums.json'), JSON.stringify(enumsObject, null, 2))
+  console.log(`Wrote src/data/netex-enums.json (${allEnums.size} enumerations)`)
 }
 
 async function buildExamplesJson() {

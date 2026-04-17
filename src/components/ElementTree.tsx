@@ -55,7 +55,8 @@ interface ElementTreeProps {
   profileData: ProfileData | null
   activeProfile: ActiveProfile
   onProfileChange: (p: ActiveProfile) => void
-  activePart: 1 | 2 | 3 | null   // replaces activeChip and query
+  activePart: 1 | 2 | 3 | null
+  enumValues: Record<string, string[]>
 }
 
 function ProfileBadge({ status }: { status: ProfileStatus | undefined }) {
@@ -88,7 +89,7 @@ function LegendItem({ color, label }: { color: string; label: string }) {
 
 export function ElementTree({
   elements, activePart, selectedElement, loadedFile, onSelect,
-  profileData, activeProfile, onProfileChange,
+  profileData, activeProfile, onProfileChange, enumValues,
 }: ElementTreeProps) {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set())
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
@@ -99,7 +100,16 @@ export function ElementTree({
     return elements.filter((el) => {
       if (el.attributes.length === 0 && el.inheritedAttributes.length === 0) return false
       if (activePart !== null && el.part !== activePart) return false
-      if (query) return el.name.toLowerCase().includes(query.toLowerCase())
+      if (query) {
+        const lowerQuery = query.toLowerCase()
+        // Søk i elementnavn
+        if (el.name.toLowerCase().includes(lowerQuery)) return true
+        // Søk i egne attributter
+        if (el.attributes.some((attr) => attr.name.toLowerCase().includes(lowerQuery))) return true
+        // Søk i arvede attributter
+        if (el.inheritedAttributes.some((attr) => attr.name.toLowerCase().includes(lowerQuery))) return true
+        return false
+      }
       return true
     })
   }, [elements, query, activePart])
@@ -130,6 +140,22 @@ export function ElementTree({
   }
 
   const groups = [...byGroup.keys()].sort()
+
+  // Create virtual enum elements for the Enumerations section
+  const enumElements: NeTExElement[] = Object.keys(enumValues)
+    .sort()
+    .filter((name) => !query || name.toLowerCase().includes(query.toLowerCase()))
+    .map((name) => ({
+      name,
+      abstract: false,
+      parent: null,
+      group: 'Enumerations' as any,
+      part: 0,
+      description: `Enumeration with ${enumValues[name].length} values`,
+      inheritedFrom: [],
+      attributes: [],
+      inheritedAttributes: [],
+    }))
 
   return (
     <div style={{ paddingTop: '0', paddingBottom: '8px' }}>
@@ -206,7 +232,7 @@ export function ElementTree({
       )}
 
       {groups.map((group) => {
-        const colour = GROUP_COLOURS[group] ?? '#555'
+        const colour = group === 'Enumerations' ? '#e65100' : (GROUP_COLOURS[group] ?? '#888')
         const isExpanded = expandedGroups.has(group)
         const children = byGroup.get(group)!
         const isGroupHovered = hoveredGroup === group
@@ -286,6 +312,79 @@ export function ElementTree({
           </div>
         )
       })}
+
+      {/* Enumerations section */}
+      {enumElements.length > 0 && (
+        <div>
+          <div style={{
+            padding: '8px 12px',
+            fontSize: '11px',
+            fontWeight: 600,
+            color: '#e65100',
+            background: '#fff3e0',
+            borderTop: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+            borderBottom: '1px solid var(--colors-greys-grey80, #e0e0e0)',
+            marginTop: '8px',
+          }}>
+            ENUMERATIONS ({enumElements.length})
+          </div>
+          <div>
+            {enumElements.map((enumEl) => {
+              const isSelected = selectedElement?.name === enumEl.name
+              const isHovered = hoveredElement === enumEl.name
+              const showHighlight = isSelected || isHovered
+              return (
+                <button
+                  key={enumEl.name}
+                  type="button"
+                  onClick={() => onSelect(enumEl)}
+                  onMouseEnter={() => setHoveredElement(enumEl.name)}
+                  onMouseLeave={() => setHoveredElement(null)}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '5px 12px',
+                    fontSize: '11px',
+                    cursor: 'pointer',
+                    background: showHighlight ? '#fff3e0' : 'none',
+                    border: 'none',
+                    borderLeft: `3px solid ${isSelected ? '#e65100' : 'transparent'}`,
+                    color: showHighlight ? '#e65100' : 'var(--colors-greys-grey40, #555)',
+                    fontWeight: isSelected ? 600 : undefined,
+                  }}
+                >
+                  <span style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    fontFamily: 'monospace',
+                  }}>
+                    {enumEl.name}
+                  </span>
+                  <span style={{
+                    fontSize: '9px',
+                    background: '#e65100',
+                    color: 'white',
+                    padding: '1px 5px',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    flexShrink: 0,
+                    marginLeft: '4px',
+                  }}>
+                    {elements.filter((el) => 
+                      [...el.attributes, ...el.inheritedAttributes].some(
+                        (attr) => attr.kind === 'enum' && attr.type === enumEl.name
+                      )
+                    ).length}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
