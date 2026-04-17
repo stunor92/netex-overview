@@ -26,36 +26,48 @@ const KIND_COLOUR: Record<string, string> = {
 }
 
 const GROUP_COLOURS: Record<string, string> = {
-  // Core fare modelling
+  // Part 1 - cool blues/greens for geography/stops
+  AccessSpace: '#00695c',
+  Connection: '#00796b',
+  FlexibleLine: '#5c6bc0',
+  Line: '#1a237e',
+  NavigationPath: '#004d40',
+  Network: '#1565c0',
+  Parking: '#37474f',
+  PathLink: '#006064',
+  Quay: '#0277bd',
+  Route: '#283593',
+  ScheduledStopPoint: '#1976d2',
+  ServiceLink: '#0288d1',
+  SiteFrame: '#455a64',
+  StopArea: '#2e7d32',
+  StopPlace: '#388e3c',
+  // Part 2 - warm purples/oranges for timetables
+  Block: '#6a1b9a',
+  DeadRun: '#757575',
+  Interchange: '#7b1fa2',
+  ServiceJourney: '#e65100',
+  TimetabledPassingTime: '#f57c00',
+  TrainNumber: '#8d6e63',
+  VehicleJourney: '#d84315',
+  VehicleService: '#bf360c',
+  // Part 3 - fare modelling
+  DistanceMatrixElement: '#388e3c',
+  DistributionChannel: '#f57c00',
+  FarePrice: '#181c56',
   FareProduct: '#ff6c6c',
   FareStructureElement: '#c0392b',
-  ValidableElement: '#d84315',
   FareTable: '#bf360c',
-  FarePrice: '#181c56',
-  FareZone: '#1a6b3c',
-  Tariff: '#4a148c',
-  // Products & sales
-  SalesOfferPackage: '#e07b00',
-  DistributionChannel: '#f57c00',
   FulfilmentMethod: '#ef6c00',
-  TypeOfTravelDocument: '#e65100',
-  // Usage & time
-  UsageParameter: '#6a1b9a',
-  TimeStructureFactor: '#1565c0',
-  QualityStructureFactor: '#0277bd',
-  GeographicStructureFactor: '#2e7d32',
-  DistanceMatrixElement: '#388e3c',
-  // Pricing & rules
   PricingRule: '#283593',
-  // Assignments & constraints
-  Assignment: '#00796b',
-  // Infrastructure
-  Frame: '#37474f',
-  // Customer-facing
-  CustomerAccount: '#558b2f',
-  SecurityListing: '#4527a0',
-  // Meta
-  FareSeries: '#757575',
+  QualityStructureFactor: '#0277bd',
+  SalesOfferPackage: '#e07b00',
+  Tariff: '#4a148c',
+  TimeStructureFactor: '#1565c0',
+  TypeOfTravelDocument: '#e65100',
+  UsageParameter: '#6a1b9a',
+  ValidableElement: '#d84315',
+  FareZone: '#1a6b3c',
 }
 
 const PROFILE_LABEL: Record<string, string> = {

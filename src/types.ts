@@ -1,27 +1,48 @@
-/** Top-level grouping categories for NeTEx Part 3 elements */
+/** Top-level grouping categories for NeTEx elements */
 export type ElementGroup =
-  | 'FareProduct'
+  // Part 1 — Network & Stops
+  | 'AccessSpace'
+  | 'Connection'
+  | 'FareZone'
+  | 'FlexibleLine'
+  | 'Line'
+  | 'NavigationPath'
+  | 'Network'
+  | 'Parking'
+  | 'PathLink'
+  | 'Quay'
+  | 'Route'
+  | 'ScheduledStopPoint'
+  | 'ServiceLink'
+  | 'SiteFrame'
+  | 'StopArea'
+  | 'StopPlace'
+  // Part 2 — Timetables
+  | 'Block'
+  | 'DeadRun'
+  | 'Interchange'
+  | 'ServiceJourney'
+  | 'TimetabledPassingTime'
+  | 'TrainNumber'
+  | 'VehicleJourney'
+  | 'VehicleService'
+  // Part 3 — Fares
+  | 'DistanceMatrixElement'
+  | 'DistributionChannel'
   | 'FarePrice'
-  | 'SalesOfferPackage'
+  | 'FareProduct'
   | 'FareStructureElement'
+  | 'FareTable'
+  | 'FulfilmentMethod'
+  | 'PricingRule'
+  | 'QualityStructureFactor'
+  | 'SalesOfferPackage'
+  | 'Tariff'
+  | 'TimeStructureFactor'
+  | 'TypeOfTravelDocument'
   | 'UsageParameter'
   | 'ValidableElement'
-  | 'DistributionChannel'
-  | 'FulfilmentMethod'
-  | 'TypeOfTravelDocument'
-  | 'FareTable'
-  | 'FareSeries'
-  | 'GeographicStructureFactor'
-  | 'QualityStructureFactor'
-  | 'TimeStructureFactor'
-  | 'DistanceMatrixElement'
-  | 'FareZone'
-  | 'Tariff'
-  | 'PricingRule'
-  | 'Assignment'
-  | 'CustomerAccount'
-  | 'SecurityListing'
-  | 'Frame'
+  // All parts
   | 'Other'
 
 export type AttributeKind =
@@ -52,6 +73,7 @@ export interface NeTExElement {
   abstract: boolean
   parent: string | null
   group: ElementGroup
+  part: 0 | 1 | 2 | 3
   description: string
   inheritedFrom: string[]       // ordered closest-first, e.g. ["FareProduct", "PriceableObject", "DataManagedObject"]
   attributes: NeTExAttribute[]
