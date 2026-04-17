@@ -34,7 +34,7 @@ Expand the netex-overview app from covering only NeTEx Part 3 (Fares) to coverin
 ### What changes
 - The current search field + filter chips are removed from the top bar
 - Four new chips replace them: `Alle | Del 1 | Del 2 | Del 3`
-  - Del 1 label: «Del 1 · Nett & stopp»
+  - Del 1 label: «Del 1 · Nettverk & stoppesteder»
   - Del 2 label: «Del 2 · Rutetabeller»
   - Del 3 label: «Del 3 · Billetter & takster»
 - When a part chip is active, a short description string appears to the right of the chips in the top bar, styled grey and italic, e.g.:
@@ -66,18 +66,17 @@ Expand the netex-overview app from covering only NeTEx Part 3 (Fares) to coverin
 ## Section 4: Inline Ref Descriptions in Attribute Panel
 
 ### What changes
-- In `AttributePanel` / `SchemaTab`, when a `ref`-typed attribute's target element has no schema data (empty `attributes` and `inheritedAttributes`), the attribute row's Type column shows:
-  - The type name (as today, no clickable link since there is nothing to navigate to)
-  - Below it, a small italic grey line with the target element's `description` text
+- In `AttributePanel` / `SchemaTab`, when a `ref`-typed attribute's target element has no schema data (empty `attributes` and `inheritedAttributes`), the attribute row shows:
+  - Type-kolonnen: type-navn som i dag, men uten klikkbar lenke (ingenting å navigere til)
+  - Beskrivelse-kolonnen: attributtens egen `description` som normalt, etterfulgt av en liten kursiv grå linje med målementets `description` tekst (fra ref-elementet i JSON-en)
 - This applies in both «Egne attributter» and «Arvet fra»-sections
-- The `findLinkedElement` helper already resolves ref targets — it can be extended to also return no-data elements (currently it may already do so); the rendering logic in `attrRow` is updated to check for no-data and render the description instead of a link
+- The `findLinkedElement` helper already resolves ref targets — the rendering logic in `attrRow` is updated to check for no-data and append the ref element's description in the Beskrivelse cell
 
 ### Example
 ```
-Navn            Type                      Kard.   Beskrivelse
-PricingRuleRef  ref                       0..1    ...
-                PricingRuleRef                    
-                Reference to a PRICING RULE.  ← italic grey, new
+Navn            Type           Kard.   Beskrivelse
+PricingRuleRef  ref            0..1    Refers to the pricing rule applied.
+                PricingRuleRef         Reference to a PRICING RULE.  ← italic grey, new
 ```
 
 ---
