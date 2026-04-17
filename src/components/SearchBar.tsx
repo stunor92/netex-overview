@@ -1,45 +1,40 @@
-import { TextField } from '@entur/form'
 import { FilterChip } from '@entur/chip'
-import { EXPORT_CHIPS } from '../constants'
+import { PARTS } from '../constants'
 
 interface SearchBarProps {
-  query: string
-  onQueryChange: (q: string) => void
-  activeChip: string | null
-  onChipChange: (c: string | null) => void
+  activePart: 1 | 2 | 3 | null
+  onPartChange: (p: 1 | 2 | 3 | null) => void
 }
 
-export function SearchBar({ query, onQueryChange, activeChip, onChipChange }: SearchBarProps) {
+export function SearchBar({ activePart, onPartChange }: SearchBarProps) {
+  const activePartDef = activePart ? PARTS.find((p) => p.key === activePart) : null
+
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: 0 }}>
-      <div className="search-label-hidden">
-        <TextField
-          label="Søk"
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Søk etter element..."
-        />
-      </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
         <FilterChip
           value=""
-          checked={activeChip === null}
-          onChange={() => onChipChange(null)}
+          checked={activePart === null}
+          onChange={() => onPartChange(null)}
         >
           Alle
         </FilterChip>
-        {EXPORT_CHIPS.map((chip) => (
+        {PARTS.map((part) => (
           <FilterChip
-            key={chip.key}
-            value={chip.key}
-            checked={activeChip === chip.key}
-            onChange={() => onChipChange(activeChip === chip.key ? null : chip.key)}
+            key={part.key}
+            value={String(part.key)}
+            checked={activePart === part.key}
+            onChange={() => onPartChange(activePart === part.key ? null : part.key)}
           >
-            {chip.label}{' '}
-            <span style={{ color: '#aaa', fontWeight: 400 }}>· {chip.sub}</span>
+            {part.label}
           </FilterChip>
         ))}
       </div>
+      {activePartDef && (
+        <span style={{ fontSize: '12px', color: 'var(--colors-greys-grey50, #888)', fontStyle: 'italic', whiteSpace: 'nowrap' }}>
+          {activePartDef.description}
+        </span>
+      )}
     </div>
   )
 }
