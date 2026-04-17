@@ -327,8 +327,9 @@
     "magneticStrip",
     "chip",
     "ocr",
-    "apnr",
+    "anpr",
     "barCode",
+    "qrCode",
     "shotCode",
     "nfc",
     "other"
@@ -366,6 +367,19 @@
     "garageRunIn",
     "turningManoeuvre",
     "other"
+  ],
+  "OccupancyEnumeration": [
+    "unknown",
+    "empty",
+    "manySeatsAvailable",
+    "fewSeatsAvailable",
+    "standingRoomOnly",
+    "crushedStandingRoomOnly",
+    "full",
+    "notAcceptingPassengers",
+    "undefined",
+    "seatsAvailable",
+    "standingAvailable"
   ],
   "OnBecomingEnumeration": [
     "automatic",
@@ -453,6 +467,12 @@
     "joining",
     "tariffSection",
     "splitting"
+  ],
+  "RechargingProcessEnumeration": [
+    "changeBatteries",
+    "powercable",
+    "pantograph",
+    "other"
   ],
   "RefundPolicyEnumeration": [
     "any",
@@ -620,18 +640,21 @@
     "within",
     "containing",
     "equivalent",
-    "different"
+    "different",
+    "neighbouring"
   ],
   "SeriesTypeEnumeration": [
     "stationToStation",
     "originToBorder",
     "borderToDestination",
     "border",
-    "transit"
+    "transit",
+    "zoneToZone"
   ],
   "ServiceAlterationEnumeration": [
     "extraJourney",
     "cancellation",
+    "provisional",
     "planned",
     "replaced"
   ],
@@ -639,6 +662,14 @@
     "singleUser",
     "concurrentUsers",
     "concurrentDesignatedUsers"
+  ],
+  "SpotAvailabilityStatusEnumeration": [
+    "free",
+    "held",
+    "expiredHeld",
+    "reserved",
+    "unknown",
+    "other"
   ],
   "StepLimitUnitEnumeration": [
     "stops",
@@ -738,12 +769,6 @@
     "blockPayAsYouGoTravel",
     "other"
   ],
-  "TypeOfCouplingEnumeration": [
-    "serviceFacility",
-    "coupling",
-    "tariffSection",
-    "uncoupled"
-  ],
   "TypeOfPricingEnumeration": [
     "valueAddedTax",
     "salesTax",
@@ -800,25 +825,6 @@
     "openEnded",
     "cap",
     "other"
-  ],
-  "UserTypeEnumeration": [
-    "adult",
-    "child",
-    "infant",
-    "senior",
-    "student",
-    "youngPerson",
-    "schoolPupil",
-    "military",
-    "disabled",
-    "disabledCompanion",
-    "jobSeeker",
-    "employee",
-    "animal",
-    "guideDog",
-    "member",
-    "other",
-    "anyone"
   ],
   "VehicleCollectionEnumeration": [
     "onSite",
