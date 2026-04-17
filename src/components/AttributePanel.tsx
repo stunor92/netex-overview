@@ -29,6 +29,7 @@ const GROUP_COLOURS: Record<string, string> = {
   // Part 1 - cool blues/greens for geography/stops
   AccessSpace: '#00695c',
   Connection: '#00796b',
+  FareZone: '#1a6b3c',
   FlexibleLine: '#5c6bc0',
   Line: '#1a237e',
   NavigationPath: '#004d40',
@@ -67,7 +68,6 @@ const GROUP_COLOURS: Record<string, string> = {
   TypeOfTravelDocument: '#e65100',
   UsageParameter: '#6a1b9a',
   ValidableElement: '#d84315',
-  FareZone: '#1a6b3c',
 }
 
 const PROFILE_LABEL: Record<string, string> = {
