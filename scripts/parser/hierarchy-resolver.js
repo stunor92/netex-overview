@@ -4,9 +4,10 @@ const SKIP_TYPES = new Set(['DataManagedObject', 'EntityInVersion', 'VersionedCh
 /**
  * @param {{ elements: Map, types: Map, groups: Map }} context
  * @param {string[]} topGroupNames
+ * @param {Map<string, 0|1|2|3>} partMap
  * @returns {import('../../src/types.js').NeTExElement[]}
  */
-export function resolveHierarchy(context, topGroupNames) {
+export function resolveHierarchy(context, topGroupNames, partMap = new Map()) {
   const { elements, types, groups } = context
   const result = []
 
@@ -47,6 +48,7 @@ export function resolveHierarchy(context, topGroupNames) {
       // parent: closest named ancestor (stripping _Dummy suffix from substitutionGroup)
       parent: el.substitutionGroup ? stripDummy(el.substitutionGroup) : null,
       group: group ?? 'Other',
+      part: partMap.get(name) ?? 0,
       description: el.description,
       inheritedFrom,
       attributes: ownAttrs.map(normaliseAttr),
