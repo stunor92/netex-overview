@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import type { NeTExElement, LoadedFile, NeTExExample, ProfileData, ActiveProfile, StructureNode, ProfileStructure, NeTExEnums } from './types'
+import { useState, useEffect } from 'react'
+import type { NeTExElement, LoadedFile, NeTExExample, ProfileData, ActiveProfile, StructureNode, ProfileStructure, NeTExEnums, VersionManifest, VersionData } from './types'
 import { PARTS } from './constants'
 import elementsData from './data/netex-elements.json'
 import examplesData from './data/netex-examples.json'
@@ -70,6 +70,64 @@ export default function App() {
   const [loadedFile, setLoadedFile] = useState<LoadedFile | null>(null)
   const [activeProfile, setActiveProfile] = useState<ActiveProfile>(null)
   const [selectedNode, setSelectedNode] = useState<StructureNode | null>(null)
+  const [netexVersion, setNetexVersion] = useState<string>('v2.0')
+  const [availableVersions, setAvailableVersions] = useState<string[]>(['v2.0'])
+  const [versionData, setVersionData] = useState<{ elements: NeTExElement[], enums: NeTExEnums, examples: NeTExExample[] }>({
+    elements: allElements,
+    enums: allEnums,
+    examples: allExamples,
+  })
+  const [isLoadingVersion, setIsLoadingVersion] = useState(false)
+
+  // Load versions manifest on mount
+  useEffect(() => {
+    async function loadManifest() {
+      try {
+        const response = await fetch('/src/data/versions-manifest.json')
+        const manifest: VersionManifest = await response.json()
+        const versions = manifest.versions
+          .filter(v => !v.error)
+          .map(v => v.version)
+        setAvailableVersions(versions)
+      } catch (err) {
+        console.warn('Failed to load versions manifest:', err)
+        // Fallback to default version
+      }
+    }
+    loadManifest()
+  }, [])
+
+  // Load version data when version changes
+  useEffect(() => {
+    async function loadVersionData() {
+      if (netexVersion === 'v2.0' && versionData.elements === allElements) {
+        // Already have default data loaded
+        return
+      }
+      
+      setIsLoadingVersion(true)
+      try {
+        const response = await fetch(`/src/data/versions/netex-${netexVersion}.json`)
+        const data: VersionData = await response.json()
+        setVersionData({
+          elements: data.elements,
+          enums: data.enums,
+          examples: data.examples,
+        })
+      } catch (err) {
+        console.error(`Failed to load version ${netexVersion}:`, err)
+        // Fallback to default data
+        setVersionData({
+          elements: allElements,
+          enums: allEnums,
+          examples: allExamples,
+        })
+      } finally {
+        setIsLoadingVersion(false)
+      }
+    }
+    loadVersionData()
+  }, [netexVersion])
 
   const profileData = activeProfile ? PROFILES[activeProfile] : null
   const structureData = activeProfile ? PROFILE_STRUCTURES[activeProfile] : null
@@ -77,6 +135,13 @@ export default function App() {
   function handleProfileChange(p: ActiveProfile) {
     setActiveProfile(p)
     setSelectedNode(null)
+  }
+
+  function handleVersionChange(newVersion: string) {
+    setNetexVersion(newVersion)
+    // Reset selections when changing version
+    setSelectedElement(null)
+    setActivePart(null)
   }
 
   const selectedNodePath = selectedNode && structureData
@@ -128,7 +193,43 @@ export default function App() {
         )}
 
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <ExampleLoader examples={allExamples} onFileLoaded={setLoadedFile} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--colors-greys-grey50, #888)" aria-hidden="true">
+              <path d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"/>
+            </svg>
+            <label htmlFor="version-select" style={{ fontSize: '12px', color: 'var(--colors-greys-grey50, #888)', whiteSpace: 'nowrap' }}>
+              Versjon:
+            </label>
+            <select
+              id="version-select"
+              value={netexVersion}
+              onChange={(e) => handleVersionChange(e.target.value)}
+              disabled={isLoadingVersion}
+              style={{ 
+                fontSize: '12px', 
+                padding: '6px 24px 6px 8px',
+                minWidth: '140px',
+                border: '1px solid var(--colors-greys-grey70, #ccc)',
+                borderRadius: '4px',
+                backgroundColor: isLoadingVersion ? 'var(--colors-greys-grey90, #f8f8f8)' : 'var(--colors-greys-white, #fff)',
+                cursor: isLoadingVersion ? 'wait' : 'pointer',
+                outline: 'none',
+                opacity: isLoadingVersion ? 0.6 : 1,
+              }}
+            >
+              {availableVersions.map((v) => (
+                <option key={v} value={v}>
+                  {v === 'v2.0' ? `${v} (stable)` : v}
+                </option>
+              ))}
+            </select>
+            {isLoadingVersion && (
+              <span style={{ fontSize: '11px', color: 'var(--colors-greys-grey50, #888)' }}>
+                Laster...
+              </span>
+            )}
+          </div>
+          <ExampleLoader examples={versionData.examples} onFileLoaded={setLoadedFile} />
           <a
             href="https://github.com/NeTEx-CEN/NeTEx"
             target="_blank"
@@ -166,7 +267,7 @@ export default function App() {
             />
           ) : (
             <ElementTree
-              elements={allElements}
+              elements={versionData.elements}
               activePart={activePart}
               selectedElement={selectedElement}
               loadedFile={loadedFile}
@@ -174,7 +275,7 @@ export default function App() {
               profileData={profileData}
               activeProfile={activeProfile}
               onProfileChange={handleProfileChange}
-              enumValues={allEnums}
+              enumValues={versionData.enums}
             />
           )}
         </div>
@@ -189,7 +290,7 @@ export default function App() {
             <ProfileGuidePanel
               node={selectedNode}
               nodePath={selectedNodePath}
-              allElements={allElements}
+              allElements={versionData.elements}
               profileData={profileData}
               activeProfile={activeProfile}
               onSelectElement={(el) => { setActiveProfile(null); setSelectedElement(el) }}
@@ -208,15 +309,15 @@ export default function App() {
           ) : selectedElement ? (
             <AttributePanel
               element={selectedElement}
-              allElements={allElements}
+              allElements={versionData.elements}
               loadedFile={loadedFile}
               profileData={profileData}
               activeProfile={activeProfile}
               onSelect={setSelectedElement}
-              enumValues={allEnums}
+              enumValues={versionData.enums}
             />
           ) : activePart ? (
-            <PartDescriptionCard activePart={activePart} allElements={allElements} />
+            <PartDescriptionCard activePart={activePart} allElements={versionData.elements} />
           ) : (
             <div style={{
               display: 'flex',

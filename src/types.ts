@@ -145,3 +145,28 @@ export interface ProfileStructure {
 
 /** Maps enum type name to array of allowed values */
 export type NeTExEnums = Record<string, string[]>
+
+// --- Version management types ---
+
+export interface VersionManifest {
+  versions: VersionInfo[]
+  generatedAt: string
+}
+
+export interface VersionInfo {
+  version: string
+  file?: string
+  elementCount?: number
+  enumCount?: number
+  exampleCount?: number
+  fetchedAt: string
+  error?: string
+}
+
+export interface VersionData {
+  version: string
+  elements: NeTExElement[]
+  enums: NeTExEnums
+  examples: NeTExExample[]
+  fetchedAt: string
+}

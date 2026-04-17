@@ -15,6 +15,9 @@ dist-ssr
 # Generated data files
 src/data/netex-elements.json
 src/data/netex-examples.json
+src/data/netex-enums.json
+src/data/versions/
+src/data/versions-manifest.json
 
 # Environment variables
 .env

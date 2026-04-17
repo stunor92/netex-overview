@@ -6,9 +6,11 @@ import { resolveHierarchy } from './parser/hierarchy-resolver.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = join(__dirname, '../src/data')
+const VERSIONS_DIR = join(DATA_DIR, 'versions')
 
-const GITHUB_API = 'https://api.github.com/repos/NeTEx-CEN/NeTEx/contents'
-const RAW_BASE = 'https://raw.githubusercontent.com/NeTEx-CEN/NeTEx/master'
+const GITHUB_API = 'https://api.github.com/repos/NeTEx-CEN/NeTEx'
+const GITHUB_CONTENTS_API = `${GITHUB_API}/contents`
+const BRANCHES_API = `${GITHUB_API}/branches`
 
 const PART1_DIRS = ['xsd/netex_part_1']
 const PART2_DIRS = ['xsd/netex_part_2']
@@ -35,6 +37,8 @@ const FRAMEWORK_DIRS = [
   'xsd/netex_framework/netex_responsibility',
   'xsd/netex_framework/netex_genericFramework',
   'xsd/netex_framework/netex_reusableComponents',
+    'xsd/netex_framework/netex_frames',
+    'xsd/netex_framework/netex_utility',
 ]
 
 const EXAMPLES_DIR = 'examples/functions/fares'
@@ -61,23 +65,49 @@ async function getAuthHeaders() {
 
 const AUTH_HEADERS = await getAuthHeaders()
 
-async function listFiles(dir) {
-  const res = await fetch(`${GITHUB_API}/${dir}`, { headers: AUTH_HEADERS })
+/**
+ * Fetch list of branches from GitHub that match version pattern
+ * @returns {Promise<string[]>} Array of branch names like ['v1.3', 'v2.0', 'v2.1-wip', 'v3.0-wip']
+ */
+async function fetchBranches() {
+  const res = await fetch(BRANCHES_API, { headers: AUTH_HEADERS })
+  if (!res.ok) throw new Error(`Failed to fetch branches: ${res.status}`)
+  const branches = await res.json()
+  return branches
+    .map(b => b.name)
+    .filter(name => /^v\d+\.\d+(-wip)?$/.test(name))  // Only vX.Y or vX.Y-wip
+    .sort((a, b) => {
+      // Sort by version number
+      const parseVer = (v) => {
+        const match = v.match(/^v(\d+)\.(\d+)/)
+        if (!match) return [0, 0]
+        return [parseInt(match[1]), parseInt(match[2])]
+      }
+      const [aMaj, aMin] = parseVer(a)
+      const [bMaj, bMin] = parseVer(b)
+      if (aMaj !== bMaj) return aMaj - bMaj
+      return aMin - bMin
+    })
+}
+
+async function listFiles(dir, version = 'master') {
+  const res = await fetch(`${GITHUB_CONTENTS_API}/${dir}?ref=${version}`, { headers: AUTH_HEADERS })
   if (!res.ok) throw new Error(`Failed to list ${dir}: ${res.status}`)
   return res.json()
 }
 
-async function fetchText(path) {
-  const res = await fetch(`${RAW_BASE}/${path}`, { headers: AUTH_HEADERS })
-  if (res.status === 404) return null  // file listed by API but missing in raw — skip silently
+async function fetchText(path, version = 'master') {
+  const rawBase = `https://raw.githubusercontent.com/NeTEx-CEN/NeTEx/${version}`
+  const res = await fetch(`${rawBase}/${path}`, { headers: AUTH_HEADERS })
+  if (res.status === 404) return null
   if (!res.ok) throw new Error(`Failed to fetch ${path}: ${res.status}`)
   return res.text()
 }
 
-async function listXsdFiles(dirs) {
+async function listXsdFiles(dirs, version = 'master') {
   const files = []
   for (const dir of dirs) {
-    const entries = await listFiles(dir)
+    const entries = await listFiles(dir, version)
     for (const entry of entries) {
       if (entry.name.endsWith('.xsd') && (entry.name.includes('_version') || entry.name.includes('_support'))) {
         files.push(entry.path)
@@ -90,14 +120,15 @@ async function listXsdFiles(dirs) {
 /**
  * Recursively list all XSD _version/_support files under a top-level directory.
  * @param {string} topDir
+ * @param {string} version
  * @returns {Promise<string[]>}
  */
-async function listXsdFilesDeep(topDir) {
+async function listXsdFilesDeep(topDir, version = 'master') {
   const files = []
-  const entries = await listFiles(topDir)
+  const entries = await listFiles(topDir, version)
   for (const entry of entries) {
     if (entry.type === 'dir') {
-      const nested = await listXsdFilesDeep(entry.path)
+      const nested = await listXsdFilesDeep(entry.path, version)
       files.push(...nested)
     } else if (
       entry.name.endsWith('.xsd') &&
@@ -109,18 +140,20 @@ async function listXsdFilesDeep(topDir) {
   return files
 }
 
-async function buildElementsJson() {
+async function buildElementsJson(version = 'master') {
   const merged = { elements: new Map(), types: new Map(), groups: new Map() }
   const partMap = new Map()
   const allEnums = new Map()
 
+  console.log(`\n📦 Building elements for ${version}...`)
+
   // Framework: types/groups only, no elements
-  console.log('Fetching framework XSD file list...')
-  const frameworkPaths = await listXsdFiles(FRAMEWORK_DIRS)
-  console.log(`Found ${frameworkPaths.length} framework XSD files`)
+  console.log('  Fetching framework XSD file list...')
+  const frameworkPaths = await listXsdFiles(FRAMEWORK_DIRS, version)
+  console.log(`  Found ${frameworkPaths.length} framework XSD files`)
   for (const path of frameworkPaths) {
-    process.stdout.write(`  Parsing ${path.split('/').pop()}...`)
-    const text = await fetchText(path)
+    process.stdout.write(`    Parsing ${path.split('/').pop()}...`)
+    const text = await fetchText(path, version)
     if (!text) { console.log(' skipped (404)'); continue }
     const { types, groups } = parseXsd(text)
     for (const [k, v] of types) merged.types.set(k, v)
@@ -129,13 +162,12 @@ async function buildElementsJson() {
   }
 
   // Part 1
-  console.log('\nFetching Part 1 XSD file list...')
-  // Single root dir — listXsdFilesDeep traverses all subdirs recursively
-  const part1Paths = await listXsdFilesDeep(PART1_DIRS[0])
-  console.log(`Found ${part1Paths.length} Part 1 XSD files`)
+  console.log('  Fetching Part 1 XSD file list...')
+  const part1Paths = await listXsdFilesDeep(PART1_DIRS[0], version)
+  console.log(`  Found ${part1Paths.length} Part 1 XSD files`)
   for (const path of part1Paths) {
-    process.stdout.write(`  Parsing ${path.split('/').pop()}...`)
-    const text = await fetchText(path)
+    process.stdout.write(`    Parsing ${path.split('/').pop()}...`)
+    const text = await fetchText(path, version)
     if (!text) { console.log(' skipped (404)'); continue }
     const { elements, types, groups } = parseXsd(text)
     for (const [k, v] of elements) { merged.elements.set(k, v); partMap.set(k, 1) }
@@ -145,13 +177,12 @@ async function buildElementsJson() {
   }
 
   // Part 2
-  console.log('\nFetching Part 2 XSD file list...')
-  // Single root dir — listXsdFilesDeep traverses all subdirs recursively
-  const part2Paths = await listXsdFilesDeep(PART2_DIRS[0])
-  console.log(`Found ${part2Paths.length} Part 2 XSD files`)
+  console.log('  Fetching Part 2 XSD file list...')
+  const part2Paths = await listXsdFilesDeep(PART2_DIRS[0], version)
+  console.log(`  Found ${part2Paths.length} Part 2 XSD files`)
   for (const path of part2Paths) {
-    process.stdout.write(`  Parsing ${path.split('/').pop()}...`)
-    const text = await fetchText(path)
+    process.stdout.write(`    Parsing ${path.split('/').pop()}...`)
+    const text = await fetchText(path, version)
     if (!text) { console.log(' skipped (404)'); continue }
     const { elements, types, groups, enums } = parseXsd(text)
     for (const [k, v] of elements) { merged.elements.set(k, v); partMap.set(k, 2) }
@@ -162,12 +193,12 @@ async function buildElementsJson() {
   }
 
   // Part 3 (processed last so Part 3 elements win if names overlap)
-  console.log('\nFetching Part 3 XSD file list...')
-  const part3Paths = await listXsdFiles(PART3_DIRS)
-  console.log(`Found ${part3Paths.length} Part 3 XSD files`)
+  console.log('  Fetching Part 3 XSD file list...')
+  const part3Paths = await listXsdFiles(PART3_DIRS, version)
+  console.log(`  Found ${part3Paths.length} Part 3 XSD files`)
   for (const path of part3Paths) {
-    process.stdout.write(`  Parsing ${path.split('/').pop()}...`)
-    const text = await fetchText(path)
+    process.stdout.write(`    Parsing ${path.split('/').pop()}...`)
+    const text = await fetchText(path, version)
     if (!text) { console.log(' skipped (404)'); continue }
     const { elements, types, groups, enums } = parseXsd(text)
     for (const [k, v] of elements) { merged.elements.set(k, v); partMap.set(k, 3) }
@@ -178,50 +209,135 @@ async function buildElementsJson() {
   }
 
   const allTopGroups = [...PART1_GROUP_NAMES, ...PART2_GROUP_NAMES, ...TOP_GROUP_NAMES]
-  console.log('\nResolving hierarchy...')
+  console.log('  Resolving hierarchy...')
   const netexElements = resolveHierarchy(merged, allTopGroups, partMap)
-  console.log(`Resolved ${netexElements.length} element types`)
+  console.log(`  ✓ Resolved ${netexElements.length} element types`)
 
-  mkdirSync(DATA_DIR, { recursive: true })
-  writeFileSync(join(DATA_DIR, 'netex-elements.json'), JSON.stringify(netexElements, null, 2))
-  console.log('Wrote src/data/netex-elements.json')
-
-  // Convert enums Map to sorted object and write to file
+  // Convert enums Map to sorted object
   const enumsObject = Object.fromEntries(
     Array.from(allEnums.entries()).sort(([a], [b]) => a.localeCompare(b))
   )
-  writeFileSync(join(DATA_DIR, 'netex-enums.json'), JSON.stringify(enumsObject, null, 2))
-  console.log(`Wrote src/data/netex-enums.json (${allEnums.size} enumerations)`)
+
+  return { elements: netexElements, enums: enumsObject }
 }
 
-async function buildExamplesJson() {
-  console.log('Fetching example file list...')
-  const entries = await listFiles(EXAMPLES_DIR)
-  const xmlFiles = entries.filter((e) => e.name.endsWith('.xml'))
-  console.log(`Found ${xmlFiles.length} example XML files`)
+async function buildExamplesJson(version) {
+  console.log(`\n📄 Building examples for ${version}...`)
+  try {
+    const entries = await listFiles(EXAMPLES_DIR, version)
+    const xmlFiles = entries.filter((e) => e.name.endsWith('.xml'))
+    console.log(`  Found ${xmlFiles.length} example XML files`)
 
-  const examples = []
-  for (const file of xmlFiles) {
-    process.stdout.write(`  Fetching ${file.name}...`)
-    const xml = await fetchText(file.path)
-    const label = file.name
-      .replace(/\.xml$/, '')
-      .replace(/^Netex_\d+\.\d+_/, '')
-      .replace(/_/g, ' ')
-    examples.push({ filename: file.name, label, xml })
-    console.log(' done')
+    const examples = []
+    for (const file of xmlFiles) {
+      process.stdout.write(`    Fetching ${file.name}...`)
+      const xml = await fetchText(file.path, version)
+      const label = file.name
+        .replace(/\.xml$/, '')
+        .replace(/^Netex_\d+\.\d+_/, '')
+        .replace(/_/g, ' ')
+      examples.push({ filename: file.name, label, xml })
+      console.log(' done')
+    }
+
+    return examples
+  } catch (err) {
+    console.log(`  ⚠️  No examples found for ${version} (${err.message})`)
+    return []
   }
-
-  writeFileSync(join(DATA_DIR, 'netex-examples.json'), JSON.stringify(examples, null, 2))
-  console.log('Wrote src/data/netex-examples.json')
 }
 
 async function main() {
-  console.log('=== NeTEx fetch-and-parse ===\n')
-  await buildElementsJson()
-  console.log()
-  await buildExamplesJson()
-  console.log('\nDone.')
+  console.log('=== NeTEx Multi-Version Fetch & Parse ===\n')
+  
+  // Create directories
+  mkdirSync(DATA_DIR, { recursive: true })
+  mkdirSync(VERSIONS_DIR, { recursive: true })
+  
+  // Fetch available branches
+  console.log('🔍 Fetching available NeTEx versions from GitHub...')
+  const branches = await fetchBranches()
+  console.log(`Found ${branches.length} versions: ${branches.join(', ')}\n`)
+  
+  const versionsData = []
+  
+  // Process each version
+  for (const version of branches) {
+    console.log(`\n${'='.repeat(60)}`)
+    console.log(`Processing ${version}`)
+    console.log('='.repeat(60))
+    
+    try {
+      // Build elements and enums
+      const { elements, enums } = await buildElementsJson(version)
+      
+      // Build examples
+      const examples = await buildExamplesJson(version)
+      
+      // Save version-specific files
+      const versionFile = `netex-${version}.json`
+      const versionPath = join(VERSIONS_DIR, versionFile)
+      
+      const versionData = {
+        version,
+        elements,
+        enums,
+        examples,
+        fetchedAt: new Date().toISOString(),
+      }
+      
+      writeFileSync(versionPath, JSON.stringify(versionData, null, 2))
+      console.log(`  ✓ Wrote ${versionFile}`)
+      
+      versionsData.push({
+        version,
+        file: versionFile,
+        elementCount: elements.length,
+        enumCount: Object.keys(enums).length,
+        exampleCount: examples.length,
+        fetchedAt: versionData.fetchedAt,
+      })
+      
+    } catch (err) {
+      console.error(`  ❌ Error processing ${version}:`, err.message)
+      versionsData.push({
+        version,
+        error: err.message,
+        fetchedAt: new Date().toISOString(),
+      })
+    }
+  }
+  
+  // Write versions manifest
+  const manifest = {
+    versions: versionsData,
+    generatedAt: new Date().toISOString(),
+  }
+  writeFileSync(join(DATA_DIR, 'versions-manifest.json'), JSON.stringify(manifest, null, 2))
+  console.log(`\n✓ Wrote versions-manifest.json with ${versionsData.length} versions`)
+  
+  // Also write latest stable version (v2.0) to default location for backward compatibility
+  const stableVersion = versionsData.find(v => v.version === 'v2.0')
+  if (stableVersion && !stableVersion.error) {
+    const { readFileSync } = await import('fs')
+    const stableData = JSON.parse(readFileSync(join(VERSIONS_DIR, stableVersion.file), 'utf8'))
+    writeFileSync(join(DATA_DIR, 'netex-elements.json'), JSON.stringify(stableData.elements, null, 2))
+    writeFileSync(join(DATA_DIR, 'netex-enums.json'), JSON.stringify(stableData.enums, null, 2))
+    writeFileSync(join(DATA_DIR, 'netex-examples.json'), JSON.stringify(stableData.examples, null, 2))
+    console.log('✓ Wrote default files (v2.0) for backward compatibility')
+  }
+  
+  console.log('\n' + '='.repeat(60))
+  console.log('✅ All versions fetched successfully!')
+  console.log('='.repeat(60))
+  console.log('\nSummary:')
+  versionsData.forEach(v => {
+    if (v.error) {
+      console.log(`  ❌ ${v.version}: ${v.error}`)
+    } else {
+      console.log(`  ✓ ${v.version}: ${v.elementCount} elements, ${v.enumCount} enums, ${v.exampleCount} examples`)
+    }
+  })
 }
 
 main().catch((err) => { console.error(err); process.exit(1) })
