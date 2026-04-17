@@ -54,4 +54,17 @@ describe('resolveHierarchy', () => {
     expect(tariff).toBeDefined()
     expect(tariff.inheritedFrom).toBe('FareProduct')
   })
+
+  it('defaults part to 0 when no partMap is supplied', () => {
+    const result = resolveHierarchy(context, TOP_GROUP_NAMES)
+    const el = result.find((e) => e.name === 'PreassignedFareProduct')
+    expect(el.part).toBe(0)
+  })
+
+  it('reads part from partMap when supplied', () => {
+    const partMap = new Map([['PreassignedFareProduct', 3]])
+    const result = resolveHierarchy(context, TOP_GROUP_NAMES, partMap)
+    const el = result.find((e) => e.name === 'PreassignedFareProduct')
+    expect(el.part).toBe(3)
+  })
 })
