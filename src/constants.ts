@@ -1,43 +1,23 @@
 // src/constants.ts
 
-export const EXPORT_CHIPS: {
-  key: string
+export const PARTS: {
+  key: 1 | 2 | 3
   label: string
-  sub: string
-  groups: string[]
+  description: string
 }[] = [
   {
-    key: 'tariff',
-    label: 'Tariff',
-    sub: 'struktur',
-    groups: [
-      'Tariff', 'FareStructureElement',
-      'QualityStructureFactor', 'TimeStructureFactor', 'DistanceMatrixElement',
-      'ValidableElement',
-    ],
+    key: 1,
+    label: 'Del 1 · Nettverk & stoppesteder',
+    description: 'Stoppestedsstruktur, linjer, ruter og nettverkstopologi',
   },
   {
-    key: 'fareproduct',
-    label: 'FareProduct',
-    sub: 'typer',
-    groups: ['FareProduct'],
+    key: 2,
+    label: 'Del 2 · Rutetabeller',
+    description: 'Avganger, kjøretøyruter, tidsplaner og tjenestekalender',
   },
   {
-    key: 'faretable',
-    label: 'FareTable',
-    sub: 'priser',
-    groups: ['FareTable', 'FarePrice', 'PricingRule'],
-  },
-  {
-    key: 'salesoffer',
-    label: 'SalesOffer',
-    sub: 'salg',
-    groups: ['SalesOfferPackage', 'DistributionChannel', 'FulfilmentMethod', 'TypeOfTravelDocument'],
-  },
-  {
-    key: 'usageparam',
-    label: 'UsageParam',
-    sub: 'vilkår',
-    groups: ['UsageParameter'],
+    key: 3,
+    label: 'Del 3 · Billetter & takster',
+    description: 'Takststruktur, billetter, salg og bruksvilkår',
   },
 ]
