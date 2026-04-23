@@ -23,7 +23,7 @@
     "@entur/table": "^4.10.9",
     "@entur/tokens": "^3.22.4",
     "@entur/typography": "^2.1.6",
-    "fast-xml-parser": "^5.5.12",
+    "fast-xml-parser": "^5.7.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
